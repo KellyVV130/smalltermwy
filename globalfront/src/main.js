@@ -3,9 +3,9 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import "../style/theme/index.css";
-import ElementUI from 'element-ui'
+import ElementUI from "element-ui";
 
-Vue.use(ElementUI)
+Vue.use(ElementUI);
 
 Vue.config.productionTip = false;
 
