@@ -9,7 +9,7 @@
         <div><doc-list :type="'history'"></doc-list></div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
-        <div><el-button type="primary">新建文档</el-button></div>
+        <div><el-button type="primary" @click="toNewDoc">新建文档</el-button></div>
         <div><el-button type="primary">模板库</el-button></div>
       </el-aside>
     </el-container>
@@ -19,6 +19,11 @@
 <script>
   export default {
     name: "history",
+    methods:{
+      toNewDoc(){
+        this.$router.push({name:'editorPage'})
+      }
+    }
   }
 </script>
 

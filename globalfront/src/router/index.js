@@ -3,23 +3,23 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-const routes = [
-  {//最近浏览
+const routes = [//I don't know why this files keeps jumping out merge fails, there is no conflicts at all.
+  {//lately views, will have router guard, haven't login jump to Home Page
     path: "/",
     name: "history",
     component: () => import('../views/history')
   },
-  {//收藏夹
+  {//collection
     path: "/collection",
     name: "collection",
     component: () => import('../views/collection')
   },
-  {//我创建的
+  {//docs I built
     path: "/myBuild",
     name: "myBuild",
     component: () => import('../views/myBuild')
   },
-  {//我的团队
+  {//teams I'm in
     path: "/myTeam",
     name: "myTeam",
     component: () => import('../views/Team')
@@ -28,8 +28,32 @@ const routes = [
     path: '/team/:teamId',
     name: 'oneTeam',
     component: () => import('../views/oneTeam')
+  },
+  {
+    path: '/Home',
+    name: "Home",
+    component: ()=> import("../views/Welcome.vue")
+  },
+  {
+    path: "/Login",
+    name: "Login",
+    component: ()=> import("../views/Login.vue")
+  },
+  {
+    path: "/Register",
+    name: "Register",
+    component: ()=> import("../views/Register.vue")
+  },
+  {
+    path: "/PersonInfo",
+    name: "PersonInfo",
+    component: ()=> import("../views/PersonInfo.vue")
+  },
+  {
+    path:'/editorPage',
+    name:'editorPage',
+    component: () => import("../views/EditorPage")
   }
-
 ];
 
 const router = new VueRouter({

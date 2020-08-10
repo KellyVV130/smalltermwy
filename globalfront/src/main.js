@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import "../style/theme/index.css";
-import ElementUI from 'element-ui'
+import ElementUI from "element-ui";
 
 import NavBar from "./components/NavBar";
 import head from "./components/header";

@@ -48,7 +48,7 @@
           <i class="el-icon-user-solid"></i>
           <span>个人中心</span>
         </template>
-        <el-menu-item index="2-1">
+        <el-menu-item index="/PersonInfo">
           <template slot="title">
             <i class="el-icon-warning-outline"></i>
             <span>账号信息</span>
