@@ -5,12 +5,25 @@
     </el-col>
     <el-col :span="20"></el-col><el-container>
       <el-main>
-        <h3>我创建的</h3><!--按修改日期倒序-->
-        <div><doc-list :type="'build'"></doc-list></div>
+        <div style="margin-top: 20px;">
+          <span style="width: 50%; font-size: 1.17em; font-weight: bold">我创建的</span>
+          <span style="float: right;">
+            <el-radio-group v-model="chart" size="small" @change="changeChart">
+              <el-radio-button label="列表"></el-radio-button>
+              <el-radio-button label="图标"></el-radio-button>
+            </el-radio-group>
+          </span>
+        </div>
+        <!--按日期倒序-->
+        <div style="margin-top: 30px;">
+          <doc-list :type="'build'" v-if="chart === '列表'"></doc-list>
+          <doc-img :type="'build'" v-else></doc-img>
+        </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
-        <div><el-button type="primary">新建文档</el-button></div>
-        <div><el-button type="primary">模板库</el-button></div>
+        <div><el-button plain type="primary" @click="toNewDoc">新建文档</el-button></div>
+        <div><el-button plain type="primary" disabled>新建文件夹</el-button></div>
+        <div><el-button plain type="primary">模板库</el-button></div>
       </el-aside>
     </el-container>
   </div>
@@ -19,6 +32,19 @@
 <script>
   export default {
     name: "myBuild",
+    data(){
+      return{
+        chart: "图标"
+      }
+    },
+    methods:{
+      toNewDoc(){
+        this.$router.push({name:'editorPage'})
+      },
+      changeChart(value){
+        this.chart = value
+      }
+    }
   }
 </script>
 
