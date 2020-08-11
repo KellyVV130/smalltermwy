@@ -26,8 +26,13 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
   },
   {
     path: '/team/:teamId',
-    name: 'oneTeam',
+    name: 'team',
     component: () => import('../views/oneTeam')
+  },
+  {//Dustbin
+    path: "/dustbin",
+    name: "dustbin",
+    component: () => import('../views/Dustbin')
   },
   {
     path: '/Home',

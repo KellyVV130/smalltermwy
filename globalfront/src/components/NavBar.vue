@@ -36,7 +36,7 @@
             <span>团队空间</span>
           </template>
         </el-menu-item>
-        <el-menu-item index="1-5">
+        <el-menu-item index="/dustbin">
           <template slot="title">
             <i class="el-icon-delete"></i>
             <span>回收站</span>

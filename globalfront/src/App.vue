@@ -14,10 +14,6 @@
     margin: 0;
     padding: 0;
   }
-  .el-scrollbar__wrap{
-    height: 100%;
-    overflow-x: hidden !important;
-  }
   .app{
     min-height: 100vh;
     display: flex;

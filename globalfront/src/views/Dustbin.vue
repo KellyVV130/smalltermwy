@@ -1,12 +1,12 @@
 <template>
-  <div class="history">
+  <div class="dustbin">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
     <el-col :span="20"></el-col><el-container>
       <el-main>
         <div style="margin-top: 20px;">
-          <span style="width: 50%; font-size: 1.17em; font-weight: bold">最近浏览</span>
+          <span style="width: 50%; font-size: 1.17em; font-weight: bold">回收站</span>
           <span style="float: right;">
             <el-radio-group v-model="chart" size="small" @change="changeChart">
               <el-radio-button label="列表"></el-radio-button>
@@ -16,15 +16,13 @@
         </div>
         <!--按日期倒序-->
         <div style="margin-top: 30px;">
-          <doc-list :type="'history'" v-if="chart === '列表'"></doc-list>
-          <doc-img :type="'history'" v-else></doc-img>
+          <doc-list :type="'dustbin'" v-if="chart === '列表'"></doc-list>
+          <doc-img :type="'dustbin'" v-else></doc-img>
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
-        <div><el-button plain type="primary" @click="toNewDoc">新建文档</el-button></div>
-        <div><el-button plain type="primary" @click="folderDialog = true" disabled>新建文件夹</el-button></div>
-        <folder-dialog :dialog-form-visible="folderDialog" @changeVisible="changeVisible"></folder-dialog>
-        <div><el-button plain type="primary">模板库</el-button></div>
+        <div><el-button plain type="danger">清空回收站</el-button></div>
+        <div><el-button plain type="warning">全部恢复</el-button></div>
       </el-aside>
     </el-container>
   </div>
@@ -32,11 +30,10 @@
 
 <script>
   export default {
-    name: "history",
+    name: "dustbin",
     data(){
       return{
-        chart: "图标",
-        folderDialog: false
+        chart: "图标"
       }
     },
     methods:{
@@ -45,9 +42,6 @@
       },
       changeChart(value){
         this.chart = value
-      },
-      changeVisible(val){
-        this.folderDialog = val
       }
     }
   }
@@ -58,7 +52,7 @@
     width: 300px;
     height: calc(100vh - 50px);
   }
-  .history{
+  .dustbin{
     background-color: whitesmoke;
   }
   .el-button{

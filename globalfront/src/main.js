@@ -6,13 +6,17 @@ import "../style/theme/index.css";
 import ElementUI from "element-ui";
 
 import NavBar from "./components/NavBar";
-import head from "./components/header";
+import brain from "./components/header";
 import docList from "./components/docList";
+import docImg from "./components/docImg";
+import folderDialog from "./components/folderDialog";
 
 Vue.use(ElementUI)
 Vue.component('workSpace', NavBar)
-Vue.component('Navbar', head)
+Vue.component('Navbar', brain)
 Vue.component('doc-list', docList)
+Vue.component('doc-img', docImg)
+Vue.component('folder-dialog', folderDialog)
 
 Vue.config.productionTip = false;
 
