@@ -188,24 +188,13 @@
         <div>修改次数：{{Info.builder}}</div>
         <el-divider></el-divider>
         <div>协作者：
-<<<<<<< HEAD
-          <div v-for="(item, index) in Info.coworkers" :key="index">
-            {{item.userName}}
-=======
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
             <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;"></el-avatar>
             <span style="height: 28px; padding-right: 15px;margin-left: 10px;">{{item.userName}}</span>
->>>>>>> b29651f86a9025e3d6793622ecf16025f9a9319b
             <i class="el-icon-user" v-if="item.isBuilder"></i>
           </div>
         </div>
         <el-divider></el-divider>
-<<<<<<< HEAD
-        <el-link type="primary" style="font-size: 16px;">分享</el-link>
-        <el-link type="danger" style="float: right; font-size: 16px;">删除</el-link>
-      </div>
-    </el-dialog>
-=======
         <el-link plain type="primary" style="font-size: 16px;">分享</el-link>
         <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.builder)">
           <span v-if="type==='dustbin'">彻底</span>删除
@@ -214,7 +203,6 @@
     </el-dialog>
 
     <folder-dialog :dialog-form-visible="folderDialog" @changeVisible="changeVisible" :doc-id="docId"></folder-dialog>
->>>>>>> b29651f86a9025e3d6793622ecf16025f9a9319b
   </div>
 </template>
 
@@ -224,12 +212,6 @@
     props:{
       type:{
         default: 'history'//'collection', 'build', 'dustbin', 'team'?
-<<<<<<< HEAD
-      },
-      style:{
-        default:'list'//'image'
-=======
->>>>>>> b29651f86a9025e3d6793622ecf16025f9a9319b
       }
     },
     mounted() {
@@ -266,12 +248,6 @@
               userId: 1,
               userName: 'Kelly',
               isBuilder: false,
-<<<<<<< HEAD
-              isCollected: true
-            }
-          ]
-        }
-=======
               isCollected: true,
               userImg: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
             },
@@ -286,22 +262,15 @@
         },
         docId: '1',
         folderDialog: false
->>>>>>> b29651f86a9025e3d6793622ecf16025f9a9319b
       }
     },
     methods:{
       init(){
         //请求数据
-<<<<<<< HEAD
-      },
-      filterTag(value, row) {
-        return row.tag === value;
-=======
         console.log(this.type)
       },
       filterTag(value, row) {
         return row.builder === value;
->>>>>>> b29651f86a9025e3d6793622ecf16025f9a9319b
       },
       filterHandler(value, row, column) {
         const property = column['property'];
@@ -309,11 +278,6 @@
       },
       handleEdit(index, row) {//查看文档详细内容
         console.log(index, row);
-<<<<<<< HEAD
-        this.Dialog = true
-        //this.Info = row//表格中每个元素是详细信息，只展示部分，点开才展示全部
-      },
-=======
         //this.Info = row//表格中每个元素是详细信息，只展示部分，点开才展示全部
         this.Dialog = true
       },
@@ -364,7 +328,6 @@
           return 'background-color: whitesmoke;'
         }
       }
->>>>>>> b29651f86a9025e3d6793622ecf16025f9a9319b
     }
   }
 </script>
@@ -373,8 +336,6 @@
   .docList{
     height: 80vh;
   }
-<<<<<<< HEAD
-=======
   .tableI{
     float: right;
     font-size: medium;
@@ -395,5 +356,4 @@
     box-sizing: border-box;
     margin: 2px 0;
   }
->>>>>>> b29651f86a9025e3d6793622ecf16025f9a9319b
 </style>
