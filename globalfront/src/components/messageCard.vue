@@ -2,7 +2,10 @@
   <el-card style="width:500px">
     <el-container>
       <el-col span="3">
-          <i class="el-icon-chat-square" style="margin-top:40%; margin-left:10px"></i>
+          <i v-if="type==='comment'" class="el-icon-chat-square" style="margin-top:40%; margin-left:10px"></i>
+          <i v-if="type==='delete'" class="el-icon-close" style="margin-top:40%; margin-left:10px"></i>
+          <i v-if="type==='share'" class="el-icon-share" style="margin-top:40%; margin-left:10px"></i>
+          <i v-if="type==='add'" class="el-icon-user" style="margin-top:40%; margin-left:10px"></i>
       </el-col>
       <el-col style="margin-top:10px">
           <el-row><div class="title">{{name}}{{content}}</div></el-row>
@@ -27,7 +30,8 @@ export default {
             name: 'whisper',
             date: '2020/8/10',
             content: '评论了[小学期]',
-            detail: '这是一条不走心的评论。'
+            detail: '这是一条不走心的评论。',
+            type: 'delete'
         }
     }
 }

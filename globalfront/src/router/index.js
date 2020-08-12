@@ -72,4 +72,28 @@ const router = new VueRouter({
   routes
 });
 
+/*const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (location) {
+  return originalPush.call(this, location).catch(err => err)
+}*/
+
+//判断用户是否登录
+/*router.beforeEach((to, from, next) => {
+  if (to.meta.requireAuth) {
+    let token = localStorage.getItem('Authorization')
+    if (token) {
+      next()
+    } else {
+      next({
+        name: 'Login',
+        params: {
+          redirect: to.fullPath
+        }
+      })
+    }
+  } else {
+    next()
+  }
+})*/
+
 export default router;
