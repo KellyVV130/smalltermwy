@@ -113,7 +113,7 @@
     <div class="aside">
       <!-- 作者 -->
       <div class="author">
-        <img class="head" :src="File.imagePath" alt="图片无法加载QAQ" />
+        <img class="head" :src="File.imagePath" alt="图片无法加载" />
         <div :class="isAdmin ? 'xxx' : ''">
           <div
             @click="manageProfile(File.userID)"
@@ -154,7 +154,6 @@
         <img v-if="isMyFile" src="../../assets/Icon/File/manage.png" alt="" />
         <img
           v-else-if="isAdmin"
-          src="../../assets/Icon/File/manage.png"
           alt=""
         />
       </div>
@@ -214,14 +213,6 @@
 </template>
 
 <script>
-// import E from "wangeditor";
-const E = process.browser ? require("wangeditor") : undefined;
-import {
-  likeFile,
-  pushComment,
-  deleteFile
-} from "../../network/File";
-import { isNotNew } from "../../network/user";
 export default {
   name: "File",
   methods: {
@@ -231,20 +222,17 @@ export default {
       let content = this.newcomment;
       pushComment(userID, FileID, content)
         .then(res => {
-          if (res == null) this.$message.error("评论失败了~请检查您的网络");
+          if (res == null) this.$message.error("评论失败，请检查您的网络");
           else {
             res.createTime = "刚刚";
             this.File.listComment.push(res);
             this.$message({
               type: "success",
-              message: "评论成功~"
+              message: "评论成功"
             });
             this.newcomment = "";
           }
         })
-        .catch(err => {
-          this.$message.error("评论失败了~请检查您的网络");
-        });
     },
     likesClick() {
       this.File.listLikes.push(this.userID);
@@ -283,12 +271,10 @@ export default {
               });
               this.FileStatus = 1;
               this.$router.go(-1);
-            } else this.$message.error("删除失败，请检查您的网络~");
+            } else this.$message.error("删除失败，请检查您的网络");
           })
-          .catch(err => {
-            this.$message.error("删除失败，请检查您的网络~");
-          });
-      },
+      }
+	},
     toEdit() {
       let File = this.File;
       this.$router.push({
