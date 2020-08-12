@@ -100,3 +100,5 @@ VueRouter.prototype.push = function push (location) {
     next()
   }
 })*/
+
+export default router

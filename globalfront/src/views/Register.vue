@@ -3,7 +3,7 @@
     <div style="display: flex;justify-content: center;margin-top:50px">
       <el-card style="width: 400px" shadow="hover">
         <div slot="header" class="clearfix">
-          <span>注  册</span>
+          <span style="margin-left:45%">注  册</span>
         </div>
         <el-form size="small" ref="infoForm" :model="user" :rules="rules"  :validate-on-rule-change="true" :label-position="right">
           <el-form-item label="手机号" prop="phone">
