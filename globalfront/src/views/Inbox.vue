@@ -11,8 +11,8 @@
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
-        <div><el-button type="primary">新建文档</el-button></div>
-        <div><el-button type="primary">模板库</el-button></div>
+        <div><el-button type="warning" plain>全部已读</el-button></div>
+        <div><el-button type="primary" plain>查看未读</el-button></div>
       </el-aside>
     </el-container>
   </div>

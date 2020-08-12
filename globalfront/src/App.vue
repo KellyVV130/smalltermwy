@@ -13,10 +13,11 @@
   html,body{
     margin: 0;
     padding: 0;
+    font-family: Georgia, serif;
   }
-  .el-scrollbar__wrap{
-    height: 100%;
-    overflow-x: hidden !important;
+  .el-button{
+    font-family: Georgia, serif;
+    font-weight: bold;
   }
   .app{
     min-height: 100vh;

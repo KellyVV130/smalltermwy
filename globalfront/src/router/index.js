@@ -63,6 +63,11 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
     path:'/Inbox',
     name: 'Inbox',
     component: () => import("../views/Inbox.vue")
+  },
+  {
+    path:'/templates',
+    name:'templates',
+    component: () => import("../views/templateHub")
   }
 ];
 

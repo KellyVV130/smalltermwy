@@ -100,14 +100,30 @@
           </div>
         </div>
         <el-divider></el-divider>
-        <el-link plain type="primary" style="font-size: 16px;">分享</el-link>
-        <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.builder)">
+<!--        <el-switch--><!--这是控制权限部分-->
+<!--          style="padding-right: 20px;"-->
+<!--          v-model="Info._public">-->
+<!--        </el-switch>-->
+<!--        <span v-if="Info._public" style="font-weight: bold;">公开</span>-->
+<!--        <span v-else style="font-weight: bold;">未公开(此时分享，除协作者外不可见)</span>-->
+        <div><el-button plain type="primary" @click="setP(Info.builder)">设置权限</el-button> </div>
+        <div style=" margin-top: 20px;"><el-button plain type="success" @click="shareDialog(Info.builder)">
+          分享</el-button></div>
+        <div style=" margin-top: 20px;"><el-button plain type="danger" @click="Delete(Info.builder)">
           <span v-if="type==='dustbin'">彻底</span>删除
-        </el-link>
+          </el-button>
+        </div>
       </div>
     </el-dialog>
 
-    <folder-dialog :dialog-form-visible="folderDialog" @changeVisible="changeVisible" :doc-id="docId"></folder-dialog>
+    <folder-dialog
+        :dialog="folderDialog"
+        @changeVisible="changeVisible"
+        :doc-id="docId"
+        :type="'coworker'"></folder-dialog>
+
+    <share-dialog :share-dialog="shareV" :share-id="shareId" @changeVisible="changeShare"></share-dialog>
+    <set-dialog :set-dialog="setV" :set-id="setId" @changeVisible="changeP"></set-dialog>
   </div>
 </template>
 
@@ -175,10 +191,15 @@
               isCollected: true,
               userImg: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
             }
-          ]
+          ],
+          _public: false
         },
         folderDialog: false,
         docId: '1',
+        shareId: '',
+        shareV: false,
+        setV: false,
+        setId: '2',
       }
     },
     methods:{
@@ -202,6 +223,13 @@
           this.Dialog = false
         })
       },
+      shareDialog(id){
+        this.shareId = id
+        this.shareV = true
+      },
+      changeShare(val){
+        this.shareV = val
+      },
       changeVisible(val){
         this.folderDialog = val
       },
@@ -218,7 +246,15 @@
         })
       },
       recover(id){
-        this.alert(id)
+        alert(id)
+      },
+      setP(id){
+        console.log('set')
+        this.setId = id
+        this.setV = true
+      },
+      changeP(val){
+        this.setV = val
       }
     },
   }
