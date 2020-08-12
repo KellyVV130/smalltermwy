@@ -10,6 +10,8 @@ import brain from "./components/header";
 import docList from "./components/docList";
 import docImg from "./components/docImg";
 import folderDialog from "./components/folderDialog";
+import shareDialog from "./components/shareDialog";
+import setDialog from "./components/setDialog";
 
 Vue.use(ElementUI)
 Vue.component('workSpace', NavBar)
@@ -17,6 +19,8 @@ Vue.component('Navbar', brain)
 Vue.component('doc-list', docList)
 Vue.component('doc-img', docImg)
 Vue.component('folder-dialog', folderDialog)
+Vue.component('share-dialog', shareDialog)
+Vue.component('set-dialog', setDialog)
 
 Vue.config.productionTip = false;
 

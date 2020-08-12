@@ -22,9 +22,9 @@
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
         <div><el-button plain type="primary" @click="toNewDoc">新建文档</el-button></div>
-        <div><el-button plain type="primary" @click="folderDialog = true" disabled>新建文件夹</el-button></div>
+<!--        <div><el-button plain type="primary" @click="folderDialog = true" disabled>新建文件夹</el-button></div>-->
         <folder-dialog :dialog-form-visible="folderDialog" @changeVisible="changeVisible"></folder-dialog>
-        <div><el-button plain type="primary">模板库</el-button></div>
+        <div><el-button plain type="primary" @click="toTemplate">模板库</el-button></div>
       </el-aside>
     </el-container>
   </div>
@@ -35,19 +35,33 @@
     name: "history",
     data(){
       return{
-        chart: "图标",
+        chart: "",
         folderDialog: false
       }
     },
+    mounted(){
+      this.init()
+    },
     methods:{
+      init(){
+        if(localStorage.getItem('chart')){
+          this.chart = localStorage.getItem('chart')
+        } else {
+          this.chart = '图标'
+        }
+      },
       toNewDoc(){
         this.$router.push({name:'editorPage'})
       },
       changeChart(value){
         this.chart = value
+        localStorage.setItem('chart', value)
       },
       changeVisible(val){
         this.folderDialog = val
+      },
+      toTemplate(){
+        this.$router.push({name:'templates'})
       }
     }
   }

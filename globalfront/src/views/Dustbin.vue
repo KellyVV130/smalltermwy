@@ -33,16 +33,27 @@
     name: "dustbin",
     data(){
       return{
-        chart: "图标"
+        chart: ""
       }
     },
+    mounted(){
+      this.init()
+    },
     methods:{
+      init(){
+        if(localStorage.getItem('chart')){
+          this.chart = localStorage.getItem('chart')
+        } else {
+          this.chart = '图标'
+        }
+      },
       toNewDoc(){
         this.$router.push({name:'editorPage'})
       },
       changeChart(value){
         this.chart = value
-      }
+        localStorage.setItem('chart', value)
+      },
     }
   }
 </script>

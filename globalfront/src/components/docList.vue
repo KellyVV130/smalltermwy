@@ -202,7 +202,11 @@
       </div>
     </el-dialog>
 
-    <folder-dialog :dialog-form-visible="folderDialog" @changeVisible="changeVisible" :doc-id="docId"></folder-dialog>
+    <folder-dialog
+        :dialog="folderDialog"
+        @changeVisible="changeVisible"
+        :doc-id="docId"
+        :type="'coworker'"></folder-dialog>
   </div>
 </template>
 

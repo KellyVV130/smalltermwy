@@ -22,8 +22,8 @@
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
-        <div><el-button plain type="primary">新建文档</el-button></div>
-        <div><el-button plain type="primary" disabled>新建文件夹</el-button></div>
+        <div><el-button plain type="primary" @click="toNewDoc">新建文档</el-button></div>
+<!--        <div><el-button plain type="primary" disabled>新建文件夹</el-button></div>-->
         <div><el-button plain type="primary">模板库</el-button></div>
         <div v-if="isBuilder">
           <el-button plain type="primary">管理团队</el-button>
@@ -43,17 +43,31 @@
     data(){
       return {
         teamName: '团队1',
-        chart: '图标',
+        chart: '',
         isBuilder: false
       }
     },
+    mounted(){
+      this.init()
+    },
     methods:{
+      init(){
+        if(localStorage.getItem('chart')){
+          this.chart = localStorage.getItem('chart')
+        } else {
+          this.chart = '图标'
+        }
+      },
+      toNewDoc(){
+        this.$router.push({name:'editorPage'})
+      },
       goBack(){
         this.$router.push({name:'myTeam'})
       },
       changeChart(value){
-        this.chart = value;
-      }
+        this.chart = value
+        localStorage.setItem('chart', value)
+      },
     }
   }
 </script>
