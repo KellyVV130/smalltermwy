@@ -3,9 +3,9 @@
     <el-container>
       <el-col span="3">
           <i v-if="type==='comment'" class="el-icon-chat-square" style="margin-top:40%; margin-left:10px"></i>
-          <i v-if="type==='delete'" class="el-icon-close" style="margin-top:40%; margin-left:10px"></i>
-          <i v-if="type==='share'" class="el-icon-share" style="margin-top:40%; margin-left:10px"></i>
-          <i v-if="type==='add'" class="el-icon-user" style="margin-top:40%; margin-left:10px"></i>
+          <i v-else-if="type==='delete'" class="el-icon-close" style="margin-top:40%; margin-left:10px"></i>
+          <i v-else-if="type==='share'" class="el-icon-share" style="margin-top:40%; margin-left:10px"></i>
+          <i v-else-if="type==='add'" class="el-icon-user" style="margin-top:40%; margin-left:10px"></i>
       </el-col>
       <el-col style="margin-top:10px">
           <el-row><div class="title">{{name}}{{content}}</div></el-row>

@@ -42,3 +42,10 @@ export const postNewUser = (name, password1, password2, phone, code) => {
     return axios.get('http://127.0.0.1:8000/users/1')
   }
   */
+export const changeVisibility = (docId, role) => {
+  return axios.put('http://127.0.0.1:8000/DocRoleEditViewset/'+docId,{'role':role})
+}
+
+export const fetchRecentDocs = (id) => {
+  return axios.get('http://127.0.0.1:8000/DocRoleEditViewset/'+id)
+}

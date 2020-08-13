@@ -24,7 +24,7 @@
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
         <div><el-button plain type="primary" @click="toNewDoc">新建文档</el-button></div>
 <!--        <div><el-button plain type="primary" disabled>新建文件夹</el-button></div>-->
-        <div><el-button plain type="primary">模板库</el-button></div>
+        <div><el-button plain type="primary" @click="toTemplate">模板库</el-button></div>
         <div v-if="isBuilder">
           <el-button plain type="primary">管理团队</el-button>
         </div>
@@ -67,6 +67,9 @@
       changeChart(value){
         this.chart = value
         localStorage.setItem('chart', value)
+      },
+      toTemplate(){
+        this.$router.push({name:'templates'})
       },
     }
   }

@@ -31,12 +31,15 @@
 </template>
 
 <script>
+  import {fetchRecentDocs} from "../api/api";
+
   export default {
     name: "history",
     data(){
       return{
         chart: "",
-        folderDialog: false
+        folderDialog: false,
+        docList:[]
       }
     },
     mounted(){
@@ -44,6 +47,21 @@
     },
     methods:{
       init(){
+        fetchRecentDocs(1).then(res=>{
+          if(res.status === 200){
+            if(res.data.length === 0){
+              this.docList = []
+            }else{
+            res.data.forEach(i=>{
+              this.docList = []
+              this.docList.push({
+                docId: i.document.id,
+                docName:i.document.name,
+                readTime: i.read_time
+              })
+            })}
+          }
+        }).catch(e=>{this.$message({message:e, type:'error'})})
         if(localStorage.getItem('chart')){
           this.chart = localStorage.getItem('chart')
         } else {

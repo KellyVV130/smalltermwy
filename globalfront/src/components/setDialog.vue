@@ -5,7 +5,7 @@
        style="width: 70%;margin: 0 auto;" :show-close="false" :close-on-click-modal="false">
         设置{{setId}}权限<br>
         <!--如果是团队文档，有完全公开、团队内及本文档协作者公开，团队外只读、仅团队内及本文档协作者公开、仅团队内及本文档协作者只读-->
-        <el-radio-group v-model="team" style="margin-top: 25px;" class="setRadio">
+        <el-radio-group v-model="vi" style="margin-top: 25px;" class="setRadio">
           <el-radio :label="0">完全公开</el-radio><br>
           <el-radio :label="2">对协作者公开，他人只读</el-radio><br>
           <el-radio :label="1">仅对协作者公开，他人不可见</el-radio><br>
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+  import {changeVisibility} from "../api/api"
   export default {
     name: "setDialog",
     props: {
@@ -30,17 +31,23 @@
       },
       setId: {
         default: false
+      },
+      Visi: {
+        default: 3
       }
     },
     watch:{
       setDialog(val){
         this.isV = val
+      },
+      Visi(val){
+        this.vi = val
       }
     },
     data(){
       return {
         isV: false,
-        team: ''
+        vi: -1,
       }
     },
     methods:{
@@ -48,8 +55,18 @@
         this.$emit('changeVisible', false)
       },
       submitForm(){
-        console.log(this.form)
-        this.$emit('changeVisible', false)
+        console.log(this.vi)
+        console.log(this.Visi)
+        changeVisibility(this.setId, this.vi).then(res=>{
+          if(res.status === 200){
+            this.$message({message:'修改权限成功！', type: 'success'})
+            this.$emit('changeVisible', false)
+          } else if(res.status === 401){
+            this.$message({message:'您没有修改权限！', type:'error'})
+          }
+        }).catch(e=>{this.$message({message:e, type:'error'})
+            this.$emit('changeVisible', false)
+        })
       },
     }
   }
