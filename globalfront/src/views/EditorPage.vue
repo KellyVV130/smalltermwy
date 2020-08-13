@@ -98,10 +98,10 @@
 </template>
 
 <script>
-//import EditorBar from "../components/Editor";
+import EditorBar from "../components/Editor";
 
 export default {
-  //components: { EditorBar },
+  components: { EditorBar },
   data() {
     return {
       input: '',
