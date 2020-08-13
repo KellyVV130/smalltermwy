@@ -6,15 +6,6 @@
           <span style="margin-left:45%">登  录</span>
         </div>
         <el-form  ref="infoForm" :model="user" :rules="rules" enctype="multipart/form-data">
-<!--          <el-form-item label="手机号" prop="username">-->
-<!--            <br>-->
-<!--            <el-input-->
-<!--                v-model="user.username"-->
-<!--                show-word-limit-->
-<!--                style="width: 100%; float: right"-->
-<!--              >-->
-<!--            </el-input>-->
-<!--          </el-form-item>-->
           <el-form-item label="用户名" prop="username">
             <br>
             <el-input
@@ -75,11 +66,12 @@ export default {
           postUser(_this.user.username,_this.user.password).then(response => {
             if(response.status===200){
               console.log(response)
+              localStorage.token = response.data.token
+              localStorage.userId = response.data.user_id
               this.$message({
                 message: '登录成功',
                 type: 'success'
               })
-              localStorage.token = response.data.token
               this.$router.push({name:'history'})
             } else {
               console.log(response)
@@ -94,6 +86,7 @@ export default {
           })
         }
       })
+      
     },
     toRegister(){
       this.$router.push({path:"/Register"})

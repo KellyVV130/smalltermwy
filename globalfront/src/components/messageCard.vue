@@ -1,18 +1,20 @@
 <template>
-  <el-card style="width:500px">
+<div>
+  <div v-for="item in messages" :key="item.label">
+  <el-card  style="width:500px">
     <el-container>
       <el-col span="3">
-          <i v-if="type==='comment'" class="el-icon-chat-square" style="margin-top:40%; margin-left:10px"></i>
-          <i v-else-if="type==='delete'" class="el-icon-close" style="margin-top:40%; margin-left:10px"></i>
-          <i v-else-if="type==='share'" class="el-icon-share" style="margin-top:40%; margin-left:10px"></i>
-          <i v-else-if="type==='add'" class="el-icon-user" style="margin-top:40%; margin-left:10px"></i>
+          <i v-if="item.type==='comment'" class="el-icon-chat-square" style="margin-top:40%; margin-left:10px"></i>
+          <i v-if="item.type==='delete'" class="el-icon-close" style="margin-top:40%; margin-left:10px"></i>
+          <i v-if="item.type==='share'" class="el-icon-share" style="margin-top:40%; margin-left:10px"></i>
+          <i v-if="item.type==='add'" class="el-icon-user" style="margin-top:40%; margin-left:10px"></i>
       </el-col>
       <el-col style="margin-top:10px">
-          <el-row><div class="title">{{name}}{{content}}</div></el-row>
-          <el-row><div class="details">{{detail}}</div></el-row>
+          <el-row><div class="title">{{item.name}}{{item.content}}</div></el-row>
+          <el-row><div class="details">{{item.detail}}</div></el-row>
           <br>
           <el-row>
-            <el-col span="14"><time class="time">{{date}}</time></el-col>
+            <el-col span="14"><time class="time">{{item.date}}</time></el-col>
               <el-button type="text" icon="el-icon-view">查看</el-button>
               <el-divider direction="vertical"></el-divider>
               <el-button type="text" icon="el-icon-check">标为已读</el-button>
@@ -20,20 +22,19 @@
       </el-col>
     </el-container>
   </el-card>
+  <br>
+</div></div>
 </template>
 
 <script>
 export default {
-    data(){
-        return{
-            circleUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-            name: 'whisper',
-            date: '2020/8/10',
-            content: '评论了[小学期]',
-            detail: '这是一条不走心的评论。',
-            type: 'delete'
-        }
+  name: 'messageCard',
+  props: {
+    messages: {
+      type: Array,
+      required: true
     }
+  }
 }
 </script>
 
