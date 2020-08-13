@@ -1,14 +1,16 @@
 <template>
   <div class="basic">
-    <el-divider content-position="center">欢 迎 使 用 环 球 文 档 G l o b a l D o c</el-divider>
+    <el-divider content-position="center">
+      <span style="font-size: larger;">欢 迎 使 用 环 球 文 档 G l o b a l D o c</span>
+    </el-divider>
     <div class="block">
-      <el-carousel height="400px">
+      <el-carousel height="400px; width:70%;">
         <el-carousel-item v-for="item in 4" :key="item">
           <h3 class="small">{{ item }}</h3>
         </el-carousel-item>
       </el-carousel>
     </div>
-    <el-button type="primary" @click="toLogin">登录</el-button>
+    <el-button type="primary" @click="toLogin" style="margin: 0 auto;">登录</el-button>
   </div>
 </template>
 
@@ -23,12 +25,13 @@ export default {
 </script>
 
 
-<style>
+<style scope>
   .basic{
     position: fixed;
-    width: 100%;
+    width: 100vw;
     height: 100%;
     background-color: whitesmoke;
+    text-align: center;
   }
 
   .el-carousel__item h3 {
@@ -45,5 +48,9 @@ export default {
   
   .el-carousel__item:nth-child(2n+1) {
      background-color: #d3dce6;
+  }
+  .block{
+    margin:0 auto 50px auto;
+    width: 70vw;
   }
 </style>

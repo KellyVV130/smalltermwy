@@ -3,7 +3,7 @@
     <div v-if="type==='history'">
       <el-row :gutter="20">
         <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
-          <div style="height: 100px;text-align: center">
+          <div style="height: 110px;text-align: center">
             <el-card class="fileCard" shadow="hover">
               <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small">
                 <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
@@ -38,7 +38,7 @@
     <div v-else-if="type === 'dustbin'">
       <el-row :gutter="20">
         <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
-          <div style="height: 100px;text-align: center">
+          <div style="height: 110px;text-align: center">
             <el-card class="fileCard" shadow="hover">
               <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small">
                 <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
@@ -66,7 +66,7 @@
     <div v-else>
       <el-row :gutter="20">
         <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
-          <div style="height: 100px;text-align: center">
+          <div style="height: 110px;text-align: center">
             <el-card class="fileCard" shadow="hover">
               <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small">
                 <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
@@ -105,14 +105,14 @@
       center>
       <div style="">
         <div>文件名：{{Info.docName}}</div>
-        <div>创建者：{{Info.builder}}</div>
+        <div style="cursor: pointer;">创建者：{{Info.builder}}</div>
         <div>创建日期：{{Info.create_time}}</div>
         <div>最后修改时间：{{Info.modify_time}}</div>
         <el-divider></el-divider>
         <div>协作者：
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
             <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;"></el-avatar>
-            <span style="height: 28px; padding-right: 15px;margin-left: 10px;">{{item.userName}}</span>
+            <span style="height: 28px; padding-right: 15px;margin-left: 10px;cursor: pointer;">{{item.userName}}</span>
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
                      @click="checkMove(item)" v-if="!item.isBuilder">
@@ -355,6 +355,7 @@
                     userImg: i.head,
                     isBuilder: index === 0? true:false
                   })
+                  console.log(i.id, this.Info.coworkers)
                 })
               }
             }).catch(e => console.log(e.response.data))
