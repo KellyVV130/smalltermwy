@@ -12,7 +12,7 @@
           <i class="el-icon-s-grid"></i>
           <span>工作台</span>
         </template>
-        <el-menu-item index="/">
+        <el-menu-item index="/history">
           <template slot="title">
             <i class="el-icon-time"></i>
             <span>最近浏览</span>

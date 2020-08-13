@@ -112,6 +112,9 @@ export default {
       }
     }
   },
+  mounted(){
+    localStorage.removeItem('token')
+  },
   methods:{
     toLogin(){
       this.$router.push({path:"/Login"})
@@ -130,7 +133,7 @@ export default {
           this.codeButton = false
         }
       },1000)
-      postCode(this.phone).then(response => {
+      postCode(this.user.phone).then(response => {
         if(response.status === 200){
           console.log(response)
           this.$message({
@@ -144,7 +147,8 @@ export default {
           })
         }
       }).catch(error => {
-        this.$message({message:error})
+        console.log(error.response)
+        this.$message({message:error.response?error.response.data.mobile[0]:'null', type:'error'})
       })
     },
     doRegister(){
@@ -165,7 +169,8 @@ export default {
             }
             this.$router.push({path: '/Login'})
           }).catch(error => {
-              console.log('error'+error)
+            console.log(error.response.data)
+            console.log(error.response.data)
           })
         }
       })

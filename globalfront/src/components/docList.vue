@@ -8,7 +8,7 @@
         :data="tableData"
         style="width: 100%">
         <el-table-column
-          prop="date"
+          prop="readTime"
           label="最后浏览日期"
           sortable
           column-key="readTime"
@@ -22,7 +22,7 @@
           width="400"
           label="文件名">
           <template slot-scope="scope">
-            <span  style="cursor: pointer;" @click="toDoc(scope.row.docId)">{{scope.row.name}}</span>
+            <span  style="cursor: pointer;" @click="toDoc(scope.row.docId)">{{scope.row.docName}}</span>
             <div class="tableI">
             <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
             <i @click="handleEdit(scope.$index, scope.row.docId)"
@@ -181,11 +181,10 @@
       width="30%"
       center>
       <div style="">
-        <div>文件名：{{Info.builder}}</div>
+        <div>文件名：{{Info.docName}}</div>
         <div>创建者：{{Info.builder}}</div>
-        <div>创建日期：{{Info.builder}}</div>
-        <div>最后修改时间：{{Info.builder}}</div>
-        <div>修改次数：{{Info.builder}}</div>
+        <div>创建日期：{{Info.create_time}}</div>
+        <div>最后修改时间：{{Info.modify_time}}</div>
         <el-divider></el-divider>
         <div>协作者：
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
@@ -198,10 +197,10 @@
           </div>
         </div>
         <el-divider></el-divider>
-        <div><el-button plain type="primary" @click="setP(Info.builder)">设置权限</el-button> </div>
-        <div style=" margin-top: 20px;"><el-button plain type="success" @click="shareDialog(Info.builder)">
+        <div><el-button plain type="primary" @click="setP(Info.id)">设置权限</el-button> </div>
+        <div style=" margin-top: 20px;"><el-button plain type="success" @click="shareDialog(Info.id)">
           分享</el-button></div>
-        <div style=" margin-top: 20px;"><el-button plain type="danger" @click="Delete(Info.builder)">
+        <div style=" margin-top: 20px;"><el-button plain type="danger" @click="Delete(Info.id)">
           <span v-if="type==='dustbin'">彻底</span>删除
           </el-button>
         </div>
@@ -220,7 +219,7 @@
 </template>
 
 <script>
-  import {fetchRecentDocs} from "../api/api";
+  import {fetchRecentDocs, fetchDocInfo, fetchCoworkers} from "../api/api";
   export default {
     name: "docList",
     props:{
@@ -233,7 +232,8 @@
     },
     data(){
       return {
-        tableData: [{
+        tableData: [
+            {
           date: '2016-05-02',
           name: '王小虎',
           builder: '家',
@@ -262,14 +262,12 @@
               userId: 1,
               userName: 'Kelly',
               isBuilder: true,
-              isCollected: true,
               userImg: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
             },
             {
               userId: 2,
               userName: 'Kelly2',
               isBuilder: false,
-              isCollected: true,
               userImg: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
             }
           ]
@@ -289,18 +287,21 @@
       init(){
         //请求数据
         if(this.type === 'history'){
-          fetchRecentDocs(1).then(res=>{
+          fetchRecentDocs().then(res=>{
             if(res.status === 200){
+              console.log(res.data)
               if(res.data.length === 0){
                 this.tableData = []
               }else{
-              res.data.forEach(i=>{
                 this.tableData = []
-                this.tableData.push({
-                  docId: i.document.id,
-                  docName:i.document.name,
-                  readTime: i.read_time
-                })
+                res.data.forEach(i=>{
+                  console.log(i)
+                  this.tableData.push({
+                    docId: i.document.id,
+                    docName:i.document.name,
+                    readTime: i.read_time
+                  })
+                console.log(this.tableData)
               })}
             }
           }).catch(e=>{this.$message({message:e, type:'error'})})
@@ -316,6 +317,7 @@
       handleEdit(index, row) {//查看文档详细内容
         console.log(index, row);
         //this.Info = row//表格中每个元素是详细信息，只展示部分，点开才展示全部！或根据id请求详细信息。移除协作者时再请求一次
+        this.getDocInfo(row)
         this.Dialog = true
       },
       Delete(id){
@@ -394,6 +396,39 @@
           console.log(item+_)
         })
       },
+      getDocInfo(id){
+        fetchDocInfo(id).then(res=>{
+          if(res.status === 200){
+            console.log(res.data)
+            this.Info.id = res.data.id
+            this.Info.docName = res.data.name
+            this.Info.role = res.data.role
+            this.Info.isDoc = !res.data.type
+            this.Info.modify_time = res.data.modify_time
+            this.Info.create_time = res.data.create_time
+            fetchCoworkers(this.Info.id).then(res=>{
+              if(res.status === 200){
+                this.Info.coworkers = []
+                res.data.forEach((i, index) => {
+                  if(index === 0){
+                    this.Info.builder = i.username
+                  }
+                  this.Info.coworkers.push({
+                    userId: i.id,
+                    userName: i.username,
+                    userImg: i.head,
+                    isBuilder: index === 0? true:false
+                  })
+                })
+              }
+            }).catch(e => console.log(e.response.data))
+          } else if(res.status === 204){
+            this.$message({message:'其他错误', type: 'error'})
+          }
+        }).catch(e=>{
+          this.$message({message:e.response.data, type: 'error'})
+        })
+      }
     }
   }
 </script>

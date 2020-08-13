@@ -1,6 +1,6 @@
-import axiosInstance from './index'
+import Axios from './index'
 
-const axios = axiosInstance
+const axios = Axios
 
 // 登录
 export const postUser = (username, password) => {
@@ -46,6 +46,14 @@ export const changeVisibility = (docId, role) => {
   return axios.put('http://127.0.0.1:8000/DocRoleEditViewset/'+docId,{'role':role})
 }
 
-export const fetchRecentDocs = (id) => {
-  return axios.get('http://127.0.0.1:8000/DocRoleEditViewset/'+id)
+export const fetchRecentDocs = () => {
+  return axios.get('http://127.0.0.1:8000/RecentDocViewset/')
+}
+
+export const fetchDocInfo= (id) =>{
+  return axios.get('/DocEdit/'+id)
+}
+
+export const fetchCoworkers = (id) => {
+  return axios.get('/CoworkerViewset/' + id)
 }

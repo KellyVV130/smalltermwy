@@ -1,9 +1,37 @@
 import Vue from 'vue'
-import Axios from 'axios'
-
-const axiosInstance = Axios.create({
-   // withCredentials: true
+import axios from 'axios'
+import Vuex from "vuex"
+Vue.use(Vuex)
+const Axios = axios.create({
+  //请求接口
+  baseURL:"http://127.0.0.1:8000/",
+  //超时设置
+  timeout:5000,
+  //请求头设置
 })
+//POST传参序列化(添加请求拦截器)
+ // 在发送请求之前做某件事
+Axios.interceptors.request.use(config => {
+    // 设置以 form 表单的形式提交参数，如果以 JSON 的形式提交表单，可忽略
+    // if(config.method  === 'post'){
+    //     // JSON 转换为 FormData
+    //     const formData = new FormData()
+    //     Object.keys(config.data).forEach(key => formData.append(key, config.data[key]))
+    //     config.data = formData
+    // }
+
+    // 下面会说在什么时候存储 token
+    if (localStorage.token) {
+        config.headers.Authorization = 'JWT ' + localStorage.token
+    }
+    return config
+},error =>{
+    this.$message({message:'参数错误',type:'error'})
+    return Promise.reject(error.response.data)
+})
+// const axiosInstance = Axios.create({
+//   withCredentials: true
+// })
 
 // 通过拦截器处理csrf问题，这里的正则和匹配下标可能需要根据实际情况小改动
 // axiosInstance.interceptors.request.use((config) => {
@@ -37,6 +65,6 @@ const axiosInstance = Axios.create({
 //     }
 // )
 
-Vue.prototype.axios = axiosInstance
+Vue.prototype.axios = Axios
 
-export default axiosInstance
+export default Axios
