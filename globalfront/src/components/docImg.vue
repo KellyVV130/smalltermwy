@@ -2,18 +2,25 @@
   <div class="docImg">
     <div v-if="type==='history'">
       <el-row :gutter="20">
-        <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="">
+        <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
           <div style="height: 100px;text-align: center">
             <el-card class="fileCard" shadow="hover">
               <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small">
+                <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-s-tools" @click="handleClick(item.id)"></i>
+                </el-tooltip>
               </div>
               <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small">
+                <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
+                  <span slot="content"><span v-if="item.isCollected">取消</span>收藏</span>
                 <i class="el-icon-star-on" v-if="item.isCollected" @click="changeColl(item.id)"></i>
                 <i class="el-icon-star-off" v-else @click="changeColl(item.id)"></i>
+                </el-tooltip>
               </div>
               <div style="right: 5px; line-height: 5px;position: absolute; top: 45px; font-size: x-small">
+                <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-s-custom" @click="openFolderDialog(item.id)"></i>
+                </el-tooltip>
               </div>
               <div style="font-size: 40px;">
                 <i class="el-icon-folder" v-if="item.isFolder"></i>
@@ -30,14 +37,18 @@
 
     <div v-else-if="type === 'dustbin'">
       <el-row :gutter="20">
-        <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="">
+        <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
           <div style="height: 100px;text-align: center">
             <el-card class="fileCard" shadow="hover">
               <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small">
+                <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-s-tools" @click="handleClick(item.id)"></i>
+                </el-tooltip>
               </div>
               <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small">
+                <el-tooltip effect="dark" content="恢复文档" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-refresh-right" @click="recover(item.id)"></i>
+                </el-tooltip>
               </div>
               <div style="font-size: 40px; cursor: default;">
                 <i class="el-icon-folder" v-if="item.isFolder"></i>
@@ -54,18 +65,25 @@
 
     <div v-else>
       <el-row :gutter="20">
-        <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="">
+        <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
           <div style="height: 100px;text-align: center">
             <el-card class="fileCard" shadow="hover">
               <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small">
+                <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-s-tools" @click="handleClick(item.id)"></i>
+                </el-tooltip>
               </div>
               <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small">
+                <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
+                  <span slot="content"><span v-if="item.isCollected">取消</span>收藏</span>
                 <i class="el-icon-star-on" v-if="item.isCollected" @click="changeColl(item.id)"></i>
                 <i class="el-icon-star-off" v-else @click="changeColl(item.id)"></i>
+                </el-tooltip>
               </div>
               <div style="right: 5px; line-height: 5px;position: absolute; top: 45px; font-size: x-small">
+                <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-s-custom" @click="openFolderDialog(item.id)"></i>
+                </el-tooltip>
               </div>
               <div style="font-size: 40px;">
                 <i class="el-icon-folder" v-if="item.isFolder"></i>
@@ -97,17 +115,14 @@
             <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;"></el-avatar>
             <span style="height: 28px; padding-right: 15px;margin-left: 10px;">{{item.userName}}</span>
             <i class="el-icon-user" v-if="item.isBuilder"></i>
+            <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
+                     @click="checkMove(item.builder)" v-if="!item.isBuilder">
+              移除</el-link>
           </div>
         </div>
         <el-divider></el-divider>
-<!--        <el-switch--><!--这是控制权限部分-->
-<!--          style="padding-right: 20px;"-->
-<!--          v-model="Info._public">-->
-<!--        </el-switch>-->
-<!--        <span v-if="Info._public" style="font-weight: bold;">公开</span>-->
-<!--        <span v-else style="font-weight: bold;">未公开(此时分享，除协作者外不可见)</span>-->
-        <div><el-button plain type="primary" @click="setP(Info.builder)">设置权限</el-button> </div>
-        <div style=" margin-top: 20px;"><el-button plain type="success" @click="shareDialog(Info.builder)">
+        <div><el-button plain type="primary" @click="setP(Info.id)">设置权限</el-button> </div>
+        <div style=" margin-top: 20px;"><el-button plain type="success" @click="shareDialog(Info.id)">
           分享</el-button></div>
         <div style=" margin-top: 20px;"><el-button plain type="danger" @click="Delete(Info.builder)">
           <span v-if="type==='dustbin'">彻底</span>删除
@@ -123,7 +138,7 @@
         :type="'coworker'"></folder-dialog>
 
     <share-dialog :share-dialog="shareV" :share-id="shareId" @changeVisible="changeShare"></share-dialog>
-    <set-dialog :set-dialog="setV" :set-id="setId" @changeVisible="changeP"></set-dialog>
+    <set-dialog :set-dialog="setV" :set-id="setId" @changeVisible="changeP" :visi="visi"></set-dialog>
   </div>
 </template>
 
@@ -172,9 +187,31 @@
           isCollected: true,
           id: 5,
           isFolder: false,
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          builder: '公司',
+          isCollected: true,
+          id: 5,
+          isFolder: false,
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          builder: '公司',
+          isCollected: true,
+          id: 5,
+          isFolder: false,
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          builder: '公司',
+          isCollected: true,
+          id: 5,
+          isFolder: false,
         }],
         Dialog: false,
         Info:{
+          id: 1,
           builder: 'Kelly',
           coworkers:[
             {
@@ -200,6 +237,7 @@
         shareV: false,
         setV: false,
         setId: '2',
+        visi: 3,
       }
     },
     methods:{
@@ -249,13 +287,26 @@
         alert(id)
       },
       setP(id){
-        console.log('set')
+        console.log(id)
         this.setId = id
+        this.tableData.forEach(i=>{
+          if(i.id === id){
+            this.visi = 0//权限码
+            return;
+          }
+        })
+        console.log(this.visi)
         this.setV = true
       },
       changeP(val){
         this.setV = val
-      }
+      },
+      checkMove(item){
+        let message = '确定要移除ta吗？'
+        this.$confirm(message).then(_ => {
+          console.log(item+_)
+        })
+      },
     },
   }
 </script>
@@ -266,7 +317,6 @@
   }
   .fileCard{
     border: 0px;
-    background-color: #FFF;
     transition: .3s;
     height: 100%;
     background-color:rgba(0,0,0,0);
@@ -280,5 +330,6 @@
   }
   .coworkers {
     margin-top: 15px;
+    position: relative;
   }
 </style>

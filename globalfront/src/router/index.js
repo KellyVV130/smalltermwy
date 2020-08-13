@@ -5,7 +5,7 @@ Vue.use(VueRouter);
 
 const routes = [//I don't know why this files keeps jumping out merge fails, there is no conflicts at all.
   {//lately views, will have router guard, haven't login jump to Home Page
-    path: "/",
+    path: "/history",
     name: "history",
     component: () => import('../views/history')
   },
@@ -35,7 +35,7 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
     component: () => import('../views/Dustbin')
   },
   {
-    path: '/Home',
+    path: '/',
     name: "Home",
     component: ()=> import("../views/Welcome.vue")
   },
@@ -68,7 +68,12 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
     path:'/templates',
     name:'templates',
     component: () => import("../views/templateHub")
-  }
+  },
+  // {
+  //   path:'/ViewPage',
+  //   name:'ViewPage',
+  //   component: () => import("../views/ViewPage")
+  // }
 ];
 
 const router = new VueRouter({
@@ -77,10 +82,10 @@ const router = new VueRouter({
   routes
 });
 
-/*const originalPush = VueRouter.prototype.push
+const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (location) {
   return originalPush.call(this, location).catch(err => err)
-}*/
+}
 
 //判断用户是否登录
 /*router.beforeEach((to, from, next) => {

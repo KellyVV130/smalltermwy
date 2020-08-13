@@ -11,40 +11,34 @@
           prop="date"
           label="最后浏览日期"
           sortable
-          column-key="date"
+          column-key="readTime"
           :filters="[{text: '2016-05-01', value: '2016-05-01'}, {text: '2016-05-02', value: '2016-05-02'}, {text: '2016-05-03', value: '2016-05-03'}, {text: '2016-05-04', value: '2016-05-04'}]"
           :filter-method="filterHandler"
         >
         </el-table-column>
         <el-table-column
-          prop="name"
+          prop="docName"
           sortable
           width="400"
           label="文件名">
           <template slot-scope="scope">
-            <span  style="cursor: pointer;" @click="toDoc(scope.row.id)">{{scope.row.name}}</span>
+            <span  style="cursor: pointer;" @click="toDoc(scope.row.docId)">{{scope.row.name}}</span>
             <div class="tableI">
-            <i @click="handleEdit(scope.$index, scope.row)"
-              class="el-icon-s-tools"></i>
-            <i @click="changeColl(scope.row.id)"
+            <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
+            <i @click="handleEdit(scope.$index, scope.row.docId)"
+               class="el-icon-s-tools"></i></el-tooltip>
+            <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
+              <span slot="content"><span v-if="scope.row.isCollected">取消</span>收藏</span>
+            <i @click="changeColl(scope.row.docId)"
               v-if="scope.row.isCollected"
               class="el-icon-star-on"></i>
-            <i @click="changeColl(scope.row.id)"
+            <i @click="changeColl(scope.row.docId)"
               v-else
-              class="el-icon-star-off"></i>
-            <i @click="openFolderDialog(scope.row.id)"
-              class="el-icon-s-custom"></i></div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="builder"
-          label="创建者"
-          sortable
-          :filters="[{ text: '家', value: '家' }, { text: '公司', value: '公司' }]"
-          :filter-method="filterTag"
-          filter-placement="bottom-end">
-          <template slot-scope="scope">
-            <span style="cursor: pointer;" @click="toUser(scope.row.builder)">{{scope.row.builder}}</span>
+              class="el-icon-star-off"></i></el-tooltip>
+            <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
+            <i @click="openFolderDialog(scope.row.docId)"
+               class="el-icon-s-custom"></i></el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -65,12 +59,14 @@
           <template slot-scope="scope">
             {{scope.row.name}}
             <div class="tableI">
+            <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
             <i
               @click="handleEdit(scope.$index, scope.row)"
-              class="el-icon-s-tools"></i>
+              class="el-icon-s-tools"></i></el-tooltip>
+            <el-tooltip effect="dark" content="恢复文档" placement="bottom" :hide-after="800" :enterable="false">
             <i
               @click="recover(scope.row.id)"
-              class="el-icon-refresh-right"></i></div>
+              class="el-icon-refresh-right"></i></el-tooltip></div>
           </template>
         </el-table-column>
         <el-table-column
@@ -123,9 +119,12 @@
           <template slot-scope="scope">
             <span  style="cursor: pointer;" @click="toDoc(scope.row.id)">{{scope.row.name}}</span>
             <div class="tableI">
+            <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
             <i
               @click="handleEdit(scope.$index, scope.row)"
-              class="el-icon-s-tools"></i>
+              class="el-icon-s-tools"></i></el-tooltip>
+            <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
+              <span slot="content"><span v-if="scope.row.isCollected">取消</span>收藏</span>
             <i
               @click="changeColl(scope.row.id)"
               v-if="scope.row.isCollected"
@@ -133,11 +132,12 @@
             <i
               @click="changeColl(scope.row.id)"
               v-else
-              class="el-icon-star-off"></i>
+              class="el-icon-star-off"></i></el-tooltip>
+            <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
             <i
-
               @click="openFolderDialog(scope.row.id)"
-              class="el-icon-s-custom"></i></div>
+              class="el-icon-s-custom"></i></el-tooltip>
+            </div>
           </template>
         </el-table-column>
         <el-table-column
@@ -192,13 +192,19 @@
             <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;"></el-avatar>
             <span style="height: 28px; padding-right: 15px;margin-left: 10px;">{{item.userName}}</span>
             <i class="el-icon-user" v-if="item.isBuilder"></i>
+            <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
+                     @click="checkMove(item)" v-if="!item.isBuilder">
+              移除</el-link>
           </div>
         </div>
         <el-divider></el-divider>
-        <el-link plain type="primary" style="font-size: 16px;">分享</el-link>
-        <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.builder)">
+        <div><el-button plain type="primary" @click="setP(Info.builder)">设置权限</el-button> </div>
+        <div style=" margin-top: 20px;"><el-button plain type="success" @click="shareDialog(Info.builder)">
+          分享</el-button></div>
+        <div style=" margin-top: 20px;"><el-button plain type="danger" @click="Delete(Info.builder)">
           <span v-if="type==='dustbin'">彻底</span>删除
-        </el-link>
+          </el-button>
+        </div>
       </div>
     </el-dialog>
 
@@ -207,10 +213,14 @@
         @changeVisible="changeVisible"
         :doc-id="docId"
         :type="'coworker'"></folder-dialog>
+
+    <share-dialog :share-dialog="shareV" :share-id="shareId" @changeVisible="changeShare"></share-dialog>
+    <set-dialog :set-dialog="setV" :set-id="setId" @changeVisible="changeP" :visi="visi"></set-dialog>
   </div>
 </template>
 
 <script>
+  import {fetchRecentDocs} from "../api/api";
   export default {
     name: "docList",
     props:{
@@ -251,7 +261,7 @@
             {
               userId: 1,
               userName: 'Kelly',
-              isBuilder: false,
+              isBuilder: true,
               isCollected: true,
               userImg: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
             },
@@ -265,13 +275,36 @@
           ]
         },
         docId: '1',
-        folderDialog: false
+        folderDialog: false,
+        shareId: '',
+        shareV: false,
+        setV: false,
+        setId: '2',
+        visi: 3,
       }
+    },
+    watch:{
     },
     methods:{
       init(){
         //请求数据
-        console.log(this.type)
+        if(this.type === 'history'){
+          fetchRecentDocs(1).then(res=>{
+            if(res.status === 200){
+              if(res.data.length === 0){
+                this.tableData = []
+              }else{
+              res.data.forEach(i=>{
+                this.tableData = []
+                this.tableData.push({
+                  docId: i.document.id,
+                  docName:i.document.name,
+                  readTime: i.read_time
+                })
+              })}
+            }
+          }).catch(e=>{this.$message({message:e, type:'error'})})
+        }
       },
       filterTag(value, row) {
         return row.builder === value;
@@ -282,7 +315,7 @@
       },
       handleEdit(index, row) {//查看文档详细内容
         console.log(index, row);
-        //this.Info = row//表格中每个元素是详细信息，只展示部分，点开才展示全部
+        //this.Info = row//表格中每个元素是详细信息，只展示部分，点开才展示全部！或根据id请求详细信息。移除协作者时再请求一次
         this.Dialog = true
       },
       Delete(id){
@@ -331,7 +364,36 @@
         if (rowIndex === 0) {
           return 'background-color: whitesmoke;'
         }
-      }
+      },
+      setP(id){
+        this.setId = id
+        this.tableData.forEach(i=>{
+          if(i.id === id){
+            this.visi = i.id//权限码
+            return
+          }
+        })
+        this.setV = true
+      },
+      changeP(val){
+        this.setV = val
+      },
+      shareDialog(id){
+        this.shareId = id
+        this.shareV = true
+      },
+      changeShare(val){
+        this.shareV = val
+      },
+      checkMove(item){
+        let message = '确定要移除ta吗？'
+        let that = this
+        this.$confirm(message).then(_ => {
+          that.Info.coworkers.remove(item)
+          console.log(this.Info.coworkers)
+          console.log(item+_)
+        })
+      },
     }
   }
 </script>

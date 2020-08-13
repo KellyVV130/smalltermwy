@@ -130,41 +130,42 @@ export default {
           this.codeButton = false
         }
       },1000)
-      postCode(this.phone).then(response => {
+      postCode(this.user.phone).then(response => {
         if(response.status === 200){
           console.log(response)
           this.$message({
             message: '验证码发送成功',
             type: 'success'
           })
-        }
-      }).catch(error => {
-        if(error.response.status === 400){
+        } else if(response.status === 400){
           this.$message({
             message: '验证码发送失败',
             type: 'error'
           })
         }
+      }).catch(error => {
+        this.$message({message:error})
       })
     },
     doRegister(){
       this.$refs.infoForm.validate((valid) => {
         if(valid) {
-          postNewUser(this.user.name,this.user.password1,this.user.password2,this.user.phone,this.user.code).then(response => {
+          postNewUser(this.user.name,this.user.password1,this.user.password2,this.user.phone,this.user.code)
+              .then(response => {
             console.log(response)
              this.$message({
               message: '注册成功',
               type: 'success'
             })
-            this.$router.push({path: '/Login'})
-          }).catch(error => {
-            if(error.response.status === 400){
-              console.log(error)
+            if(response.status === 400){
               this.$message({
                 message: '昵称或手机号已被使用 或验证码输入错误',
                 type: 'error'
               })
             }
+            this.$router.push({path: '/Login'})
+          }).catch(error => {
+              console.log('error'+error)
           })
         }
       })

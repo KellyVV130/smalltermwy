@@ -38,14 +38,14 @@
             <el-form>
               <el-form-item><el-button type="text" @click="changeNameVisible=true">修改</el-button>
                 <el-dialog title="修改昵称" :visible.sync="changeNameVisible" :modal-append-to-body="false" width="300px">
-                  <el-form :model="nameForm">
-                    <el-form-item>
+                  <el-form ref="nameForm" :model="nameForm" :rules="nameRules" enctype="multipart/form-data">
+                    <el-form-item prop="newName">
                         <el-input v-model="nameForm.newName" autocomplete="off" placeholder="新昵称"></el-input>
                     </el-form-item>
                   </el-form>
                   <div slot="footer" class="dialog-footer">
                     <el-button @click="changeNameVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="changeNameVisible = false">确 定</el-button>
+                    <el-button type="primary" @click="changeName">确 定</el-button>
                   </div>
                 </el-dialog>
               </el-form-item>
@@ -74,28 +74,28 @@
 
               <el-form-item><el-button type="text" @click="changePhoneVisible=true">修改</el-button>
                 <el-dialog title="修改手机号" :visible.sync="changePhoneVisible" :modal-append-to-body="false" width="300px">
-                  <el-form :model="phoneForm">
+                  <el-form ref="phoneForm" :model="phoneForm" :rules="phoneRules" enctype="multipart/form-data">
                     <el-form-item>
                       <el-input v-model="phoneForm.newPhone" type="tel" autocomplete="off" placeholder="新手机号"></el-input>
                     </el-form-item>
                   </el-form>
                   <div slot="footer" class="dialog-footer">
                     <el-button @click="changePhoneVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="changePhoneVisible = false">确 定</el-button>
+                    <el-button type="primary" @click="changePhone">确 定</el-button>
                   </div>
                 </el-dialog>
               </el-form-item>
 
               <el-form-item><el-button type="text" @click="changeEmailVisible=true">修改</el-button>
                 <el-dialog title="修改邮箱" :visible.sync="changeEmailVisible" :modal-append-to-body="false" width="300px">
-                  <el-form :model="emailForm">
+                  <el-form ref="emailForm" :model="emailForm" :rules="emailRules" enctype="multipart/form-data">
                     <el-form-item>
                       <el-input v-model="emailForm.newEmail" type="tel" autocomplete="off" placeholder="新邮箱"></el-input>
                     </el-form-item>
                   </el-form>
                   <div slot="footer" class="dialog-footer">
                     <el-button @click="changeEmailVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="changeEmailVisible = false">确 定</el-button>
+                    <el-button type="primary" @click="changeEmail">确 定</el-button>
                   </div>
                 </el-dialog>
               </el-form-item>
@@ -108,6 +108,8 @@
 </template>
 
 <script>
+import Axios from '../api/index'
+import {getUserInfo} from '../api/api'
   export default {
     data () {
       return {
@@ -116,7 +118,7 @@
         phone: "18538947201",
         email: "1214960505@qq.com",
         ID: "18373154",
-        circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+        head: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
         changePasswordVisible: false,
         changePhoneVisible: false,
         changeEmailVisible: false,
@@ -127,20 +129,139 @@
           newPasswordAgain: ''
         },
         phoneForm: {
-            newPhone: '',
+          newPhone: '',
+        },
+        phoneRules: {
+          newPhone: [
+            {required:true, message:'请输入新手机号', trigger: 'blur'}
+          ]
         },
         emailForm: {
-            newEmail: '',
+          newEmail: '',
+        },
+        emailRules: {
+          newEmail: [
+            {required:true, message:'请输入新邮箱', trigger:'blur'}
+          ]
         },
         nameForm: {
-            newName: '',
+          newName: '',
+        },
+        nameRules: {
+          newName: [
+            {required:true, message:'请输入新昵称', trigger:'blur'}
+          ]
         }
       }
     },
     methods:{
-        toChangeInfo(){
-            this.$router.push({path:"/ChangeInfo"})
-        }
+      //获取个人信息
+      getPersonInfo(id) {
+        getUserInfo(id).then(response => {
+          if(response.status===200){
+            console.log(response)
+            this.name=response.data.username
+            this.phone=response.data.mobile
+            if(response.data.email === '') this.email='未填写'
+            else this.email=response.data.email
+            this.password=response.data.password
+            this.ID=response.data.id
+            this.head=response.data.head
+          }
+          else{
+            this.$message({
+              message: '获取信息失败'+response.message,
+              type: 'error'
+            })
+          }
+        }).catch(error => {
+          console.log(error.response)
+        })
+      },
+      //修改昵称
+      changeName(){
+        this.$refs.nameForm.validate((valid) => {
+          if(valid){
+            const axios = Axios
+            axios.put('http://127.0.0.1:8000/users/'+localStorage.userId+'/',{
+              username: this.nameForm.newName
+            }).then(response => {
+              if(response.status===200){
+                console.log(response)
+                this.name=this.nameForm.newName
+                this.$message({
+                  message: '修改昵称成功',
+                  type: 'success'
+                })
+              }else{
+                this.$message({
+                  message: '修改昵称失败',
+                  type: 'error'
+                })
+              }
+            }).catch(error => {
+              console.log(error.response)
+            })
+          }
+        })
+      },
+      //修改手机
+      changePhone(){
+        this.$refs.phoneForm.validate((valid) => {
+          if(valid){
+            const axios = Axios
+            axios.put('http://127.0.0.1:8000/users/'+localStorage.userId+'/',{
+              mobile: this.phoneForm.newPhone
+            }).then(response => {
+              if(response.status===200){
+                console.log(response)
+                this.phone=this.phoneForm.newPhone
+                this.$message({
+                  message: '修改昵称成功',
+                  type: 'success'
+                })
+              }else{
+                this.$message({
+                  message: '修改昵称失败',
+                  type: 'error'
+                })
+              }
+            }).catch(error => {
+              console.log(error.response)
+            })
+          }
+        })
+      },
+      //修改邮箱
+      changeEmail(){
+        this.$refs.emailForm.validate((valid) => {
+          if(valid){
+            const axios = Axios
+            axios.put('http://127.0.0.1:8000/users/'+localStorage.userId+'/',{
+              email: this.emailForm.newEmail
+            }).then(response => {
+              if(response.status===200){
+                console.log(response)
+                this.email=this.emailForm.newEmail
+                this.$message({
+                  message: '修改昵称成功',
+                  type: 'success'
+                })
+              }else{
+                this.$message({
+                  message: '修改昵称失败',
+                  type: 'error'
+                })
+              }
+            }).catch(error => {
+              console.log(error.response)
+            })
+          }
+        })
+      }
+    },
+    mounted() {
+      this.getPersonInfo(localStorage.userId)
     }
   }
 </script>

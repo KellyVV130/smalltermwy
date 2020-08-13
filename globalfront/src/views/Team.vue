@@ -7,7 +7,7 @@
       <el-main>
         <h3>我的团队</h3><!--按修改日期倒序-->
         <el-row :gutter="20">
-          <el-col :span="4" v-for="(item, index) in teams" :key="index" style="">
+          <el-col :span="4" v-for="(item, index) in teams" :key="index" style="margin-bottom: 20px;">
             <div style="text-align: center; height: 100px;">
               <el-card class="teamCard" shadow="hover">
                 <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small">

@@ -16,7 +16,16 @@
             <el-table-column width="200" property="content"></el-table-column>
             <el-table-column width="40">
               <template slot-scope="scope">
-                <i class="el-icon-check" @click="checkMessage(scope.row)"></i>
+                <el-tooltip effect="dark" content="拒绝加入团队" placement="bottom">
+                <i class="el-icon-close" @click="refuseMessage(scope.row)" style="cursor: pointer;"></i>
+                </el-tooltip>
+              </template>
+            </el-table-column>
+            <el-table-column width="40">
+              <template slot-scope="scope">
+                <el-tooltip effect="dark" content="设为已读" placement="bottom">
+                <i class="el-icon-check" @click="checkMessage(scope.row)" style="cursor: pointer;"></i>
+                </el-tooltip>
               </template>
             </el-table-column>
           </el-table>
@@ -25,7 +34,8 @@
         </el-popover>
       </el-badge>
       <el-badge :hidden="true" class="badgeitem">
-        <el-avatar :src="userImg" :size="'small'" style="margin-left: 40px; cursor: pointer;"></el-avatar>
+        <el-avatar :src="userImg" :size="'small'"
+                   style="margin-left: 40px; cursor: pointer;" @click.native="toPerson"></el-avatar>
       </el-badge>
     </div>
     </div>
@@ -61,6 +71,12 @@
       },
       checkMessage(row){
         console.log(row)
+      },
+      refuseMessage(row){
+        console.log(row)
+      },
+      toPerson(){
+        this.$router.push({name: 'PersonInfo'})
       }
     }
   }
