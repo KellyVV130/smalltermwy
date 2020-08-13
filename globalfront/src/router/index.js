@@ -72,7 +72,7 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
 ];
 
 const router = new VueRouter({
-  mode: "history",
+  mode: "hash",
   base: process.env.BASE_URL,
   routes
 });

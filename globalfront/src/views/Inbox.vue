@@ -6,8 +6,8 @@
     <el-col :span="20"></el-col><el-container>
       <el-main>
         <h3>收件箱</h3><!--按修改日期倒序-->
-        <div v-for="o in 2" :key="o">
-        <mCard></mCard><br>
+        <div>
+        <messageCard v-bind:messages="messages"></messageCard><br>
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
@@ -21,9 +21,26 @@
 <script>
 import messageCard from "../components/messageCard"
 export default {
-    components: {
-        "mCard" : messageCard
+  data() {
+    return {
+      messages: [{
+        type: 'comment', 
+        name: 'whisper', 
+        content: '评论了[小学期]', 
+        detail: '这是一条不走心的评论',
+        date: '2020/8/10'
+      },{
+        type: 'add', 
+        name: 'whisper', 
+        content: '添加你为[小学期]协作者', 
+        detail: '',
+        date: '2020/8/13'
+      }]
     }
+  },
+  components: {
+    "messageCard": messageCard
+  }
 }
 </script>
 
