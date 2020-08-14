@@ -48,7 +48,7 @@
           <i class="el-icon-user-solid"></i>
           <span>个人中心</span>
         </template>
-        <el-menu-item index="/PersonInfo">
+        <el-menu-item index="/PersonInfo" @click="toPersonInfo">
           <template slot="title">
             <i class="el-icon-warning-outline"></i>
             <span>账号信息</span>
@@ -75,6 +75,9 @@
       }
     },
     methods:{
+      toPersonInfo(){
+        this.$router.push({name:'PersonInfo',params:{personId: localStorage.userId}})
+      },
       handleOpen(key, keyPath) {
         console.log(key, keyPath);
       },

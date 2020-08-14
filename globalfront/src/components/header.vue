@@ -76,7 +76,7 @@
         console.log(row)
       },
       toPerson(){
-        this.$router.push({name: 'PersonInfo'})
+        this.$router.push({name: 'PersonInfo', params:{personId:localStorage.userId}})
       }
     }
   }

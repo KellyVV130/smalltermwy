@@ -1,5 +1,5 @@
 <template>
-  <div class="basic">
+  <div class="welcome">
     <el-divider content-position="center">
       <span style="font-size: larger;">欢 迎 使 用 环 球 文 档 G l o b a l D o c</span>
     </el-divider>
@@ -26,7 +26,7 @@ export default {
 
 
 <style scope>
-  .basic{
+  .welcome{
     position: fixed;
     width: 100vw;
     height: 100%;

@@ -28,16 +28,11 @@ export const getUserInfo = (id) => {
   return axios.get('http://127.0.0.1:8000/users/'+id+'/')
 }
 
-
-  /*
-  // 他人获取个人信息，可能不返回
-  export const getUserInfo2 = (id) => {
-    return axios.get('http://127.0.0.1:8000/users/', {
-      params: {id: id}})
-  }
-  
-  
-  */
+//获取他人信息
+export const getOtherInfo = (id) => {
+  return axios.get('http://127.0.0.1:8000/OtherInfo/'+id+'/')
+}
+ 
 export const changeVisibility = (docId, role) => {
   return axios.put('http://127.0.0.1:8000/DocRoleEditViewset/'+docId,{'role':role})
 }
