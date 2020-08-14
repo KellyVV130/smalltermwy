@@ -12,7 +12,7 @@
           <i class="el-icon-s-grid"></i>
           <span>工作台</span>
         </template>
-        <el-menu-item index="/history">
+        <el-menu-item index="/">
           <template slot="title">
             <i class="el-icon-time"></i>
             <span>最近浏览</span>
@@ -27,7 +27,7 @@
         <el-menu-item index="/myBuild">
           <template slot="title">
             <i class="el-icon-edit-outline"></i>
-            <span>我创建的</span>
+            <span>我的文档</span>
           </template>
         </el-menu-item>
         <el-menu-item index="myTeam">

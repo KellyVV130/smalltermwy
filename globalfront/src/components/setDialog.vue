@@ -3,13 +3,13 @@
     <div>
       <el-dialog title="设置文档权限" :visible.sync="setDialog"
        style="width: 70%;margin: 0 auto;" :show-close="false" :close-on-click-modal="false">
-        设置{{setId}}权限<br>
+        设置{{setName}}权限<br>
         <!--如果是团队文档，有完全公开、团队内及本文档协作者公开，团队外只读、仅团队内及本文档协作者公开、仅团队内及本文档协作者只读-->
         <el-radio-group v-model="vi" style="margin-top: 25px;" class="setRadio">
           <el-radio :label="0">完全公开</el-radio><br>
           <el-radio :label="2">对协作者公开，他人只读</el-radio><br>
           <el-radio :label="1">仅对协作者公开，他人不可见</el-radio><br>
-          <el-radio :label="3">仅协作者只读，他人不可见</el-radio>
+          <el-radio :label="3" v-if="isTeam">仅协作者只读，他人不可见</el-radio>
         </el-radio-group>
         <!--如果是个人文档，有完全公开、协作者内公开，协作者外只读、仅协作者公开、仅协作者只读-->
         <div slot="footer" class="dialog-footer">
@@ -34,6 +34,12 @@
       },
       Visi: {
         default: 3
+      },
+      isTeam:{
+        default: false
+      },
+      setName:{
+        default:[]
       }
     },
     watch:{
@@ -64,8 +70,8 @@
           } else if(res.status === 401){
             this.$message({message:'您没有修改权限！', type:'error'})
           }
-        }).catch(e=>{this.$message({message:e, type:'error'})
-            this.$emit('changeVisible', false)
+        }).catch(e=>{this.$message({message:e.response.data, type:'error'})
+          this.$emit('changeVisible', false)
         })
       },
     }

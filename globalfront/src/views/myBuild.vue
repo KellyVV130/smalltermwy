@@ -6,7 +6,7 @@
     <el-col :span="20"></el-col><el-container>
       <el-main>
         <div style="margin-top: 20px;">
-          <span style="width: 50%; font-size: 1.17em; font-weight: bold">我创建的</span>
+          <span style="width: 50%; font-size: 1.17em; font-weight: bold">我的文档</span>
           <span style="float: right;">
             <el-radio-group v-model="chart" size="small" @change="changeChart">
               <el-radio-button label="列表"></el-radio-button>
@@ -30,6 +30,7 @@
 </template>
 
 <script>
+
   export default {
     name: "myBuild",
     data(){

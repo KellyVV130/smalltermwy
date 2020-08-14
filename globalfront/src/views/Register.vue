@@ -179,7 +179,7 @@ export default {
 }
 </script>
 
-<style>
+<style scope>
   .basic{
     position: fixed;
     width: 100%;

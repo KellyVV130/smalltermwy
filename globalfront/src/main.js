@@ -38,6 +38,14 @@ if (index > -1) {
 this.splice(index, 1);
 }
 };
+export const GetTime = (time, sp = '.')=>{
+  if(!time) return '—';
+  if(sp === '.')
+    time = time.split('T')[0]+' '+time.split('T')[1]
+  if(time.indexOf(sp)>-1){
+    return time.split(sp)[0]
+  } else return time;
+}
 
 new Vue({
   router,

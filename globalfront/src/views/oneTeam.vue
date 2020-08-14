@@ -17,8 +17,8 @@
           </span>
         </div><!--按修改日期倒序-->
         <div style="margin-top: 40px;">
-          <doc-list :type="'team'" v-if="chart === '列表'"></doc-list>
-          <doc-img :type="'team'" v-else></doc-img>
+          <doc-list :type="'team'" v-if="chart === '列表'" :team="teamId"></doc-list>
+          <doc-img :type="'team'" v-else :team="teamId"></doc-img>
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
@@ -44,7 +44,8 @@
       return {
         teamName: '团队1',
         chart: '',
-        isBuilder: false
+        isBuilder: false,
+        teamId: ''
       }
     },
     mounted(){
@@ -57,6 +58,7 @@
         } else {
           this.chart = '图标'
         }
+        this.teamId = this.$route.params.teamId
       },
       toNewDoc(){
         this.$router.push({name:'editorPage'})

@@ -9,12 +9,16 @@
         <el-row :gutter="20">
           <el-col :span="4" v-for="(item, index) in teams" :key="index" style="margin-bottom: 20px;">
             <div style="text-align: center; height: 100px;">
-              <el-card class="teamCard" shadow="hover">
-                <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small">
+              <el-card class="teamCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
+                <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="isHover">
+                  <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false" content="查看团队信息">
                   <i class="el-icon-s-tools" @click="handleClick(item.id)"></i>
+                  </el-tooltip>
                 </div>
-                <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small">
+                <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="isHover">
+                  <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false" content="添加队员">
                   <i class="el-icon-s-custom" @click="addPeople(item.id)"></i>
+                  </el-tooltip>
                 </div>
                 <div style="font-size: 40px;"><i class="el-icon-pie-chart" @click="toOneTeam(item.id)"></i></div>
                 <div @click="toOneTeam(item.id)" style="cursor: pointer;">{{item.name}}</div>
@@ -33,39 +37,45 @@
     </el-container>
 
     <el-dialog
-      title="文件详细信息"
+      title="团队详细信息"
       :visible.sync="infoDialog"
       width="30%"
       center>
       <div style="">
-        <div>团队名：{{Info.builder}}</div>
-        <div>创建者：{{Info.builder}}</div>
-        <div>创建日期：{{Info.builder}}</div>
+        <div><span style="width: 40px;">团队名：</span>{{Info.name}}</div>
+        <div style="cursor: pointer;"><span style="width: 40px;">创建者：</span>{{Info.builder}}</div>
+      <div><span style="width: 40px;">创建日期：</span>{{Info.create_time}}</div>
         <el-divider></el-divider>
         <div>所有成员：
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
             <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;"></el-avatar>
             <span style="height: 28px; padding-right: 15px;margin-left: 10px;">{{item.userName}}</span>
-            <i class="el-icon-user" v-if="item.isBuilder"></i>
+            <i class="el-icon-user" v-if="item.isBuilder">
+            </i><el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
+                     @click="checkMove(item)" v-if="!item.isBuilder">
+              移除</el-link>
           </div>
         </div>
-        <el-divider></el-divider>
-        <el-link plain type="primary" style="font-size: 16px;">分享</el-link>
-        <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.builder)">删除
-        </el-link>
+<!--        <el-divider></el-divider>-->
+<!--        <el-link plain type="primary" style="font-size: 16px;">分享</el-link>-->
+<!--        <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.id)">删除-->
+<!--        </el-link>-->
       </div>
     </el-dialog>
 
     <folder-dialog
         :dialog="folderDialog"
         @changeVisible="changeVisible"
-        :doc-id="''"
-        :team-id="dialogTeam"
-        :type="type"></folder-dialog>
+        :doc-id="dialogTeam"
+        :type="type"
+        :name="NAME"></folder-dialog>
   </div>
 </template>
 
 <script>
+  import {fetchCoworkers, fetchTeams} from "../api/api";
+  import {GetTime} from "../main";
+
   export default {
     name: "myTeam",
     data(){
@@ -84,6 +94,7 @@
         type: '',
         dialogTeam: '',
         Info:{
+          id:1,
           builder: 'Kelly',
           coworkers:[
             {
@@ -103,9 +114,29 @@
           ]
         },
         infoDialog: false,
+        isHover: false,
+        NAME: '',
       }
     },
+    mounted(){
+      this.init()
+    },
     methods:{
+      init(){
+        fetchTeams().then(res=>{
+          if(res.status === 200){
+            this.teams = []
+            res.data.forEach(i=>{
+              this.teams.push({
+                id: i.id,
+                name: i.name,
+                create_time : GetTime(i.create_time),
+                builder : i.create_user.username,
+              })
+            })
+          }
+        })
+      },
       toOneTeam(id){
         this.$router.push({name:'team', params: {teamId: id}})
       },
@@ -119,22 +150,50 @@
       addPeople(id){
         this.type = 'teamwork'
         this.dialogTeam = id
+        this.teams.forEach(i=>{
+          if(i.id +''=== id+''){
+            this.NAME = i.name
+            return ;
+          }
+        })
+        console.log(this.NAME)
         this.folderDialog = true
       },
       handleClick(id){
-        // this.teams.forEach(i=>{
-        //   if(i.id === id){
-        //     this.Info = i
-        //     return
-        //   }
-        // })
-        console.log(id)
-        this.infoDialog = true
+        this.teams.forEach(i=>{
+          if(i.id === id){
+            this.Info = i
+          }
+        })
+        fetchCoworkers(this.Info.id).then(res=>{
+          this.Info.coworkers = []
+          console.log(res.data)
+          res.data.forEach((i, index) => {
+            if(index === 0){
+              this.Info.builder = i.username
+            }
+            this.Info.coworkers.push({
+              userId: i.id,
+              userName: i.username,
+              userImg: i.head,
+              isBuilder: index === 0? true:false
+            })
+            console.log(i.id, this.Info.coworkers)
+          })
+          this.infoDialog = true
+        }).catch(e => {this.$message({message: e.response.data, typd:'error'})})
       },
       Delete(id){
         let message='确定要删除团队吗？'
         this.$confirm(message).then(_ => {
           console.log(id+_)
+          this.infoDialog = false
+        })
+      },
+      checkMove(item){
+        let message = '确定要移除ta吗？'
+        this.$confirm(message).then(_ => {
+          console.log(item+_)
           this.infoDialog = false
         })
       },

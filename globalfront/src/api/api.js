@@ -39,11 +39,11 @@ export const getUserInfo = (id) => {
   
   */
 export const changeVisibility = (docId, role) => {
-  return axios.put('http://127.0.0.1:8000/DocRoleEditViewset/'+docId,{'role':role})
+  return axios.put('http://127.0.0.1:8000/DocRoleEdit/'+docId+'/',{'role':role})
 }
 
 export const fetchRecentDocs = () => {
-  return axios.get('http://127.0.0.1:8000/RecentDocViewset/')
+  return axios.get('http://127.0.0.1:8000/RecentDoc/')
 }
 
 export const fetchDocInfo= (id) =>{
@@ -51,5 +51,29 @@ export const fetchDocInfo= (id) =>{
 }
 
 export const fetchCoworkers = (id) => {
-  return axios.get('/CoworkerViewset/' + id)
+  return axios.get('/Coworker/' + id)
+}
+
+export const addCoworker = (doc, user) => {
+  return axios.post('/AddMember/', {'document': doc, 'user': user})
+}
+
+export const removeCoworker = (doc, user) => {
+  return axios.post('/DeleteMember/', {'document': doc, 'user': user})
+}
+
+export const fetchTeams = () => {
+  return axios.get('/MyTeam/')
+}
+
+export const fetchMyDocs = () => {
+  return axios.get('/MyDoc/')
+}
+
+export const fetchUsers = (keywords) => {
+  return axios.get('/search/', {params:{str: keywords}})
+}
+
+export const fetchTeamDocs = (id) => {
+  return axios.get('/ChildDoc/'+id+'/')
 }

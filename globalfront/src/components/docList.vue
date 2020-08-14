@@ -12,7 +12,7 @@
           label="最后浏览日期"
           sortable
           column-key="readTime"
-          :filters="[{text: '2016-05-01', value: '2016-05-01'}, {text: '2016-05-02', value: '2016-05-02'}, {text: '2016-05-03', value: '2016-05-03'}, {text: '2016-05-04', value: '2016-05-04'}]"
+          :filters="createTimeFilter('readTime')"
           :filter-method="filterHandler"
         >
         </el-table-column>
@@ -117,25 +117,25 @@
           width="400"
           label="文件名">
           <template slot-scope="scope">
-            <span  style="cursor: pointer;" @click="toDoc(scope.row.id)">{{scope.row.name}}</span>
+            <span  style="cursor: pointer;" @click="toDoc(scope.row.docId)">{{scope.row.docName}}</span>
             <div class="tableI">
             <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
             <i
-              @click="handleEdit(scope.$index, scope.row)"
+              @click="handleEdit(scope.$index, scope.row.docId)"
               class="el-icon-s-tools"></i></el-tooltip>
             <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
               <span slot="content"><span v-if="scope.row.isCollected">取消</span>收藏</span>
             <i
-              @click="changeColl(scope.row.id)"
+              @click="changeColl(scope.row.docId)"
               v-if="scope.row.isCollected"
               class="el-icon-star-on"></i>
             <i
-              @click="changeColl(scope.row.id)"
+              @click="changeColl(scope.row.docId)"
               v-else
               class="el-icon-star-off"></i></el-tooltip>
             <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
             <i
-              @click="openFolderDialog(scope.row.id)"
+              @click="openFolderDialog(scope.row.docId)"
               class="el-icon-s-custom"></i></el-tooltip>
             </div>
           </template>
@@ -143,33 +143,28 @@
         <el-table-column
           prop="builder"
           label="创建者"
-          sortable
-          :filters="[{ text: '家', value: '家' }, { text: '公司', value: '公司' }]"
-          :filter-method="filterTag"
-          filter-placement="bottom-end">
+          sortable>
           <template slot-scope="scope">
             <span style="cursor: pointer;" @click="toUser(scope.row.builder)">{{scope.row.builder}}</span>
           </template>
         </el-table-column>
         <el-table-column
-          prop="date"
-          label="最新修改日期"
+          prop="lastTime"
+          label="最新修改时间"
           sortable
-          column-key="date"
-          :filters="[{text: '2016-05-01', value: '2016-05-01'}, {text: '2016-05-02', value: '2016-05-02'}, {text: '2016-05-03', value: '2016-05-03'}, {text: '2016-05-04', value: '2016-05-04'}]"
+          column-key="lastTime"
+          :filters="createTimeFilter('lastTime')"
           :filter-method="filterHandler"
         >
         </el-table-column>
         <el-table-column
-          prop="date"
+          prop="lastUser"
           label="最新修改者"
           sortable
-          column-key="date"
-          :filters="[{text: '2016-05-01', value: '2016-05-01'}, {text: '2016-05-02', value: '2016-05-02'}, {text: '2016-05-03', value: '2016-05-03'}, {text: '2016-05-04', value: '2016-05-04'}]"
-          :filter-method="filterHandler"
+          column-key="lastUser"
         >
           <template slot-scope="scope">
-            <span style="cursor: pointer;" @click="toUser(scope.row.date)">{{scope.row.date}}</span>
+            <span style="cursor: pointer;" @click="toUser(scope.row.lastUserId)">{{scope.row.lastUser}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -181,10 +176,10 @@
       width="30%"
       center>
       <div style="">
-        <div>文件名：{{Info.docName}}</div>
-        <div>创建者：{{Info.builder}}</div>
-        <div>创建日期：{{Info.create_time}}</div>
-        <div>最后修改时间：{{Info.modify_time}}</div>
+        <div><span style="width: 40px;">文件名：</span>{{Info.docName}}</div>
+        <div style="cursor: pointer;"><span style="width: 40px;">创建者：</span>{{Info.builder}}</div>
+        <div><span style="width: 40px;">创建日期：</span>{{Info.create_time}}</div>
+        <div><span style="width: 40px;">最后修改时间：</span>{{Info.modify_time}}</div>
         <el-divider></el-divider>
         <div>协作者：
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
@@ -211,20 +206,25 @@
         :dialog="folderDialog"
         @changeVisible="changeVisible"
         :doc-id="docId"
-        :type="'coworker'"></folder-dialog>
+        :type="'coworker'" :name="NAME"></folder-dialog>
 
-    <share-dialog :share-dialog="shareV" :share-id="shareId" @changeVisible="changeShare"></share-dialog>
-    <set-dialog :set-dialog="setV" :set-id="setId" @changeVisible="changeP" :visi="visi"></set-dialog>
+    <share-dialog :share-dialog="shareV" :share-id="shareId" @changeVisible="changeShare" :share-name="NAME"></share-dialog>
+    <set-dialog :set-dialog="setV" :set-id="setId" @changeVisible="changeP" :visi="visi" :is-team="isTeam" :set-name="NAME"></set-dialog>
   </div>
 </template>
 
 <script>
-  import {fetchRecentDocs, fetchDocInfo, fetchCoworkers} from "../api/api";
+  import {fetchRecentDocs, fetchDocInfo, fetchCoworkers, removeCoworker, fetchMyDocs, fetchTeamDocs} from "../api/api";
+  import {GetTime} from "../main"
+
   export default {
     name: "docList",
     props:{
       type:{
         default: 'history'//'collection', 'build', 'dustbin', 'team'?
+      },
+      team:{
+        default : ''
       }
     },
     mounted() {
@@ -233,29 +233,30 @@
     data(){
       return {
         tableData: [
-            {
-          date: '2016-05-02',
-          name: '王小虎',
-          builder: '家',
-          isCollected: false
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          builder: '公司',
-          isCollected: true
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          builder: '家',
-          isCollected: true
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          builder: '公司',
-          isCollected: true
-        }],
+          {
+            docId: 1,
+            docName: '文档1',
+            readTime: GetTime('2020-08-14T00:04:23.408300')
+          },
+          {
+            docId: 2,
+            docName: '文档2',
+            readTime: GetTime('2020-08-15T00:04:23.408300')
+          },
+          {
+            docId: 3,
+            docName: '文档3',
+            readTime: GetTime('2020-08-14T00:04:23')
+          },
+          {
+            docId: 4,
+            docName: '文档4',
+            readTime: GetTime('2020-08-11T00:04:23.408300')
+          }
+        ],
         Dialog: false,
         Info:{
+          id: 1,
           builder: 'Kelly',
           coworkers:[
             {
@@ -279,6 +280,8 @@
         setV: false,
         setId: '2',
         visi: 3,
+        NAME: '',
+        isTeam: false,
       }
     },
     watch:{
@@ -293,26 +296,85 @@
               if(res.data.length === 0){
                 this.tableData = []
               }else{
-                this.tableData = []
-                res.data.forEach(i=>{
-                  console.log(i)
-                  this.tableData.push({
-                    docId: i.document.id,
-                    docName:i.document.name,
-                    readTime: i.read_time
-                  })
-                console.log(this.tableData)
+                  this.tableData = []
+                  res.data.forEach(i=>{
+                    console.log(i)
+                    this.tableData.push({
+                      docId: i.document.id,
+                      docName:i.document.name,
+                      readTime: GetTime(i.read_time)
+                    })
               })}
             }
+          }).catch(e=>{this.$message({message:e.response.data, type:'error'})})
+        } else if(this.type === 'build'){
+          console.log('build')
+          fetchMyDocs().then(res=>{
+            if(res.status === 200){
+              console.log(res.data)
+              this.tableData = []
+              res.data.forEach(i => {
+                this.tableData.push({
+                  docId: i.id,
+                  docName: i.name,
+                  builder: i.create_user.username,
+                  createTime: GetTime(i.create_time),
+                  lastTime: GetTime(i.last_modify_time),
+                  lastUser: i.last_modify_user.username,
+                  lastUserId: i.last_modify_user.id
+                })
+                console.log(this.tableData)
+              })
+            }
           }).catch(e=>{this.$message({message:e, type:'error'})})
+        } else if(this.team){
+          fetchTeamDocs(this.team).then(res=>{
+            if(res.status === 200){
+              console.log(res)
+              this.tableData = []
+              res.data.forEach(i=>{
+                this.tableData.push({
+                  docId: i.id,
+                  docName: i.name,
+                  builder: i.create_user.username,
+                  createTime: GetTime(i.create_time),
+                  lastTime: GetTime(i.modify_time),
+                  lastUser: i.last_modify_user.username,
+                  lastUserId: i.last_modify_user.id
+                })
+                console.log(this.tableData)
+              })
+            }
+          }).catch(e=>{
+            if(e.response.status === 401){
+              this.$message({message:'不是团队', type:'error'})
+            }
+          })
         }
+      },
+      createTimeFilter(timeName){
+        let dateFilter = []
+        let dates = []
+        this.tableData.forEach(i =>{
+          console.log(GetTime(i[timeName],' '))
+          if(dates.length === 0 || dates.indexOf(GetTime(i[timeName],' '))==-1){
+            dates.push(GetTime(i[timeName],' '))
+          }
+        })
+        dates.forEach(i=>{
+          dateFilter.push({
+            text: i,
+            value: i,
+          })
+        })
+        return dateFilter
       },
       filterTag(value, row) {
         return row.builder === value;
       },
       filterHandler(value, row, column) {
         const property = column['property'];
-        return row[property] === value;
+        return GetTime(row[property],' ') === value;
       },
       handleEdit(index, row) {//查看文档详细内容
         console.log(index, row);
@@ -322,28 +384,38 @@
       },
       Delete(id){
         let message = this.type === 'dustbin'?'确定要彻底删除它吗？':'确定要删除它吗？'
+        // eslint-disable-next-line no-unused-vars
         this.$confirm(message).then(_ => {
-          console.log(id+_)
+          console.log(_, id)
           this.Dialog = false
         })
       },
-      changeVisible(val){
+      changeVisible(val, id){
         this.folderDialog = val
+        this.getDocInfo(id)
       },
       openFolderDialog(id){
         this.docId = id
+        let that = ''
+        this.tableData.forEach(i=>{
+          if(i.docId +''=== id+''){
+            that = i.docName
+            return ;
+          }
+        })
+        this.NAME = that
         this.folderDialog = true
       },
       changeColl(id){
         this.tableData.forEach(i => {
-          if(i.id === id){
+          if(i.id+'' === id+''){
             i.isCollected = !i.isCollected
             return;
           }
         })
       },
       recover(id){
-        this.alert(id)
+        alert(id)
       },
       toDoc(id){
         this.$router.push({name:'editorPage', params: {docId: id}})
@@ -369,12 +441,9 @@
       },
       setP(id){
         this.setId = id
-        this.tableData.forEach(i=>{
-          if(i.id === id){
-            this.visi = i.id//权限码
-            return
-          }
-        })
+        this.visi = this.Info.role
+        this.isTeam = this.Info.isTeam
+        this.NAME = this.Info.docName
         this.setV = true
       },
       changeP(val){
@@ -382,6 +451,7 @@
       },
       shareDialog(id){
         this.shareId = id
+        this.NAME = this.Info.docName
         this.shareV = true
       },
       changeShare(val){
@@ -389,11 +459,31 @@
       },
       checkMove(item){
         let message = '确定要移除ta吗？'
-        let that = this
         this.$confirm(message).then(_ => {
-          that.Info.coworkers.remove(item)
-          console.log(this.Info.coworkers)
-          console.log(item+_)
+          console.log(_)
+          removeCoworker(this.Info.id, item.userId).then(res=>{
+            if(res.status === 200){
+              this.Info.coworkers = []
+              res.data.forEach((i, index) => {
+                if(index === 0){
+                  this.Info.builder = i.username
+                }
+                this.Info.coworkers.push({
+                  userId: i.id,
+                  userName: i.username,
+                  userImg: i.head,
+                  isBuilder: index === 0? true:false
+                })
+              })
+              this.$message({message:'移除成功', type:'success'})
+            } else {
+              this.$message({message:'发生其他错误', type:'error'})
+            }
+          }).catch(e=>{
+            if(e.response.status === 401){
+              this.$message({message:'此人不在协作者中', type: 'error'})
+            }
+          })
         })
       },
       getDocInfo(id){
@@ -404,8 +494,9 @@
             this.Info.docName = res.data.name
             this.Info.role = res.data.role
             this.Info.isDoc = !res.data.type
-            this.Info.modify_time = res.data.modify_time
-            this.Info.create_time = res.data.create_time
+            this.Info.isTeam = this.Info.isDoc && res.data.parent_doc
+            this.Info.modify_time = GetTime(res.data.modify_time)
+            this.Info.create_time = GetTime(res.data.create_time)
             fetchCoworkers(this.Info.id).then(res=>{
               if(res.status === 200){
                 this.Info.coworkers = []

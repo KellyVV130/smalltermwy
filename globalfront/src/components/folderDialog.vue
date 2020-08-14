@@ -5,7 +5,7 @@
       :show-close="false" style="width: 70%;margin: 0 auto;">
         <el-form :model="form" style="text-align: center;">
           <el-form-item prop="name">
-            <div style="font-size: medium; font-family: Georgia, serif;">为[{{docId}}]添加协作者:</div>
+            <div style="font-size: medium; font-family: Georgia, serif;">为[{{name}}]添加协作者:</div>
             <el-autocomplete
               class="autocomplete"
               v-model="form.name"
@@ -48,7 +48,7 @@
         :show-close="false" style="width: 70%;margin: 0 auto;">
         <el-form :model="form" style="text-align: center;">
           <el-form-item prop="name">
-            <div style="font-size: medium; font-family: Georgia, serif;">为【{{teamId}}】添加成员:</div>
+            <div style="font-size: medium; font-family: Georgia, serif;">为【{{name}}】添加成员:</div>
             <el-autocomplete
               class="autocomplete"
               v-model="form.name"
@@ -70,6 +70,8 @@
 </template>
 
 <script>
+  import {addCoworker, fetchUsers} from "../api/api";
+
   export default {
     name: "folderDialog",
     props:{
@@ -82,18 +84,19 @@
       type:{
         default: ''//coworker, teamworker, newteam
       },
-      teamId:{
+      name:{
         default: ''
       }
     },
     data(){
       return{
         form:{
-          name: ''
+          name: '',
+          id: 1
         },
         isV: false,
-        users: [],
         state: '',
+        newCo:[],
       }
     },
     watch:{
@@ -105,21 +108,54 @@
     },
     methods:{
       cancelForm(){
-        this.$emit('changeVisible', false)
+        this.$emit('changeVisible', false, this.docId)
       },
       submitForm(){
         console.log(this.form)
-        this.$emit('changeVisible', false)
+        addCoworker(this.docId, this.form.id).then(res=>{
+          if(res.status === 200){
+            // })
+            this.$message({message:'添加成功', type:'success'})
+          } else if(res.status === 204){
+            this.$message({message:'发生未知错误', type:'error'})
+          }
+        }).catch(e=>{
+          if(e.response.status === 401){
+            this.$message({message:'您没有权限', type:'error'})
+          } else if (e.response.status === 400){
+            this.$message({message:'此用户已在协作者中', type: 'error'})
+          }
+        })
+        this.$emit('changeVisible', false, this.docId)
       },
       querySearchAsync(queryString, cb) {
-        let users = this.users;//按照queryString去后端请求，将返回的数据sb(results)
+        //let users = this.users;//按照queryString去后端请求，将返回的数据sb(results)
+        let results = []
+        fetchUsers(queryString).then(res => {
+          if(res.status === 200){
+            if(res.data.length === 0){
+              //this.$message({message:'暂无匹配', type:'error'})
+            } else {
+              console.log(res.data)
+              res.data.forEach(i => {
+                results.push({
+                  id: i.id,
+                  value: i.username,
+                })
+              })
+              //"id": 1, "username": "aaa", "head": "", "email": "", "mobile": "17600294315"
+            }
+          }
+        }).catch(e=>{this.$message({message:e.response.data, type: 'error'})})
         //若无匹配，$message提示暂无匹配
-        let results = queryString ? users.filter(this.createStateFilter(queryString)) : null;
-        cb(results);
+        console.log(results)
+        cb(results)
+        // let results = queryString ? users.filter(this.createStateFilter(queryString)) : null;
+        // cb(results);
       },
       handleSelect(item) {
         this.form.name = item.value
-        this.restaurants = []
+        this.form.id = item.id
       },
       createStateFilter(queryString) {//给filter()的参数函数包了一层外壳。
         return (s) => {//filter()函数的参数，返回为true时元素保留。该函数的第一个参数是当前元素值即s。
@@ -129,7 +165,6 @@
       },
     },
     mounted() {
-      console.log('dialog mounted')
     }
   }
 </script>
