@@ -1,11 +1,11 @@
 <template>
-  <div class="basic">
+  <div class="person">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
     <el-col :span="20"></el-col>
     <div class="box">
-      <el-card style="background-color: whitesmoke; border: 0px; margin-top: 80px;" shadow="never">
+      <el-card style="background-color: whitesmoke; border: 0px; padding-top: 80px;" shadow="never">
         <br>
         <el-row>
           <el-col :span="8">
@@ -267,7 +267,7 @@ import {getUserInfo} from '../api/api'
 </script>
 
 <style>
-  .basic{
+  .person{
     /*position: fixed;*/
     /*width: 100%;*/
     /*height: 100%;*/
