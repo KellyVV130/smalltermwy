@@ -104,7 +104,7 @@ export default {
         ],
         password1: [
           {required: true, message: '密码不能为空', trigger: 'blur'},
-          {min: 4, max: 18, message: '密码至少4位', trigger: 'blur'}
+          {min: 4, message: '密码至少4位', trigger: 'blur'}
         ],
         password2: [// 与上个相同
           {required: true, message: '两次输入密码必须一致', trigger: 'blur', validator: validatePwd2}
