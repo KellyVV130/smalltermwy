@@ -115,7 +115,7 @@
         addCoworker(this.docId, this.form.id).then(res=>{
           if(res.status === 200){
             // })
-            this.$message({message:'添加成功', type:'success'})
+            this.$message({message:'添加成功', type:'info'})
           } else if(res.status === 204){
             this.$message({message:'发生未知错误', type:'error'})
           }

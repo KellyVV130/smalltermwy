@@ -65,7 +65,7 @@
         console.log(this.Visi)
         changeVisibility(this.setId, this.vi).then(res=>{
           if(res.status === 200){
-            this.$message({message:'修改权限成功！', type: 'success'})
+            this.$message({message:'修改权限成功！', type: 'info'})
             this.$emit('changeVisible', false)
           } else if(res.status === 401){
             this.$message({message:'您没有修改权限！', type:'error'})

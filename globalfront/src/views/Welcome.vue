@@ -1,7 +1,7 @@
 <template>
   <div class="welcome">
     <el-divider content-position="center">
-      <span style="font-size: larger;">欢 迎 使 用 环 球 文 档 G l o b a l D o c</span>
+      <span style="font-size: 34px;">欢 迎 使 用 环 球 文 档 G l o b a l D o c</span>
     </el-divider>
     <div class="block">
       <el-carousel height="400px; width:70%;">
@@ -50,7 +50,7 @@ export default {
      background-color: #d3dce6;
   }
   .block{
-    margin:0 auto 50px auto;
+    margin:100px auto;
     width: 70vw;
   }
 </style>

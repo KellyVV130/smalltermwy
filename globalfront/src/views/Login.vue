@@ -70,7 +70,7 @@ export default {
               localStorage.userId = response.data.user_id
               this.$message({
                 message: '登录成功',
-                type: 'success'
+                type: 'info'
               })
               this.$router.push({name:'history'})
             } else {

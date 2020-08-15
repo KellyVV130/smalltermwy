@@ -138,7 +138,7 @@ export default {
           console.log(response)
           this.$message({
             message: '验证码发送成功',
-            type: 'success'
+            type: 'info'
           })
         } else if(response.status === 400){
           this.$message({
@@ -159,7 +159,7 @@ export default {
             console.log(response)
              this.$message({
               message: '注册成功',
-              type: 'success'
+              type: 'info'
             })
             if(response.status === 400){
               this.$message({
@@ -168,9 +168,8 @@ export default {
               })
             }
             this.$router.push({path: '/Login'})
-          }).catch(error => {
-            console.log(error.response.data)
-            console.log(error.response.data)
+          }).catch(e => {
+            this.$message({message:e.response.data, type:'error'})
           })
         }
       })

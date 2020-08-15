@@ -272,7 +272,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
                 this.nameForm.newName=''
                 this.$message({
                   message: '修改昵称成功',
-                  type: 'success'
+                  type: 'info'
                 })
               }else{
                 this.$message({
@@ -303,7 +303,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
                 this.passwordForm.newPasswordAgain=''
                 this.$message({
                   message: '修改密码成功',
-                  type: 'success'
+                  type: 'info'
                 })
               }else{
                 this.$message({
@@ -333,7 +333,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
                 this.phoneForm.newPhone=''
                 this.$message({
                   message: '修改手机号码成功',
-                  type: 'success'
+                  type: 'info'
                 })
               }else{
                 this.$message({
@@ -362,7 +362,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
                 this.email=this.emailForm.newEmail
                 this.$message({
                   message: '修改邮箱成功',
-                  type: 'success'
+                  type: 'info'
                 })
               }else{
                 this.$message({

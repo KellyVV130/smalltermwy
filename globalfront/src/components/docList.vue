@@ -52,20 +52,20 @@
         :data="tableData"
         style="width: 100%">
         <el-table-column
-          prop="name"
+          prop="docName"
           sortable
           width="400"
           label="文件名">
           <template slot-scope="scope">
-            {{scope.row.name}}
+            {{scope.row.docName}}
             <div class="tableI">
             <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
             <i
-              @click="handleEdit(scope.$index, scope.row)"
+              @click="handleEdit(scope.$index, scope.row.docId)"
               class="el-icon-s-tools"></i></el-tooltip>
             <el-tooltip effect="dark" content="恢复文档" placement="bottom" :hide-after="800" :enterable="false">
             <i
-              @click="recover(scope.row.id)"
+              @click="recover(scope.row.docId)"
               class="el-icon-refresh-right"></i></el-tooltip></div>
           </template>
         </el-table-column>
@@ -73,33 +73,19 @@
           prop="builder"
           label="创建者"
           sortable
-          :filters="[{ text: '家', value: '家' }, { text: '公司', value: '公司' }]"
-          :filter-method="filterTag"
           filter-placement="bottom-end">
           <template slot-scope="scope">
             <span style="cursor: pointer;" @click="toUser(scope.row.builder)">{{scope.row.builder}}</span>
           </template>
         </el-table-column>
         <el-table-column
-          prop="date"
-          label="最新修改日期"
+          prop="deleteTime"
+          label="删除时间"
           sortable
-          column-key="date"
-          :filters="[{text: '2016-05-01', value: '2016-05-01'}, {text: '2016-05-02', value: '2016-05-02'}, {text: '2016-05-03', value: '2016-05-03'}, {text: '2016-05-04', value: '2016-05-04'}]"
+          column-key="deleteTime"
+          :filters="createTimeFilter('deleteTime')"
           :filter-method="filterHandler"
         >
-        </el-table-column>
-        <el-table-column
-          prop="date"
-          label="最新修改者"
-          sortable
-          column-key="date"
-          :filters="[{text: '2016-05-01', value: '2016-05-01'}, {text: '2016-05-02', value: '2016-05-02'}, {text: '2016-05-03', value: '2016-05-03'}, {text: '2016-05-04', value: '2016-05-04'}]"
-          :filter-method="filterHandler"
-        >
-          <template slot-scope="scope">
-            <span style="cursor: pointer;" @click="toUser(scope.row.date)">{{scope.row.date}}</span>
-          </template>
         </el-table-column>
       </el-table>
     </div>
@@ -214,7 +200,15 @@
 </template>
 
 <script>
-  import {fetchRecentDocs, fetchDocInfo, fetchCoworkers, removeCoworker, fetchMyDocs, fetchTeamDocs} from "../api/api";
+  import {
+    fetchRecentDocs,
+    fetchDocInfo,
+    fetchCoworkers,
+    removeCoworker,
+    fetchMyDocs,
+    fetchTeamDocs,
+    undoCollect, doCollect, fetchDustbin, fetchCollections, deleteForever, undoDelete
+  } from "../api/api";
   import {GetTime} from "../main"
 
   export default {
@@ -285,10 +279,23 @@
       }
     },
     watch:{
+      // tableData:{
+      //   handler(){
+      //     this.init()
+      //   },
+      //   deep: true
+      // },
+      // type(){
+      //   this.init()
+      // },
+      // team(){
+      //   this.init()
+      // }
     },
     methods:{
       init(){
         //请求数据
+        console.log('type', this.type)
         if(this.type === 'history'){
           fetchRecentDocs().then(res=>{
             if(res.status === 200){
@@ -302,7 +309,8 @@
                     this.tableData.push({
                       docId: i.document.id,
                       docName:i.document.name,
-                      readTime: GetTime(i.read_time)
+                      readTime: GetTime(i.read_time),
+                      isCollected: i.document.has_collect
                     })
               })}
             }
@@ -321,7 +329,8 @@
                   createTime: GetTime(i.create_time),
                   lastTime: GetTime(i.last_modify_time),
                   lastUser: i.last_modify_user.username,
-                  lastUserId: i.last_modify_user.id
+                  lastUserId: i.last_modify_user.id,
+                  isCollected: i.has_collect
                 })
                 console.log(this.tableData)
               })
@@ -350,6 +359,37 @@
               this.$message({message:'不是团队', type:'error'})
             }
           })
+        } else if (this.type === 'dustbin'){
+          fetchDustbin().then(res=>{
+            if(res.status === 200){
+              this.tableData =[]
+              res.data.forEach(i=>{
+                this.tableData.push({
+                  docId: i.document.id,
+                  docName: i.document.name,
+                  deleteTime: GetTime(i.delete_time),
+                  builder: i.document.create_user.username
+                })
+              })
+              console.log(this.tableData)
+            }
+          }).catch(e=>this.$message({message: e, type: 'error'}))
+        } else if (this.type === 'collection'){
+          console.log('collect')
+          fetchCollections().then(res=>{
+            if(res.status === 200){
+              this.tableData = []
+              res.data.forEach(i=>{
+                this.tableData.push({
+                  docId: i.id,
+                  docName: i.name,
+                  isCollected: i.has_collect,
+                  builder: i.create_user,
+                  lastUser: i.last_modify_user
+                })
+              })
+            }
+          }).catch(e=>this.$message({message: e, type: 'error'}))
         }
       },
       createTimeFilter(timeName){
@@ -369,9 +409,6 @@
         })
         return dateFilter
       },
-      filterTag(value, row) {
-        return row.builder === value;
-      },
       filterHandler(value, row, column) {
         const property = column['property'];
         return GetTime(row[property],' ') === value;
@@ -385,8 +422,17 @@
       Delete(id){
         let message = this.type === 'dustbin'?'确定要彻底删除它吗？':'确定要删除它吗？'
         // eslint-disable-next-line no-unused-vars
-        this.$confirm(message).then(_ => {
-          console.log(_, id)
+        this.$confirm(message).then(() => {
+          if(this.type === 'dustbin'){
+            deleteForever(id).then(res => {
+              if(res.status === 204){
+                this.$message({message:'已彻底删除文档!', type:'warning'})
+              }
+              this.init()//再获取一遍回收站
+            }).catch(e=>this.$message({message:e.response.data, type:'error'}))
+          } else {
+            //删除文档
+          }
           this.Dialog = false
         })
       },
@@ -407,15 +453,42 @@
         this.folderDialog = true
       },
       changeColl(id){
+        let item = {};
         this.tableData.forEach(i => {
           if(i.id+'' === id+''){
-            i.isCollected = !i.isCollected
-            return;
+            item = i;
           }
         })
+        console.log(item)
+        if(item.isCollected){
+          undoCollect(item.docId).then(res=>{
+            if(res.status === 204){
+              this.$message({message:'取消收藏成功', type:'info'})
+              item.isCollected = false
+              this.init()
+              return;
+            }
+          }).catch(e=>this.$message({message:e.response.data, type:'error'}))
+        } else {
+          doCollect(item.docId).then(res=>{
+            if(res.status === 201){
+              item.isCollected = true
+              this.$message({message:'收藏成功', type:'info'});
+              this.init()
+              return ;
+            }
+          }).catch(e=>{if(e.response.status === 400){
+            this.$message({message:'本文已被收藏', type:'error'})
+          }})
+        }
       },
       recover(id){
-        alert(id)
+        undoDelete(id).then(res => {
+          if(res.status === 200){
+            this.$message({message:'恢复文档成功！', type:'info'})
+            this.init()//再获取一遍回收站
+          }
+        }).catch(e=>this.$message({message:e.response.data, type:'error'}))
       },
       toDoc(id){
         this.$router.push({name:'editorPage', params: {docId: id}})
@@ -475,7 +548,8 @@
                   isBuilder: index === 0? true:false
                 })
               })
-              this.$message({message:'移除成功', type:'success'})
+              this.$message({message:'移除成功', type:'info'})
+              this.init()
             } else {
               this.$message({message:'发生其他错误', type:'error'})
             }

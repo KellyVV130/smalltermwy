@@ -56,7 +56,7 @@
               </div>
               <div @click="toDoc(item.id)" style="cursor: pointer">{{item.name}}</div>
               <div style="font-size: x-small; color: grey; margin-top: 12px;">
-              删除于{{item.date}}</div>
+              删除于{{item.deleteTime}}</div>
             </el-card>
           </div>
         </el-col>
@@ -143,7 +143,15 @@
 </template>
 
 <script>
-  import {fetchCoworkers, fetchDocInfo, fetchMyDocs, fetchRecentDocs, fetchTeamDocs, removeCoworker} from "../api/api";
+  import {
+    fetchCoworkers,
+    fetchDocInfo,
+    fetchDustbin,
+    fetchMyDocs,
+    fetchRecentDocs,
+    fetchTeamDocs,
+    removeCoworker
+  } from "../api/api";
   import {GetTime} from "../main";
 
   export default {
@@ -277,6 +285,21 @@
               this.$message({message:'不是团队', type:'error'})
             }
           })
+        } else if (this.type === 'dustbin'){
+          fetchDustbin().then(res=>{
+            if(res.status === 200){
+              this.tableData =[]
+              res.data.forEach(i=>{
+                this.tableData.push({
+                  docId: i.document.id,
+                  docName: i.document.name,
+                  deleteTime: GetTime(i.delete_time),
+                  builder: i.document.create_user.username
+                })
+              })
+              console.log(this.tableData)
+            }
+          }).catch(e=>this.$message({message: e, type: 'error'}))
         }
       },
       toDoc(id){
@@ -356,7 +379,7 @@
                   isBuilder: index === 0? true:false
                 })
               })
-              this.$message({message:'移除成功', type:'success'})
+              this.$message({message:'移除成功', type:'info'})
             } else {
               this.$message({message:'发生其他错误', type:'error'})
             }

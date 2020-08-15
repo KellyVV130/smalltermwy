@@ -1,6 +1,8 @@
 import Axios from './index'
 
 const axios = Axios
+//http://127.0.0.1:8000
+//http://127.0.0.1:8000
 
 // 登录
 export const postUser = (username, password) => {
@@ -71,4 +73,28 @@ export const fetchUsers = (keywords) => {
 
 export const fetchTeamDocs = (id) => {
   return axios.get('/ChildDoc/'+id+'/')
+}
+
+export const fetchCollections = () => {
+  return axios.get('/collectList/')
+}
+
+export const doCollect = (id) => {
+  return axios.post('/collect/', {'document': id})
+}
+
+export const undoCollect = (id) => {
+  return axios.delete('/cancelCollect/' + id + '/')
+}
+
+export const fetchDustbin = () => {
+  return axios.get('/RecycleBin/')
+}
+
+export const deleteForever = (id) => {
+  return axios.delete('/Pack/'+id+'/')
+}
+
+export const undoDelete = (id) => {
+  return axios.get('/Recall/'+id+'/')
 }

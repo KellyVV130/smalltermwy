@@ -118,14 +118,16 @@ VueRouter.prototype.push = function push (location) {
 }
 
 //判断用户是否登录
-let that = this
 router.beforeEach((to, from, next) => {
+  let that = router.app
   if (to.meta.auth) {
     let token = localStorage.getItem('token')
     if (token) {
       next()
     } else {
+      console.log(that)
       that.$message({message:'您暂无权限查看此页面。', type: 'error'})
+      //alert('您暂无权限查看此页面，请先登录')
       next({
         name: 'Home',
         params: {
@@ -134,6 +136,7 @@ router.beforeEach((to, from, next) => {
       })
     }
   } else {
+    console.log(that)
     next()
   }
 })
