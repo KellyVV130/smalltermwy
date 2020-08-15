@@ -1,0 +1,21 @@
+.DS_Store
+/gloabalfront/node_modules
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+/gloabalfront/npm-debug.log*
+/gloabalfront/yarn-debug.log*
+/gloabalfront/yarn-error.log*
+/gloabalfront/pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

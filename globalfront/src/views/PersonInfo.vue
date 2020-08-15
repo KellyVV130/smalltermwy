@@ -132,8 +132,7 @@
   </div>
 </template>
 
-<script>
-import Axios from '../api/index'
+<script>import Axios from '../api/index'
 import {getUserInfo,getOtherInfo} from '../api/api'
   export default {
     data () {

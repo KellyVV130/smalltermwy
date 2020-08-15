@@ -11,8 +11,9 @@
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
-        <div><el-button type="warning" plain>全部已读</el-button></div>
-        <div><el-button type="primary" plain>查看未读</el-button></div>
+        <div><el-button type="warning" plain @click="readAll">全部已读</el-button></div>
+        <div><el-button type="primary" plain @click="getMessage">查看未读</el-button></div>
+        <div><el-button type="warning" plain @click="deleteAll">全部删除</el-button></div>
       </el-aside>
     </el-container>
   </div>
@@ -20,26 +21,137 @@
 
 <script>
 import messageCard from "../components/messageCard"
+import {getAllMessage, getMessage,readAllMessage,deleteAllMessage} from '../api/api'
 export default {
   data() {
     return {
+      ifGetAllMessage: true,
       messages: [{
-        type: 'comment', 
+        id: 1,
+        type: 1, 
+        status: 0, //0表示未读 1表示已读
         name: 'whisper', 
         content: '评论了[小学期]', 
         detail: '这是一条不走心的评论',
         date: '2020/8/10'
-      },{
-        type: 'add', 
+      },
+      {
+        id: 1,
+        type: 1, 
+        status: 0, //0表示未读 1表示已读
         name: 'whisper', 
-        content: '添加你为[小学期]协作者', 
-        detail: '',
-        date: '2020/8/13'
-      }]
+        content: '评论了[小学期]', 
+        detail: '这是一条不走心的评论',
+        date: '2020/8/10'
+      }
+      ]
     }
   },
   components: {
     "messageCard": messageCard
+  },
+  methods: {
+    //查看所有消息
+    getAllMessage(){
+        getAllMessage().then(response => {
+          if(response.status===200){
+            this.ifGetAllMessage=true
+            console.log(response)
+            this.messages=response.data
+            for(var i=0;i<this.messages.length;i++){
+              if(this.messages[i].type===1){//1:团队邀请信息（给被邀请人发）
+                this.messages[i].content='邀请你加入团队'
+              }else if(this.messages[i].type===2){//2:加入团队结果（给邀请人+老大发）
+                this.messages[i].content='回复了你的团队邀请'
+              }else if(this.messages[i].type===3){//3:退出团队结果（给老大发）
+                this.messages[i].content='退出了团队'
+              }else if(this.messages[i].type===4){//4:被踢出团队提醒（给被踢的人发）
+                this.messages[i].content='将你移出团队'
+              }else if(this.messages[i].type===5){//5:被加入协作者提醒（给被邀请人发）
+                this.messages[i].content='邀请你成为协作者'
+              }else if(this.messages[i].type===6){//6:文档被评论（给被评论的文档的创建者+协作者发）
+                this.messages[i].content='评论了你的文档'
+              }else if(this.messages[i].type===7){//7:评论被回复（给被回复的评论人发）
+                this.messages[i].content='回复了你的评论'
+              }else if(this.messages[i].type===8){//8:退出文档协作者结果（给创建者发）
+                this.messages[i].content='退出了文档协作者'
+              }else if(this.messages[i].type===9){//9：被踢出文档协作者提醒（给被踢的人发）
+                this.messages[i].content='将你移出文档协作者'
+              }
+            }
+          }
+        })
+      },
+    //查看未读消息
+    getMessage(){
+      getMessage().then(response => {
+          if(response.status===200){
+            this.ifGetAllMessage=false
+            console.log(response)
+            this.messages=response.data
+            for(var i=0;i<this.messages.length;i++){
+              if(this.messages[i].type===1){//1:团队邀请信息（给被邀请人发）
+                this.messages[i].content='邀请你加入团队'
+              }else if(this.messages[i].type===2){//2:加入团队结果（给邀请人+老大发）
+                this.messages[i].content='回复了你的团队邀请'
+              }else if(this.messages[i].type===3){//3:退出团队结果（给老大发）
+                this.messages[i].content='退出了团队'
+              }else if(this.messages[i].type===4){//4:被踢出团队提醒（给被踢的人发）
+                this.messages[i].content='将你移出团队'
+              }else if(this.messages[i].type===5){//5:被加入协作者提醒（给被邀请人发）
+                this.messages[i].content='邀请你成为协作者'
+              }else if(this.messages[i].type===6){//6:文档被评论（给被评论的文档的创建者+协作者发）
+                this.messages[i].content='评论了你的文档'
+              }else if(this.messages[i].type===7){//7:评论被回复（给被回复的评论人发）
+                this.messages[i].content='回复了你的评论'
+              }else if(this.messages[i].type===8){//8:退出文档协作者结果（给创建者发）
+                this.messages[i].content='退出了文档协作者'
+              }else if(this.messages[i].type===9){//9：被踢出文档协作者提醒（给被踢的人发）
+                this.messages[i].content='将你移出文档协作者'
+              }
+            }
+          }
+        })
+    },
+    //全部已读
+    readAll(){
+      readAllMessage(localStorage.userId).then(response => {
+        if(response.status===200){
+          console.log(response)
+          this.getAllMessage()
+        }else{
+          console.log(response)
+        }
+      })
+    },
+    //全部删除
+    deleteAll(){
+      deleteAllMessage(localStorage.userId).then(response => {
+        if(response.status===200){
+          console.log(response)
+          this.getAllMessage
+        }else{
+          console.log(response)
+        }
+      })
+    }
+  },
+  mounted(){
+    this.getAllMessage()
+  },
+  watch:{
+    messages: {
+      handler(oldValue,newValue){
+        console.log(oldValue)
+        console.log(newValue)
+        if(oldValue!==newValue){
+          if(this.ifGetAllMessage===true) this.getAllMessage()
+          else if(this.ifGetAllMessage===false) this.getMessage()
+        }
+      },
+      deep:true,
+      immediate:true
+    }
   }
 }
 </script>
