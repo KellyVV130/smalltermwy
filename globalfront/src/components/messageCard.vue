@@ -15,8 +15,8 @@
           <i v-if="item.type===9" class="el-icon-error" style="margin-top:40%; margin-left:10px"></i>
       </el-col>
       <el-col style="margin-top:10px">
-          <el-row><div class="title">{{item.origin_user}}{{item.content}}</div></el-row>
-          <el-row><div class="details">{{item.detail}}</div></el-row>
+          <el-row><div class="title">{{item.origin_user.username}}{{item.content}}</div></el-row>
+          <el-row><div class="details">{{item.document.name}}</div></el-row>
           <br>
           <el-row>
             <el-col span="14"><time class="time">{{item.time}}</time></el-col>

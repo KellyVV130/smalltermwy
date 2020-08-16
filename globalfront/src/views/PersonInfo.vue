@@ -16,7 +16,7 @@
                 <el-form :model="form">
                   <el-form-item ref="uploadElement">
                     <el-upload ref="upload"
-                              action="#"
+                              action="http://127.0.0.1/users/1/"
                               accept="image/png,image/gif,image/jpg,image/jpeg"
                               list-type="picture-card"
                               :limit=limitNum
@@ -261,7 +261,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
         this.$refs.nameForm.validate((valid) => {
           if(valid){
             const axios = Axios
-            axios.patch('http://127.0.0.1:8000/users/'+localStorage.userId+'/',{
+            axios.patch('/users/'+localStorage.userId+'/',{
               username: this.nameForm.newName
             }).then(response => {
               if(response.status===200){
@@ -291,7 +291,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
         this.$refs.passwordForm.validate((valid) => {
           if(valid){
             const axios = Axios
-            axios.patch('http://127.0.0.1:8000/users/'+localStorage.userId+'/',{
+            axios.patch('/users/'+localStorage.userId+'/',{
               password: this.passwordForm.newPassword
             }).then(response => {
               if(response.status===200){
@@ -322,7 +322,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
         this.$refs.phoneForm.validate((valid) => {
           if(valid){
             const axios = Axios
-            axios.patch('http://127.0.0.1:8000/users/'+localStorage.userId+'/',{
+            axios.patch('/users/'+localStorage.userId+'/',{
               mobile: this.phoneForm.newPhone
             }).then(response => {
               if(response.status===200){
@@ -352,7 +352,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
         this.$refs.emailForm.validate((valid) => {
           if(valid){
             const axios = Axios
-            axios.patch('http://127.0.0.1:8000/users/'+localStorage.userId+'/',{
+            axios.patch('/users/'+localStorage.userId+'/',{
               email: this.emailForm.newEmail
             }).then(response => {
               if(response.status===200){
@@ -396,7 +396,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
       fd.append("picFile", file); //传文件
       console.log(fd.get('picFile'));
       const axios = Axios
-      axios.patch('http://127.0.0.1:8000/users/1/',fd).then(response=>{
+      axios.patch('/users/1/',fd).then(response=>{
         console.log(response)
       })
       /*this.api({
@@ -427,7 +427,6 @@ import {getUserInfo,getOtherInfo} from '../api/api'
     },
     uploadFile () {
       this.$refs.upload.submit()
-
     },
     imgChange (files, fileList) {
       this.hideUpload = fileList.length >= this.limitNum;

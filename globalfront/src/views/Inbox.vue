@@ -12,7 +12,8 @@
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
         <div><el-button type="warning" plain @click="readAll">全部已读</el-button></div>
-        <div><el-button type="primary" plain @click="getMessage">查看未读</el-button></div>
+        <div><el-button v-if="ifGetAllMessage===true" type="primary" plain @click="getMessage">查看未读</el-button></div>
+        <div><el-button v-if="ifGetAllMessage===false" type="primary" plain @click="getAllMessage">查看全部</el-button></div>
         <div><el-button type="warning" plain @click="deleteAll">全部删除</el-button></div>
       </el-aside>
     </el-container>
@@ -22,27 +23,91 @@
 <script>
 import messageCard from "../components/messageCard"
 import {getAllMessage, getMessage,readAllMessage,deleteAllMessage} from '../api/api'
+import { GetTime } from '../main'
 export default {
   data() {
     return {
       ifGetAllMessage: true,
-      messages: [{
+      messages: [
+      {
+      id: 15,
+      user: {
         id: 1,
-        type: 1, 
-        status: 0, //0表示未读 1表示已读
-        name: 'whisper', 
-        content: '评论了[小学期]', 
-        detail: '这是一条不走心的评论',
-        date: '2020/8/10'
+        username: "1",
+        head: null
+      },
+      origin_user: {
+        id: 2,
+        username: "1679",
+        head: null
+      },
+      document: {
+        id: 1,
+        name: "测试"
+      },
+      time: "2020-08-15T22:03:10.828014",
+      type: 6,
+      status: 1
       },
       {
+      id: 15,
+      user: {
         id: 1,
-        type: 1, 
-        status: 0, //0表示未读 1表示已读
-        name: 'whisper', 
-        content: '评论了[小学期]', 
-        detail: '这是一条不走心的评论',
-        date: '2020/8/10'
+        username: "1",
+        head: null
+      },
+      origin_user: {
+        id: 2,
+        username: "1679",
+        head: null
+      },
+      document: {
+        id: 1,
+        name: "测试"
+      },
+      time: "2020-08-15T22:03:10.828014",
+      type: 6,
+      status: 1
+      },
+      {
+      id: 15,
+      user: {
+        id: 1,
+        username: "1",
+        head: null
+      },
+      origin_user: {
+        id: 2,
+        username: "1679",
+        head: null
+      },
+      document: {
+        id: 1,
+        name: "测试"
+      },
+      time: "2020-08-15T22:03:10.828014",
+      type: 6,
+      status: 1
+      },
+      {
+      id: 15,
+      user: {
+        id: 1,
+        username: "1",
+        head: null
+      },
+      origin_user: {
+        id: 2,
+        username: "1679",
+        head: null
+      },
+      document: {
+        id: 1,
+        name: "测试"
+      },
+      time: "2020-08-15T22:03:10.828014",
+      type: 6,
+      status: 1
       }
       ]
     }
@@ -59,6 +124,7 @@ export default {
             console.log(response)
             this.messages=response.data
             for(var i=0;i<this.messages.length;i++){
+              this.messages[i].time=GetTime(this.messages[i].time,'.')
               if(this.messages[i].type===1){//1:团队邀请信息（给被邀请人发）
                 this.messages[i].content='邀请你加入团队'
               }else if(this.messages[i].type===2){//2:加入团队结果（给邀请人+老大发）
@@ -90,6 +156,7 @@ export default {
             console.log(response)
             this.messages=response.data
             for(var i=0;i<this.messages.length;i++){
+              this.messages[i].time=GetTime(this.messages[i].time,'.')
               if(this.messages[i].type===1){//1:团队邀请信息（给被邀请人发）
                 this.messages[i].content='邀请你加入团队'
               }else if(this.messages[i].type===2){//2:加入团队结果（给邀请人+老大发）
@@ -137,6 +204,7 @@ export default {
     }
   },
   mounted(){
+    //this.ifGetAllMessage=true
     this.getAllMessage()
   },
   watch:{
@@ -150,7 +218,6 @@ export default {
         }
       },
       deep:true,
-      immediate:true
     }
   }
 }
@@ -158,13 +225,13 @@ export default {
 
 <style scope>
   .basic{
-    position: fixed;
+    
     width: 100%;
     height: 100%;
     background-color: whitesmoke;
   }
 
-  .el-aside{
+  .el-aside{ 
     width: 300px;
     height: calc(100vh - 50px);
   }
