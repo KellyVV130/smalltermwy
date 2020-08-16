@@ -87,9 +87,9 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
     path:'/Inbox',
     name: 'Inbox',
     component: () => import("../views/Inbox.vue"),
-    meta:{
-      auth: true
-    }
+//    meta:{
+//      auth: true
+//    }
   },
   {
     path:'/templates',
