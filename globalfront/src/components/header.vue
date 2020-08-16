@@ -185,6 +185,7 @@ import { GetTime } from '../main'
       logOut(){
         localStorage.removeItem('token')
         localStorage.removeItem('chart')
+        localStorage.removeItem('userId')
         this.$router.push({name:'history'})
       }
     },
