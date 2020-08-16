@@ -9,7 +9,7 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
     name: "history",
     component: () => import('../views/history'),
     meta:{
-      auth: true
+      auth: true,
     }
   },
   {//collection

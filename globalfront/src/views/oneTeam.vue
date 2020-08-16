@@ -1,5 +1,5 @@
 <template>
-  <div class="oneTeam">
+  <div class="oneTeam" v-web-title="{title:webTitle}">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
@@ -22,7 +22,7 @@
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
-        <div><el-button plain type="primary" @click="toNewDoc">新建文档</el-button></div>
+        <div><el-button plain type="primary" @click="toNewDoc">新建团队文档</el-button></div>
 <!--        <div><el-button plain type="primary" disabled>新建文件夹</el-button></div>-->
         <div><el-button plain type="primary" @click="toTemplate">模板库</el-button></div>
         <div v-if="isBuilder">
@@ -38,11 +38,14 @@
 </template>
 
 <script>
+  import {createDoc, fetchDocInfo} from "../api/api";
+
   export default {
     name: "oneTeam",
     data(){
       return {
-        teamName: '团队1',
+        webTitle:'团队文档',
+        teamName: '',
         chart: '',
         isBuilder: false,
         teamId: ''
@@ -59,9 +62,24 @@
           this.chart = '图标'
         }
         this.teamId = this.$route.params.teamId
+        fetchDocInfo(this.teamId).then(res=>{
+          if(res.status === 200){
+            this.teamName = res.data.name;
+            this.webTitle = this.teamName+'的文档'
+          }
+        }).catch(e=>this.$message({message:e.response.data, type:'error'}))
       },
       toNewDoc(){
-        this.$router.push({name:'editorPage'})
+        createDoc(0,'未命名', this.teamId).then(res=>{
+          if(res.status === 201){
+            this.$message({message:'新建文档成功', type:'info'})
+            this.$router.push({name:'editorPage'})
+          }
+        }).catch(e=>{
+          if(e.response.status === 401){
+            this.$message({message:'您没有权限', type: 'error'})
+          }
+        })
       },
       goBack(){
         this.$router.push({name:'myTeam'})

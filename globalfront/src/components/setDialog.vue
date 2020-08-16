@@ -66,11 +66,10 @@
         changeVisibility(this.setId, this.vi).then(res=>{
           if(res.status === 200){
             this.$message({message:'修改权限成功！', type: 'info'})
-            this.$emit('changeVisible', false)
-          } else if(res.status === 401){
-            this.$message({message:'您没有修改权限！', type:'error'})
+            this.$emit('changeVisible', false, this.setId)
           }
-        }).catch(e=>{this.$message({message:e.response.data, type:'error'})
+        }).catch(e=>{if(e.response.status === 401)
+          this.$message({message:e.response.data, type:'error'})
           this.$emit('changeVisible', false)
         })
       },

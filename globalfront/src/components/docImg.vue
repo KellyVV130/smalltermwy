@@ -42,19 +42,19 @@
             <el-card class="fileCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
               <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="isHover">
                 <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
-                <i class="el-icon-s-tools" @click="handleClick(item.id)"></i>
+                <i class="el-icon-s-tools" @click="handleClick(item.docId)"></i>
                 </el-tooltip>
               </div>
               <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="isHover">
                 <el-tooltip effect="dark" content="恢复文档" placement="bottom" :hide-after="800" :enterable="false">
-                <i class="el-icon-refresh-right" @click="recover(item.id)"></i>
+                <i class="el-icon-refresh-right" @click="recover(item.docId)"></i>
                 </el-tooltip>
               </div>
               <div style="font-size: 40px; cursor: default;">
                 <i class="el-icon-folder" v-if="item.isFolder"></i>
                 <i class="el-icon-document" v-else></i>
               </div>
-              <div @click="toDoc(item.id)" style="cursor: pointer">{{item.name}}</div>
+              <div @click="toDoc(item.docId)" style="cursor: pointer">{{item.docName}}</div>
               <div style="font-size: x-small; color: grey; margin-top: 12px;">
               删除于{{item.deleteTime}}</div>
             </el-card>
@@ -70,28 +70,28 @@
             <el-card class="fileCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
               <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="isHover">
                 <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
-                <i class="el-icon-s-tools" @click="handleClick(item.id)"></i>
+                <i class="el-icon-s-tools" @click="handleClick(item.docId)"></i>
                 </el-tooltip>
               </div>
               <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="isHover">
                 <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
                   <span slot="content"><span v-if="item.isCollected">取消</span>收藏</span>
-                <i class="el-icon-star-on" v-if="item.isCollected" @click="changeColl(item.id)"></i>
-                <i class="el-icon-star-off" v-else @click="changeColl(item.id)"></i>
+                <i class="el-icon-star-on" v-if="item.isCollected" @click="changeColl(item.docId)"></i>
+                <i class="el-icon-star-off" v-else @click="changeColl(item.docId)"></i>
                 </el-tooltip>
               </div>
               <div style="right: 5px; line-height: 5px;position: absolute; top: 45px; font-size: x-small" v-if="isHover">
                 <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
-                <i class="el-icon-s-custom" @click="openFolderDialog(item.id)"></i>
+                <i class="el-icon-s-custom" @click="openFolderDialog(item.docId)"></i>
                 </el-tooltip>
               </div>
               <div style="font-size: 40px;">
                 <i class="el-icon-folder" v-if="item.isFolder"></i>
-                <i class="el-icon-document" @click="toDoc(item.id)" v-else></i>
+                <i class="el-icon-document" @click="toDoc(item.docId)" v-else></i>
               </div>
-              <div @click="toDoc(item.id)" style="cursor: pointer">{{item.name}}</div>
+              <div @click="toDoc(item.docId)" style="cursor: pointer">{{item.docName}}</div>
               <div style="font-size: x-small; color: grey; margin-top: 12px;">
-              {{item.date}}最后修改</div>
+              {{item.lastTime}}最后修改</div>
             </el-card>
           </div>
         </el-col>
@@ -104,24 +104,27 @@
       width="30%"
       center>
       <div style="">
-        <div><span style="width: 40px;">文件名：</span>{{Info.docName}}</div>
-        <div style="cursor: pointer;"><span style="width: 40px;">创建者：</span>{{Info.builder}}</div>
-      <div><span style="width: 40px;">创建日期：</span>{{Info.create_time}}</div>
-      <div><span style="width: 40px;">最后修改时间：</span>{{Info.modify_time}}</div>
+        <div><span style="width: 40px; inline-block;">文件名：</span>{{Info.docName}}</div>
+        <div>
+          <span style="width: 40px; inline-block;">创建者：</span>
+          <span @click="toUser(Info.builderId)" style="cursor: pointer;width: 40px;">{{Info.builder}}</span>
+        </div>
+      <div><span style="width: 40px; inline-block;">创建日期：</span>{{Info.create_time}}</div>
+      <div><span style="width: 40px; inline-block;">最后修改时间：</span>{{Info.modify_time}}</div>
         <el-divider></el-divider>
-        <div>协作者：
+        <div v-if="type !== 'dustbin'">协作者：
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
-            <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;"></el-avatar>
-            <span style="height: 28px; padding-right: 15px;margin-left: 10px;cursor: pointer;">{{item.userName}}</span>
+            <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;" @click.native="toUser(item.userId)"></el-avatar>
+            <span style="height: 28px; padding-right: 15px;margin-left: 10px;cursor:pointer;" @click="toUser(item.userId)">{{item.userName}}</span>
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
                      @click="checkMove(item)" v-if="!item.isBuilder">
               移除</el-link>
           </div>
         </div>
-        <el-divider></el-divider>
-        <div><el-button plain type="primary" @click="setP(Info.id)">设置权限</el-button> </div>
-        <div style=" margin-top: 20px;"><el-button plain type="success" @click="shareDialog(Info.id)">
+        <el-divider v-if="type !== 'dustbin'"></el-divider>
+        <div v-if="type !== 'dustbin'"><el-button plain type="primary" @click="setP(Info.id)">设置权限</el-button> </div>
+        <div style=" margin-top: 20px;" v-if="type !== 'dustbin'"><el-button plain type="success" @click="shareDialog(Info.id)">
           分享</el-button></div>
         <div style=" margin-top: 20px;"><el-button plain type="danger" @click="Delete(Info.id)">
           <span v-if="type==='dustbin'">彻底</span>删除
@@ -134,23 +137,25 @@
         :dialog="folderDialog"
         @changeVisible="changeVisible"
         :doc-id="docId"
-        :type="'coworker'"
-    :name="NAME"></folder-dialog>
+        :type="'coworker'" :name="NAME"></folder-dialog>
 
     <share-dialog :share-dialog="shareV" :share-id="shareId" @changeVisible="changeShare" :share-name="NAME"></share-dialog>
-    <set-dialog :set-dialog="setV" :set-id="setId" @changeVisible="changeP" :visi="visi" :set-name="NAME" :is-team="isTeam"></set-dialog>
+    <set-dialog :set-dialog="setV" :set-id="setId" @changeVisible="changeP" :visi="visi" :is-team="isTeam" :set-name="NAME"></set-dialog>
   </div>
 </template>
 
 <script>
   import {
+    deleteDoc,
+    deleteForever, doCollect,
+    fetchCollections,
     fetchCoworkers,
     fetchDocInfo,
     fetchDustbin,
     fetchMyDocs,
     fetchRecentDocs,
     fetchTeamDocs,
-    removeCoworker
+    removeCoworker, undoCollect, undoDelete
   } from "../api/api";
   import {GetTime} from "../main";
 
@@ -167,26 +172,26 @@
     data(){
       return{
         tableData: [
-        {
-            docId: 1,
-            docName: '文档1',
-            readTime: '2020-08-14 00:04:23.408300'
-          },
-          {
-            docId: 2,
-            docName: '文档2',
-            readTime: '2020-08-15 00:04:23.408300'
-          },
-          {
-            docId: 3,
-            docName: '文档3',
-            readTime: '2020-08-14 00:04:23.408300'
-          },
-          {
-            docId: 4,
-            docName: '文档4',
-            readTime: '2020-08-11 00:04:23.408300'
-          }
+        // {
+        //     docId: 1,
+        //     docName: '文档1',
+        //     readTime: '2020-08-14 00:04:23.408300'
+        //   },
+        //   {
+        //     docId: 2,
+        //     docName: '文档2',
+        //     readTime: '2020-08-15 00:04:23.408300'
+        //   },
+        //   {
+        //     docId: 3,
+        //     docName: '文档3',
+        //     readTime: '2020-08-14 00:04:23.408300'
+        //   },
+        //   {
+        //     docId: 4,
+        //     docName: '文档4',
+        //     readTime: '2020-08-11 00:04:23.408300'
+        //   }
         ],
         isHover: false,
         Dialog: false,
@@ -229,59 +234,57 @@
         if(this.type === 'history'){
           fetchRecentDocs().then(res=>{
             if(res.status === 200){
-              if(res.data.length === 0){
-                this.tableData = []
-              }else{
               this.tableData = []
               res.data.forEach(i=>{
                 this.tableData.push({
                   docId: i.document.id,
                   docName:i.document.name,
-                  readTime: GetTime(i.read_time)
+                  readTime: GetTime(i.read_time),
+                  isCollected: i.document.has_collect,
+                  builder: i.document.create_user.username,
+                  buiderId: i.document.create_user.id,
                 })
-              })}
+              })
             }
           }).catch(e=>{this.$message({message:e, type:'error'})})
         } else if(this.type === 'build'){
-          console.log('build')
           fetchMyDocs().then(res=>{
             if(res.status === 200){
-              console.log(res.data)
               this.tableData = []
               res.data.forEach(i => {
                 this.tableData.push({
                   docId: i.id,
                   docName: i.name,
                   builder: i.create_user.username,
+                  buiderId: i.create_user.id,
                   createTime: GetTime(i.create_time),
                   lastTime: GetTime(i.last_modify_time),
                   lastUser: i.last_modify_user.username,
-                  lastUserId: i.last_modify_user.id
+                  lastUserId: i.last_modify_user.id,
+                  isCollected: i.has_collect
                 })
-                console.log(this.tableData)
               })
             }
           }).catch(e=>{this.$message({message:e, type:'error'})})
         } else if(this.team){
           fetchTeamDocs(this.team).then(res=>{
             if(res.status === 200){
-              console.log(res)
               this.tableData = []
               res.data.forEach(i=>{
                 this.tableData.push({
                   docId: i.id,
                   docName: i.name,
                   builder: i.create_user.username,
+                  buiderId: i.create_user.id,
                   createTime: GetTime(i.create_time),
                   lastTime: GetTime(i.modify_time),
                   lastUser: i.last_modify_user.username,
                   lastUserId: i.last_modify_user.id
                 })
-                console.log(this.tableData)
               })
             }
           }).catch(e=>{
-            if(e.response.status === 401){
+            if(e.response&&e.response.status === 401){
               this.$message({message:'不是团队', type:'error'})
             }
           })
@@ -294,16 +297,36 @@
                   docId: i.document.id,
                   docName: i.document.name,
                   deleteTime: GetTime(i.delete_time),
-                  builder: i.document.create_user.username
+                  builder: i.document.create_user.username,
+                  buiderId: i.document.create_user.id,
                 })
               })
-              console.log(this.tableData)
             }
-          }).catch(e=>this.$message({message: e, type: 'error'}))
+          }).catch(e=>this.$message({message: e.response.data, type: 'error'}))
+        } else if (this.type === 'collection'){
+          fetchCollections().then(res=>{
+            if(res.status === 200){
+              this.tableData = []
+              res.data.forEach(i=>{
+                this.tableData.push({
+                  docId: i.id,
+                  docName: i.name,
+                  isCollected: i.has_collect,
+                  builder: i.create_user.username,
+                  buiderId: i.create_user.id,
+                  lastUser: i.last_modify_user.username,
+                  lastTime: GetTime(i.modyfy_time)
+                })
+              })
+            }
+          }).catch(e=>this.$message({message: e.response.data, type: 'error'}))
         }
       },
       toDoc(id){
         this.$router.push({name:'editorPage', params: {docId: id}})
+      },
+      toUser(id){
+        this.$router.push({name:'PersonInfo', params:{personId: id}})
       },
       handleClick(id){
         this.getDocInfo(id)
@@ -311,8 +334,23 @@
       },
       Delete(id){
         let message = this.type === 'dustbin'?'确定要彻底删除它吗？':'确定要删除它吗？'
-        this.$confirm(message).then(_ => {
-          console.log(id, _)
+        this.$confirm(message).then(() => {
+          if(this.type === 'dustbin'){
+            deleteForever(id).then(res => {
+              if(res.status === 204){
+                this.init()
+                this.$message({message:'已彻底删除文档!', type:'warning'})
+              }
+            }).catch(e=>this.$message({message:e.response.data, type:'error'}))
+          } else {
+            //删除文档
+            deleteDoc(id).then(res => {
+              if(res.status === 204){
+                this.init()
+                this.$message({message:'删除成功！', type: 'info'})
+              }
+            }).catch(e=>this.$message({message:e.response.data, type:'error'}))
+          }
           this.Dialog = false
         })
       },
@@ -341,15 +379,42 @@
         this.folderDialog = true
       },
       changeColl(id){
+        let item = {};
         this.tableData.forEach(i => {
-          if(i.id+'' === id+''){
-            i.isCollected = !i.isCollected
-            return;
+          if(i.docId+'' === id+''){
+            item = i;
           }
         })
+        if(item.isCollected){
+          undoCollect(item.docId).then(res=>{
+            if(res.status === 204){
+              this.init()
+              this.$message({message:'取消收藏成功', type:'info'})
+              item.isCollected = false
+              return;
+            }
+          }).catch(e=>this.$message({message:e.response.data, type:'error'}))
+        } else {
+          doCollect(item.docId).then(res=>{
+            if(res.status === 201){
+              this.init()
+              item.isCollected = true
+              this.$message({message:'收藏成功', type:'info'});
+              return ;
+            }
+          }).catch(e=>{if(e.response.status === 400){
+            this.$message({message:'本文已被收藏', type:'error'})
+          }})
+        }
       },
       recover(id){
-        alert(id)
+        undoDelete(id).then(res => {
+          if(res.status === 200){
+            this.init()
+            this.$message({message:'恢复文档成功！', type:'info'})
+            this.init()//再获取一遍回收站
+          }
+        }).catch(e=>this.$message({message:e.response.data, type:'error'}))
       },
       setP(id){
         this.setId = id
@@ -358,13 +423,13 @@
         this.NAME = this.Info.docName
         this.setV = true
       },
-      changeP(val){
+      changeP(val, id){
         this.setV = val
+        this.getDocInfo(id)
       },
       checkMove(item){
         let message = '确定要移除ta吗？'
-        this.$confirm(message).then(_ => {
-          console.log(_)
+        this.$confirm(message).then(() => {
           removeCoworker(this.Info.id, item.userId).then(res=>{
             if(res.status === 200){
               this.Info.coworkers = []
@@ -385,7 +450,7 @@
             }
           }).catch(e=>{
             if(e.response.status === 401){
-              this.$message({message:'此人不在协作者中', type: 'error'})
+              this.$message({message:'您没有删除权限或此人不在协作者中', type: 'error'})
             }
           })
         })
@@ -393,7 +458,6 @@
       getDocInfo(id){
         fetchDocInfo(id).then(res=>{
           if(res.status === 200){
-            console.log(res.data)
             this.Info.id = res.data.id
             this.Info.docName = res.data.name
             this.Info.role = res.data.role
@@ -407,6 +471,7 @@
                 res.data.forEach((i, index) => {
                   if(index === 0){
                     this.Info.builder = i.username
+                    this.Info.builderId = i.id
                   }
                   this.Info.coworkers.push({
                     userId: i.id,
@@ -416,7 +481,7 @@
                   })
                 })
               }
-            }).catch(e => console.log(e.response.data))
+            }).catch(e => this.$message({message:e.response.data, type:'error'}))
           } else if(res.status === 204){
             this.$message({message:'其他错误', type: 'error'})
           }

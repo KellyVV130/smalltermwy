@@ -70,7 +70,7 @@
 </template>
 
 <script>
-  import {addCoworker, fetchUsers} from "../api/api";
+  import {addCoworker, createDoc, fetchUsers} from "../api/api";
 
   export default {
     name: "folderDialog",
@@ -92,7 +92,7 @@
       return{
         form:{
           name: '',
-          id: 1
+          id: null,
         },
         isV: false,
         state: '',
@@ -103,7 +103,6 @@
       dialog(val){
         this.isV = val
         this.form.name=''
-        console.log('type is'+this.type)
       }
     },
     methods:{
@@ -111,22 +110,34 @@
         this.$emit('changeVisible', false, this.docId)
       },
       submitForm(){
-        console.log(this.form)
-        addCoworker(this.docId, this.form.id).then(res=>{
-          if(res.status === 200){
-            // })
-            this.$message({message:'添加成功', type:'info'})
-          } else if(res.status === 204){
-            this.$message({message:'发生未知错误', type:'error'})
-          }
-        }).catch(e=>{
-          if(e.response.status === 401){
-            this.$message({message:'您没有权限', type:'error'})
-          } else if (e.response.status === 400){
-            this.$message({message:'此用户已在协作者中', type: 'error'})
-          }
-        })
-        this.$emit('changeVisible', false, this.docId)
+        if(this.type !== 'newteam'){
+          addCoworker(this.docId, this.form.id).then(res=>{
+            if(res.status === 200){
+              // })
+              this.$message({message:'添加成功', type:'info'})
+            } else if(res.status === 204){
+              this.$message({message:'发生未知错误', type:'error'})
+            }
+          }).catch(e=>{
+            if(e.response.status === 401){
+              this.$message({message:'您没有权限', type:'error'})
+            } else if (e.response.status === 400){
+              this.$message({message:'此用户已在协作者中', type: 'error'})
+            }
+          })
+          this.$emit('changeVisible', false, this.docId)
+        } else {
+          createDoc(1,this.form.name).then(res => {
+            if(res.status === 201){
+              this.$message({message:'创建团队成功！', type: 'info'})
+              this.$emit('changeVisible', false)
+            }
+          }).catch(e=>{
+            if(e.response.status === 401){
+              this.$message({message:'您没有权限', type: 'error'});
+            }
+          })
+        }
       },
       querySearchAsync(queryString, cb) {
         //let users = this.users;//按照queryString去后端请求，将返回的数据sb(results)

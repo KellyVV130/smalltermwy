@@ -2,8 +2,7 @@
   <div class="header">
     <div style="font-size: large; color: black; font-weight: bold">
       <img :src="logo" style="width: 44px; height: 44px; object-fit: cover; vertical-align: top;margin-top: 3px;">
-      环球文档
-      <span style="margin-left: 8px;">GlobalDoc</span>
+      <span style="margin-left: 18px;">GlobalDoc</span>
     <div style="float: right;margin-top: 11px; line-height: 28px;">
       <el-button @click="logOut">退出登录</el-button>
       <el-badge is-dot class="badgeitem" :hidden="!hasMessage">
@@ -142,7 +141,7 @@ import {getMessage} from '../api/api'
     height: 50px;
     background-color: #fbfbfb;
     line-height: 50px;
-    padding: 0 20px 0 5px;
+    padding: 0 20px 0 15px;
   }
   
   .el-table .warning-row {

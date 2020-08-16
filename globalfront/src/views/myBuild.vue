@@ -1,5 +1,5 @@
 <template>
-  <div class="myBuild">
+  <div class="myBuild" v-web-title="{title:'我的文档'}">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
@@ -16,8 +16,8 @@
         </div>
         <!--按日期倒序-->
         <div style="margin-top: 30px;">
-          <doc-list :type="'build'" v-if="chart === '列表'"></doc-list>
-          <doc-img :type="'build'" v-else></doc-img>
+          <doc-list :type="'build'" v-if="chart === '列表'" ref="child"></doc-list>
+          <doc-img :type="'build'" v-else ref="child"></doc-img>
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
@@ -30,6 +30,8 @@
 </template>
 
 <script>
+
+  import {createDoc} from "../api/api";
 
   export default {
     name: "myBuild",
@@ -50,7 +52,17 @@
         }
       },
       toNewDoc(){
-        this.$router.push({name:'editorPage'})
+        createDoc(0).then(res=>{
+          if(res.status === 201){
+            this.$message({message:'新建文档成功', type:'info'})
+            this.$router.push({name:'editorPage'})
+          }
+        }).catch(e=>{
+          if(e.response.status === 401){
+            this.$message({message:'您没有权限', type: 'error'})
+          }
+        })
+        this.$refs.child.init()
       },
       changeChart(value){
         this.chart = value

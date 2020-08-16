@@ -32,7 +32,6 @@
 <!--        <div><el-button plain type="primary" disabled>新建文件夹</el-button></div>-->
 <!--        <div><el-button plain type="primary">模板库</el-button></div>-->
         <div><el-button plain type="primary" @click="newTeam">创建团队</el-button></div>
-        <div><el-button plain type="primary">管理全部团队</el-button></div>
       </el-aside>
     </el-container>
 
@@ -56,10 +55,12 @@
               移除</el-link>
           </div>
         </div>
-<!--        <el-divider></el-divider>-->
+        <el-divider></el-divider>
 <!--        <el-link plain type="primary" style="font-size: 16px;">分享</el-link>-->
-<!--        <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.id)">删除-->
-<!--        </el-link>-->
+        <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.id)">
+          <span v-if="userId === Info.builderId">退出</span>
+          <span v-else></span>删除
+        </el-link>
       </div>
     </el-dialog>
 
@@ -73,22 +74,23 @@
 </template>
 
 <script>
-  import {fetchCoworkers, fetchTeams} from "../api/api";
+  import {deleteDoc, fetchCoworkers, fetchTeams, removeCoworker} from "../api/api";
   import {GetTime} from "../main";
 
   export default {
     name: "myTeam",
     data(){
       return {
+        userId:localStorage.getItem('userId'),
         teams:[
-          {
-            id: 1,
-            name: '小学期1'
-          },
-          {
-            id: 2,
-            name: '小学期2'
-          }
+          // {
+          //   id: 1,
+          //   name: '小学期1'
+          // },
+          // {
+          //   id: 2,
+          //   name: '小学期2'
+          // }
         ],
         folderDialog : false,
         type: '',
@@ -132,6 +134,7 @@
                 name: i.name,
                 create_time : GetTime(i.create_time),
                 builder : i.create_user.username,
+                builderId: i.create_user.id
               })
             })
           }
@@ -142,6 +145,7 @@
       },
       changeVisible(val){
         this.folderDialog = val
+        this.init()
       },
       newTeam(){
         this.type = 'newteam'
@@ -184,16 +188,61 @@
         }).catch(e => {this.$message({message: e.response.data, typd:'error'})})
       },
       Delete(id){
-        let message='确定要删除团队吗？'
-        this.$confirm(message).then(_ => {
-          console.log(id+_)
-          this.infoDialog = false
-        })
+        if(this.userId === this.Info.builderId){
+          let message = '确定要退出团队吗？'
+          this.$confirm(message).then(()=>{
+            removeCoworker(id, localStorage.getItem('userId')).then(res => {
+              if(res.status === 200){
+                this.$message({message:'退出团队成功', type: 'warning'})
+              } else if(res.status == 204){
+                this.$message({message:'发生其他错误，退出团队失败', type:'error'})
+              }
+            }).catch(e=>{
+              if(e.response && e.response.status === 401){
+                this.$message({message:'您没有删除权限或此人不在协作者中', type: 'error'})
+              }
+            })
+          })
+        } else{
+          let message='确定要删除团队吗？'
+          this.$confirm(message).then(() => {
+            deleteDoc(id).then(res => {
+              if(res.status === 204){
+                this.$message({message:'删除团队成功', type: 'info'})
+                this.init()
+              }
+            }).catch(e=>this.$message({message:e.response.data, type:'error'}))
+            this.infoDialog = false
+          })
+        }
       },
       checkMove(item){
         let message = '确定要移除ta吗？'
-        this.$confirm(message).then(_ => {
-          console.log(item+_)
+        this.$confirm(message).then(() => {
+          removeCoworker(this.Info.id, item.userId).then(res=>{
+            if(res.status === 200){
+              this.Info.coworkers = []
+              res.data.forEach((i, index) => {
+                if(index === 0){
+                  this.Info.builder = i.username
+                }
+                this.Info.coworkers.push({
+                  userId: i.id,
+                  userName: i.username,
+                  userImg: i.head,
+                  isBuilder: index === 0? true:false
+                })
+              })
+              this.$message({message:'移除成功', type:'info'})
+              //this.init()//好像不需要
+            } else {
+              this.$message({message:'发生其他错误', type:'error'})
+            }
+          }).catch(e=>{
+            if(e.response.status === 401){
+              this.$message({message:'您没有删除权限或此人不在团队中', type: 'error'})
+            }
+          })
           this.infoDialog = false
         })
       },

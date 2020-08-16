@@ -1,5 +1,5 @@
 <template>
-  <div class="collection">
+  <div class="collection" v-web-title="{title:'收藏夹'}">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
@@ -30,6 +30,8 @@
 </template>
 
 <script>
+  import {createDoc} from "../api/api";
+
   export default {
     name: "collection",
     data(){
@@ -49,7 +51,16 @@
         }
       },
       toNewDoc(){
-        this.$router.push({name:'editorPage'})
+        createDoc(0).then(res=>{
+          if(res.status === 201){
+            this.$message({message:'新建文档成功', type:'info'})
+            this.$router.push({name:'editorPage'})
+          }
+        }).catch(e=>{
+          if(e.response.status === 401){
+            this.$message({message:'您没有权限', type: 'error'})
+          }
+        })
       },
       changeChart(value){
         this.chart = value

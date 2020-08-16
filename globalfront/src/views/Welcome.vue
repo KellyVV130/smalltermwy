@@ -30,8 +30,10 @@ export default {
     position: fixed;
     width: 100vw;
     height: 100%;
-    background-color: whitesmoke;
     text-align: center;
+    margin-top: -50px;
+    z-index: 100;
+    background-color: whitesmoke;
   }
 
   .el-carousel__item h3 {

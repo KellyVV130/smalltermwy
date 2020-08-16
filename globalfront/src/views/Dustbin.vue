@@ -1,5 +1,5 @@
 <template>
-  <div class="dustbin">
+  <div class="dustbin" v-web-title="{title:'回收站'}">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
@@ -16,19 +16,21 @@
         </div>
         <!--按日期倒序-->
         <div style="margin-top: 30px;">
-          <doc-list :type="'dustbin'" v-if="chart === '列表'"></doc-list>
-          <doc-img :type="'dustbin'" v-else></doc-img>
+          <doc-list :type="'dustbin'" v-if="chart === '列表'" ref="child"></doc-list>
+          <doc-img :type="'dustbin'" v-else ref="child"></doc-img>
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
-        <div><el-button plain type="danger">清空回收站</el-button></div>
-        <div><el-button plain type="warning">全部恢复</el-button></div>
+        <div><el-button plain type="danger" @click="deleteAll">清空回收站</el-button></div>
+        <div><el-button plain type="warning" @click="recoverAll">全部恢复</el-button></div>
       </el-aside>
     </el-container>
   </div>
 </template>
 
 <script>
+  import {deleteForAll, undoDeleteAll} from "../api/api";
+
   export default {
     name: "dustbin",
     data(){
@@ -54,6 +56,23 @@
         this.chart = value
         localStorage.setItem('chart', value)
       },
+      deleteAll(){
+        deleteForAll().then(res => {
+          if(res.status === 200){
+            this.$refs.child.init()
+            this.$message({message:'清空回收站成功', type:'info'})
+          }
+        }).catch(e=>this.$message({message:e.response.data, type: 'error'}))
+        this.$refs.child.init()
+      },
+      recoverAll(){
+        undoDeleteAll().then(res => {
+          if(res.status === 200){
+            this.$refs.child.init()
+            this.$message({message:'全部恢复成功', type:'info'})
+          }
+        }).catch(e=>this.$message({message:e.response.data, type: 'error'}))
+      }
     }
   }
 </script>

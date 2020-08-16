@@ -1,7 +1,9 @@
 module.exports = {
     // 输出目录
     assetsDir: 'static',
-    //publicPath: './'
+
+    publicPath:'/',
+
     // pwa: {
     //   iconPaths: {
     //     favicon32: 'favicon.ico',
@@ -11,4 +13,5 @@ module.exports = {
     //     msTileImage: 'favicon.ico'
     //   }
     // }
+    productionSourceMap: false
 };

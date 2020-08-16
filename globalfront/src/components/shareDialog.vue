@@ -49,11 +49,8 @@
     methods:{
       init(){
         this.axios.get('/qrcode/DocEdit/'+this.shareId+'/', {responseType: 'blob'}).then(res => {
-          console.log(res.data)
           let blob = new Blob([res.data],{type: "image/jpeg"});
-          console.log(blob)
           let url = window.URL.createObjectURL(blob);
-          console.log(url)
           this.shareImg = url
         })
       },
