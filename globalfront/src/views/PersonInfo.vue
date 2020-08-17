@@ -418,6 +418,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
           this.head=response.data.head
           this.headForm.newHead=''
           localStorage.head = this.head
+          this.$addStorageEvent('head',this.head)
           this.$message({
             message: '修改头像成功',
             type: 'info'

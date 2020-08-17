@@ -72,6 +72,7 @@ export default {
               getUserInfo(localStorage.userId).then(response => {
                 if(response.status===200){
                   localStorage.head=response.data.head
+                  this.$addStorageEvent('head',this.head)
                 }
               })
               this.$message({

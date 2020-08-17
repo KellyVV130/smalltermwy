@@ -226,6 +226,10 @@ import { GetTime } from '../main'
       }
     },
     mounted(){
+      window.addEventListener('setItem',(e)=>{
+        console.log(e)
+        this.getHead()
+      })
       this.getMessage()
       this.getHead()
       this.timer=setInterval(this.getMessage,2000)
