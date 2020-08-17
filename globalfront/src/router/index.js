@@ -71,12 +71,12 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
     path: "/PersonInfo/:personId",
     name: "PersonInfo",
     component: ()=> import("../views/PersonInfo.vue"),
-    meta:{
-      auth: true
-    }
+//    meta:{
+ //     auth: true
+  //  }
   },
   {
-    path:'/editorPage',
+    path:'/editorPage/:docId',
     name:'editorPage',
     component: () => import("../views/EditorPage"),
     meta:{

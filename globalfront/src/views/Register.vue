@@ -5,13 +5,14 @@
         <div slot="header" class="clearfix">
           <span style="margin-left:45%">注  册</span>
         </div>
-        <el-form size="small" ref="infoForm" :model="user" :rules="rules"  :validate-on-rule-change="true" :label-position="right">
+        <el-form size="small" ref="infoForm" :model="user" :rules="rules"  :validate-on-rule-change="true" :label-position="right" status-icon="true">
           <el-form-item label="手机号" prop="phone">
             <el-input
               v-model="user.phone"
               type="tel"
               show-word-limit
               style="width: 78%; float: right"
+              id="phone"
             >
             </el-input>
           </el-form-item>
@@ -53,6 +54,7 @@
               maxlength="20"
               show-word-limit
               style="width: 78%; float: right"
+              @keydown.enter.native="doRegister"
             >
             </el-input>
           </el-form-item>
@@ -113,6 +115,8 @@ export default {
     }
   },
   mounted(){
+    let inputElement=document.getElementById('phone')
+    inputElement.focus()
     localStorage.removeItem('token')
   },
   methods:{
@@ -180,6 +184,8 @@ export default {
 
 <style scope>
   .basic{
+    margin-top: -50px;
+    z-index: 100;
     position: fixed;
     width: 100%;
     height: 100%;
