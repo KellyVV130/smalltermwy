@@ -55,7 +55,8 @@
     transition: .3s;
     background-color: rgba(0, 0, 0, 0);
     position: relative;
-    height: 180px;
+    padding-top: 10px;
+    height: 200px;
   }
   .imgDiv{
     width:70%;

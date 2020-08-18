@@ -123,11 +123,19 @@ router.beforeEach((to, from, next) => {
   if (to.meta.auth) {
     let token = localStorage.getItem('token')
     if (token) {
-      next()
+      if(!Object.keys(from.params).personId &&!Object.keys(from.params).docId&& !Object.keys(from.params).teamId){//判断路由来源是否有query，处理不是目的跳转的情况
+          next()
+      }else{
+          let redirect = from.params.redirect//如果来源路由有query
+          if(to.path === redirect){//这行是解决next无限循环的问题
+              next()
+          }else{
+              next({path:redirect})//跳转到目的路由
+          }
+      }
     } else {
       console.log(that)
       that.$message({message:'欢迎使用环球文档！敬请登录。', type: 'info'})
-      //alert('您暂无权限查看此页面，请先登录')
       next({
         name: 'Home',
         params: {

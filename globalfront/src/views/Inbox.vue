@@ -1,13 +1,15 @@
 <template>
-  <div class="basic" v-web-title="{title:'收件箱'}">
+  <div class="Inbox" v-web-title="{title:'收件箱'}">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
     <el-col :span="20"></el-col><el-container>
       <el-main>
-        <h3>收件箱</h3><!--按修改日期倒序-->
-        <div>
-        <messageCard v-bind:messages="messages" @getChangeFromSon='getChangeFromSon'></messageCard><br>
+        <div class="titleOfInbox">
+          <h3>收件箱</h3>
+        </div>
+        <div class="MessageCard">
+          <messageCard v-bind:messages="messages" @getChangeFromSon='getChangeFromSon'></messageCard><br>
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
@@ -27,9 +29,9 @@ import { GetTime } from '../main'
 export default {
   data() {
     return {
+      inboxTimer:'',
       ifGetAllMessage: true,
-      messages: [
-      {
+      messages: [{
       id: 15,
       user: {
         id: 1,
@@ -210,11 +212,20 @@ export default {
     getChangeFromSon(){
       if(this.ifGetAllMessage===true) this.getAllMessage()
       else if(this.ifGetAllMessage===false) this.getMessage()
+    },
+    //定时器调用函数
+    timerGet(){
+      if(this.ifGetAllMessage===true) this.getAllMessage()
+      else if(this.ifGetAllMessage===false) this.getMessage()
     }
   },
   mounted(){
     //this.ifGetAllMessage=true
     this.getAllMessage()
+    this.inboxTimer=setInterval(this.timerGet,120000)
+  },
+  beforeDestroy(){
+    clearInterval(this.inboxTimer)
   },
   watch:{
     ifGetAllMessage: {
@@ -232,11 +243,26 @@ export default {
 </script>
 
 <style scope>
-  .basic{
+  .Inbox{
     position: fixed;
-    width: 100%;
     height: 100%;
+    width: 100%;
     background-color: whitesmoke;
+  }
+
+  .MessageCard{
+    overflow: scroll;
+    margin-top: 60px;
+    height: calc(100vh - 110px);
+  }
+
+  .el-main{
+    height: calc(100vh - 50px);  
+    overflow: hidden;
+  }
+
+  .titleOfInbox{
+    position: fixed;
   }
 
   .el-aside{ 
@@ -245,6 +271,6 @@ export default {
   }
 
   .el-aside .el-button{
-      width: 150px;
+    width: 150px;
   }
 </style>

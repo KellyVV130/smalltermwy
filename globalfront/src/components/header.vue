@@ -229,7 +229,7 @@ import { GetTime } from '../main'
       })
       this.getMessage()
       this.getHead()
-      //this.timer=setInterval(this.getMessage,2000)
+      this.timer=setInterval(this.getMessage,120000)
     },
     beforeDestroy(){
       clearInterval(this.timer)

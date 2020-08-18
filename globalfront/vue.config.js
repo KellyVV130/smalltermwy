@@ -13,5 +13,5 @@ module.exports = {
     //     msTileImage: 'favicon.ico'
     //   }
     // }
-    productionSourceMap: false
+    //productionSourceMap: false
 };

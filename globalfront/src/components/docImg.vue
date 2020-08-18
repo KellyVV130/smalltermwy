@@ -4,7 +4,7 @@
       <el-timeline>
         <el-timeline-item v-for="(father, index_f) in todo" :key="index_f" :timestamp="father.date" placement="top"
           type="primary" size="large">
-          <el-row :gutter="40">
+          <el-row :gutter="30">
             <el-col :span="4" v-for="(item, index) in father.subList" :key="index" style="margin: 20px 0;">
               <div style="height: 110px;text-align: center">
                 <el-card class="fileCard" shadow="hover" @mouseenter.native="item.isHover = true" @mouseleave.native="item.isHover=false">
@@ -41,7 +41,7 @@
     </div>
 
     <div v-else-if="type === 'dustbin'" style="margin: 5px;">
-      <el-row :gutter="40">
+      <el-row :gutter="30">
         <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
           <div style="height: 110px;text-align: center">
             <el-card class="fileCard" shadow="hover" @mouseenter.native="item.isHover = true" @mouseleave.native="item.isHover=false">
@@ -69,7 +69,7 @@
     </div>
 
     <div v-else style="margin: 5px;">
-      <el-row :gutter="40">
+      <el-row :gutter="35">
         <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
           <div style="height: 110px;text-align: center">
             <el-card class="fileCard" shadow="hover" @mouseenter.native="item.isHover = true" @mouseleave.native="item.isHover=false">
@@ -104,7 +104,7 @@
     </div>
 
     <el-dialog
-      title="文件详细信息"
+      title="文档详细信息"
       :visible.sync="Dialog"
       width="30%"
       center>
@@ -185,123 +185,29 @@
         tableData: [
         {
             docId: 1,
-            docName: '文档1',
+            docName: '文档aaa1',
             readTime: '2020-08-14 00:04:23.408300',
             isHover: false
           },
           {
             docId: 2,
-            docName: '文档2',
+            docName: '文档aaa2',
             readTime: '2020-08-15 00:04:23.408300',
             isHover: false
           },
-          {
-            docId: 3,
-            docName: '文档3',
-            readTime: '2020-08-14 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 4,
-            docName: '文档4',
-            readTime: '2020-08-11 00:04:23.408300',
-            isHover: false
-          },
-        {
-            docId: 1,
-            docName: '文档1',
-            readTime: '2020-08-14 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 2,
-            docName: '文档2',
-            readTime: '2020-08-15 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 3,
-            docName: '文档3',
-            readTime: '2020-08-14 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 4,
-            docName: '文档4',
-            readTime: '2020-08-11 00:04:23.408300',
-            isHover: false
-          },
-        {
-            docId: 1,
-            docName: '文档1',
-            readTime: '2020-08-14 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 2,
-            docName: '文档2',
-            readTime: '2020-08-15 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 3,
-            docName: '文档3',
-            readTime: '2020-08-14 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 4,
-            docName: '文档4',
-            readTime: '2020-08-11 00:04:23.408300',
-            isHover: false
-          },
-        {
-            docId: 1,
-            docName: '文档1',
-            readTime: '2020-08-14 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 2,
-            docName: '文档2',
-            readTime: '2020-08-15 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 3,
-            docName: '文档3',
-            readTime: '2020-08-19 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 4,
-            docName: '文档4',
-            readTime: '2020-08-10 00:04:23.408300',
-            isHover: false
-          }
+        //   {
+        //     docId: 3,
+        //     docName: '文档3',
+        //     readTime: '2020-08-14 00:04:23.408300',
+        //     isHover: false
+        //   },
+        //   {
+        //     docId: 4,
+        //     docName: '文档4',
+        //     readTime: '2020-08-11 00:04:23.408300',
+        //     isHover: false
+        //   },
         ],
-        isHover: false,
-        Dialog: false,
-        Info:{
-          id: 1,
-          builder: 'Kelly',
-          coworkers:[
-            {
-              userId: 1,
-              userName: 'Kelly',
-              isBuilder: true,
-              isCollected: true,
-              userImg: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
-            },
-            {
-              userId: 2,
-              userName: 'Kelly2',
-              isBuilder: false,
-              isCollected: true,
-              userImg: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
-            }
-          ],
-        },
         folderDialog: false,
         docId: '1',
         shareId: '',
@@ -312,11 +218,12 @@
         NAME: '',
         isTeam: false,
         todo:{},
+        Dialog: false,
+        Info:{}
       }
     },
     mounted(){
-      //this.init()
-      this.todo = splitDate(this.tableData,"readTime")
+      this.init()
     },
     methods:{
       init(){
@@ -589,7 +496,8 @@
                     userId: i.id,
                     userName: i.username,
                     userImg: i.head,
-                    isBuilder: i.role === 1? true:false
+                    isBuilder: i.role === 1? true:false,
+                    role:i.role
                   })
                 })
               }
@@ -619,7 +527,7 @@
     position: relative;
   }
   .fileCard /deep/ .el-card__body{
-    padding: 0;
+    padding: 2px;
   }
   .fileCard i{
     cursor: pointer;

@@ -28,6 +28,9 @@ export default {
     isClear: {
       type: Boolean,
       default: false
+    },
+    edit:{
+      default: true
     }
   },
   watch: {
@@ -42,7 +45,7 @@ export default {
       if (value !== this.editor.txt.html()) {
         this.editor.txt.html(this.value)
       }
-    }
+    },
   },
   mounted() {
     this.seteditor()
@@ -62,6 +65,7 @@ export default {
       // this.editor.customConfig.uploadImgTimeout = 3 * 60 * 1000; // 设置超时时间
 
       // 配置菜单
+      this.editor.customConfig.pasteFilterStyle = false
       this.editor.customConfig.menus = [
         'head', // 标题
         'bold', // 粗体
@@ -99,7 +103,6 @@ export default {
 
 <style lang="css">
 .editor {
-  width: 50%;
   margin: 0 auto;
   position: relative;
   z-index: 0;

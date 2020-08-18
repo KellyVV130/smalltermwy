@@ -6,7 +6,7 @@
     <el-col :span="20"></el-col><el-container>
       <el-main>
         <h3>我的团队</h3><!--按修改日期倒序-->
-        <el-row :gutter="40">
+        <el-row :gutter="35">
           <el-col :span="4" v-for="(item, index) in teams" :key="index" style="margin-bottom: 20px;">
             <div style="text-align: center; height: 100px;">
               <el-card class="teamCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">

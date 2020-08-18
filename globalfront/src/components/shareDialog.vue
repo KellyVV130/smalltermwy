@@ -48,7 +48,7 @@
     },
     methods:{
       init(){
-        this.axios.get('/qrcode/DocEdit/'+this.shareId+'/', {responseType: 'blob'}).then(res => {
+        this.axios.get('/qrcode/', {params:{doc: this.shareId},responseType: 'blob'}).then(res => {
           let blob = new Blob([res.data],{type: "image/jpeg"});
           let url = window.URL.createObjectURL(blob);
           this.shareImg = url

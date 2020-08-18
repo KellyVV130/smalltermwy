@@ -113,7 +113,8 @@
         if(this.type !== 'newteam'){
           addCoworker(this.docId, this.form.id).then(res=>{
             if(res.status === 200){
-              this.$message({message:'添加成功', type:'info'})
+              let message = this.type === 'coworker'?'添加成功':'邀请成功'
+              this.$message({message:message, type:'info'})
             } else if(res.status === 204){
               this.$message({message:'用户不存在', type:'error'})
             }

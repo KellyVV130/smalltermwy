@@ -79,7 +79,7 @@ export default {
                 message: '登录成功',
                 type: 'info'
               })
-              this.$router.push({name:'history'})
+              this.$router.push({ path: this.$route.params.redirect || '/' })
             } else {
               console.log(response)
             }

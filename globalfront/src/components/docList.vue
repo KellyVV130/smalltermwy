@@ -325,7 +325,11 @@
                 })
               })
             }
-          }).catch(e=>{this.$message({message:e, type:'error'})})
+          }).catch(e=>{
+            if(e.response.status === 401){
+              this.$message({message:'您没有权限查看', type:'error'})
+            }
+          })
         } else if(this.type === 'build'){
           fetchMyDocs().then(res=>{
             if(res.status === 200){

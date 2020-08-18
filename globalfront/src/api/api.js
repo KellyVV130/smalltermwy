@@ -160,31 +160,27 @@ export const fetchTemplates = (keywords, ordering) => {
   return axios.get('/templates/', {params:{search: keywords, ordering:ordering}})
 }
 
-//获取文章内容
-export const getContent = doc => {
-  return axios.get('/DocEdit/' + doc)
-}
-
 //修改文章内容
-export const changeContent = (
-  type,
-  name = '未命名',
-  parent_doc,
-  content,
-  model,
-  role
-) => {
-  return axios.post('/DocEdit/', {
+export const changeContent = (docId, name = '未命名', content) => {
+  return axios.put('/DocEdit/'+docId+'/', {
     name: name,
     content: content,
-    parent_doc: parent_doc,
-    role: role,
-    type: type,
-    create_by_model: model
   })
 }
 
 // 获取编辑者ID
-export const Edit = doc => {
-  return axios.get('/DocEdit/' + doc)
+export const Edit = (doc, status) => {
+  return axios.put('/DocStatusEdit/' + doc+'/', {'status':status})
+}
+
+export const postMsg = (doc_id, body, reply_comment) => {
+  return axios.post('/comment/', {
+    document: doc_id,
+    body: body,
+    reply_comment: reply_comment
+  })
+}
+
+export const deleteMsg = function(params) {
+  return axios.delete('/comment/', { data: params })
 }
