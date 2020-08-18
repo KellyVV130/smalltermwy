@@ -5,13 +5,14 @@
         <div slot="header" class="clearfix">
           <span style="margin-left:45%">登  录</span>
         </div>
-        <el-form  ref="infoForm" :model="user" :rules="rules" enctype="multipart/form-data">
+        <el-form  ref="infoForm" :model="user" :rules="rules" enctype="multipart/form-data" status-icon="true">
           <el-form-item label="用户名" prop="username">
             <br>
             <el-input
                 v-model="user.username"
                 show-word-limit
                 style="width: 100%; float: right"
+                id="name"
               >
             </el-input>
           </el-form-item>
@@ -40,7 +41,7 @@
 </template>
 
 <script>
-import {postUser} from '../api/api'
+import {postUser,getUserInfo} from '../api/api'
 export default {
   data (){
     return {
@@ -68,6 +69,12 @@ export default {
               console.log(response)
               localStorage.token = response.data.token
               localStorage.userId = response.data.user_id
+              getUserInfo(localStorage.userId).then(response => {
+                if(response.status===200){
+                  localStorage.head=response.data.head
+                  this.$addStorageEvent('head',this.head)
+                }
+              })
               this.$message({
                 message: '登录成功',
                 type: 'info'
@@ -90,13 +97,19 @@ export default {
     },
     toRegister(){
       this.$router.push({path:"/Register"})
-    }
+    },
+  },
+  mounted(){
+    let inputElement=document.getElementById('name')
+    inputElement.focus()
   }
 }
 </script>
 
 <style scope>
   .basic{
+    margin-top: -50px;
+    z-index: 100;
     position: fixed;
     width: 100%;
     height: 100%;

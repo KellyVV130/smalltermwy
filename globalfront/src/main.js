@@ -70,35 +70,51 @@ export const GetTime = (time, sp = '.')=>{
   } else return time;
 }
 
-export const splitDate = (todo = [], time)=>{//将数组todo按字段time降序分组
-  if(!todo) return []
+export const splitDate = (todo = [], time)=> {//将数组todo按字段time降序分组
+  if (!todo) return []
   let dates = []
   let newTodo = []
   let j = 0;
-  todo.forEach((item)=>{
-    let t = GetTime(item[time]," ")
-    if(dates.length === 0 || dates.indexOf(t)===-1){
+  todo.forEach((item) => {
+    let t = GetTime(item[time], " ")
+    if (dates.length === 0 || dates.indexOf(t) === -1) {
       dates.push(t)
       newTodo.push({
-        date:dates[j++],
-        subList:[]
+        date: dates[j++],
+        subList: []
       })
     }
   })
   todo.forEach((item) => {
-    let t = GetTime(item[time]," ")
-    if(dates.indexOf(t) > -1){
+    let t = GetTime(item[time], " ")
+    if (dates.indexOf(t) > -1) {
       newTodo[dates.indexOf(t)].subList.push(item)
     }
   })
-  newTodo.sort(function(a,b) {
-    return Date.parse(b.date.replace(/-/g,"/"))-Date.parse(a.date.replace(/-/g,"/"));
+  newTodo.sort(function (a, b) {
+    return Date.parse(b.date.replace(/-/g, "/")) - Date.parse(a.date.replace(/-/g, "/"));
   });
   return newTodo
+}
+
+Vue.prototype.$addStorageEvent = function (key, data) {
+ 
+      // 创建一个StorageEvent事件
+      let newStorageEvent = document.createEvent('StorageEvent');
+      const storage = {
+          setItem: function (k, val) {
+              localStorage.setItem(k, val);
+              // 初始化创建的事件
+              newStorageEvent.initStorageEvent('setItem', false, false, k, null, val, null, null);
+              // 派发对象
+              window.dispatchEvent(newStorageEvent);
+          }
+      }
+      return storage.setItem(key, data);
 }
 
 new Vue({
   router,
   store,
   render: h => h(App)
-}).$mount("#app");
+}).$mount("#app")

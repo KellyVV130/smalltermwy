@@ -45,9 +45,9 @@ export default {
         id: 1,
         name: "测试"
       },
-      time: "2020-08-15T22:03:10.828014",
+      time: "2020-08-15 22:03:10",
       type: 6,
-      status: 1
+      status: 0
       },
       {
       id: 15,
@@ -67,7 +67,7 @@ export default {
       },
       time: "2020-08-15T22:03:10.828014",
       type: 6,
-      status: 1
+      status: 0
       },
       {
       id: 15,
@@ -142,6 +142,8 @@ export default {
                 this.messages[i].content='退出了文档协作者'
               }else if(this.messages[i].type===9){//9：被踢出文档协作者提醒（给被踢的人发）
                 this.messages[i].content='将你移出文档协作者'
+              }else if(this.messages[i].type===10){//10: 拒绝团队邀请（给老大发）
+                this.messages[i].content='拒绝了你的团队邀请'
               }
             }
             this.ifGetAllMessage=true
@@ -174,6 +176,8 @@ export default {
                 this.messages[i].content='退出了文档协作者'
               }else if(this.messages[i].type===9){//9：被踢出文档协作者提醒（给被踢的人发）
                 this.messages[i].content='将你移出文档协作者'
+              }else if(this.messages[i].type===10){//10: 拒绝团队邀请（给老大发）
+                this.messages[i].content='拒绝了你的团队邀请'
               }
             }
             this.ifGetAllMessage=false
@@ -229,7 +233,7 @@ export default {
 
 <style scope>
   .basic{
-    
+    position: fixed;
     width: 100%;
     height: 100%;
     background-color: whitesmoke;

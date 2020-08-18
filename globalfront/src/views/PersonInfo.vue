@@ -19,6 +19,7 @@
                               action="http://127.0.0.1/users/1/"
                               accept="image/png,image/gif,image/jpg,image/jpeg"
                               list-type="picture-card"
+                              :http-request="uploadAvatar"
                               :limit=limitNum
                               :auto-upload="false"
                               :on-exceed="handleExceed"
@@ -26,6 +27,7 @@
                               :on-preview="handlePictureCardPreview"
                               :on-remove="handleRemove"
                               :on-change="imgChange"
+                              :on-success="handleAvatarSuccess"
                               :class="{hide:hideUpload}">
                       <i class="el-icon-plus"></i>
                     </el-upload>
@@ -69,7 +71,7 @@
                 <el-dialog title="修改昵称" :visible.sync="changeNameVisible" :modal-append-to-body="false" width="300px">
                   <el-form ref="nameForm" :model="nameForm" :rules="nameRules" enctype="multipart/form-data">
                     <el-form-item prop="newName">
-                        <el-input v-model="nameForm.newName" autocomplete="off" placeholder="新昵称"></el-input>
+                        <el-input v-model="nameForm.newName" autocomplete="off" placeholder="新昵称" @keydown.enter.native="changeName"></el-input>
                     </el-form-item>
                   </el-form>
                   <div slot="footer" class="dialog-footer">
@@ -87,7 +89,7 @@
                     </el-form-item>
                     <br>
                     <el-form-item prop="newPasswordAgain">
-                      <el-input v-model="passwordForm.newPasswordAgain" type="password" autocomplete="off" placeholder="确认新密码"></el-input>
+                      <el-input v-model="passwordForm.newPasswordAgain" type="password" autocomplete="off" placeholder="确认新密码" @keydown.enter.native="changePassword"></el-input>
                     </el-form-item>
                   </el-form>
                   <div slot="footer" class="dialog-footer">
@@ -101,7 +103,7 @@
                 <el-dialog title="修改手机号" :visible.sync="changePhoneVisible" :modal-append-to-body="false" width="300px">
                   <el-form ref="phoneForm" :model="phoneForm" :rules="phoneRules" enctype="multipart/form-data">
                     <el-form-item>
-                      <el-input v-model="phoneForm.newPhone" type="tel" autocomplete="off" placeholder="新手机号"></el-input>
+                      <el-input v-model="phoneForm.newPhone" type="tel" autocomplete="off" placeholder="新手机号" @keydown.enter.native="changePhone"></el-input>
                     </el-form-item>
                   </el-form>
                   <div slot="footer" class="dialog-footer">
@@ -115,7 +117,7 @@
                 <el-dialog title="修改邮箱" :visible.sync="changeEmailVisible" :modal-append-to-body="false" width="300px">
                   <el-form ref="emailForm" :model="emailForm" :rules="emailRules" enctype="multipart/form-data">
                     <el-form-item>
-                      <el-input v-model="emailForm.newEmail" type="tel" autocomplete="off" placeholder="新邮箱"></el-input>
+                      <el-input v-model="emailForm.newEmail" type="email" autocomplete="off" placeholder="新邮箱" @keydown.enter.native="changeEmail"></el-input>
                     </el-form-item>
                   </el-form>
                   <div slot="footer" class="dialog-footer">
@@ -152,7 +154,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
         phone: "18538947201",
         email: "1214960505@qq.com",
         ID: "18373154",
-        avatarUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+        head: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
         uploadurl:'http://127.0.0.1:8000/users/',
         hideUpload: false,
         dialogImageUrl:'',
@@ -247,6 +249,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
             this.password=response.data.password
             this.ID=response.data.id
             this.head=response.data.head
+            this.webTitle = this.name + '的个人主页'
           }
           else{
             this.$message({
@@ -275,6 +278,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
                   message: '修改昵称成功',
                   type: 'info'
                 })
+                this.$router.push({name: 'Login'})
               }else{
                 this.$message({
                   message: '修改昵称失败',
@@ -285,6 +289,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
               console.log(error.response)
             })
             this.changeNameVisible=false
+            this.$refs.nameForm.resetFields()
           }
         })
       },
@@ -316,6 +321,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
               console.log(error.response)
             })
             this.changePasswordVisible=false
+            this.$refs.passwordForm.resetFields()
           }
         })
       },
@@ -346,6 +352,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
               console.log(error.response)
             })
             this.changePhoneVisible=false
+            this.$refs.phoneForm.resetFields()
           }
         })
       },
@@ -361,6 +368,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
                 console.log(response)
                 console.log(localStorage.token)
                 this.email=this.emailForm.newEmail
+                this.emailForm.newEmail=''
                 this.$message({
                   message: '修改邮箱成功',
                   type: 'info'
@@ -375,6 +383,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
               console.log(error.response)
             })
             this.changeEmailVisible=false
+            this.$refs.emailForm.resetFields()
           }
         })
       },
@@ -394,34 +403,52 @@ import {getUserInfo,getOtherInfo} from '../api/api'
           message: '图片大小必须小于2M'
         })
       }
+      if((file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/jpg' || file.type === 'image/jpeg')&&size<=2){
+        this.headFile=file
+        console.log('headfile:'+this.headFile)
+      }
+    },
+    //真正的上传函数
+    uploadAvatar(){
       let fd = new FormData();//通过form数据格式来传
-      fd.append("picFile", file); //传文件
+      fd.append("head", this.headFile); //传文件
       console.log(fd.get('picFile'));
       const axios = Axios
       axios.patch('/users/1/',fd).then(response=>{
         console.log(response)
-      })
-      /*this.api({
-        url: "http://127.0.0.1:8000/users/1",
-        method: "patch",
-        data: fd,
-        headers: {
-          'Content-Type': 'multipart/form-data'
+        if(response.status===200){
+          console.log(response)
+          this.head=response.data.head
+          this.headForm.newHead=''
+          localStorage.head = this.head
+          this.$addStorageEvent('head',this.head)
+          this.$message({
+            message: '修改头像成功',
+            type: 'info'
+          })
+          this.getPersonInfo()
+        }else{
+          this.$message({
+            message: '修改头像失败',
+            type: 'error'
+          })
         }
+      }).catch(error => {
+        console.log(error.response)
       })
-      .then((data) => {
-
-      })*/
+      this.changeHeadVisible=false
+      this.$refs.headForm.resetFields()
+      this.headForm.newHead=''
     },
     // 文件超出个数限制时的钩子
-    /*handleExceed (files, fileList) {
-
-    },*/
+    handleExceed (files, fileList) {
+      this.hideUpload = fileList.length >= this.limitNum;
+    },
     // 文件列表移除文件时的钩子
-    /*handleRemove (file, fileList) {
+    handleRemove (file, fileList) {
       this.hideUpload = fileList.length >= this.limitNum;
 
-    },*/
+    },
     // 点击文件列表中已上传的文件时的钩子
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url;
@@ -435,6 +462,9 @@ import {getUserInfo,getOtherInfo} from '../api/api'
       if (fileList) {
         this.$refs.uploadElement.clearValidate();
       }
+    },
+    handleAvatarSuccess(response){
+      window.console.log(response)
     },
     toCancel(){
       this.changeHeadVisible=false
@@ -453,6 +483,16 @@ import {getUserInfo,getOtherInfo} from '../api/api'
         this.getOtherInfo(this.$route.params.personId)
       }
       //this.getAvatar()//获取的头像都是登录用户的头像
+    },
+    watch: {
+      head: {
+        handler(oldValue,newValue){
+          if(oldValue!==newValue){
+            this.getPersonInfo()
+          }
+        },
+        immediate:true
+      }
     }
   }
 </script>
@@ -495,6 +535,10 @@ import {getUserInfo,getOtherInfo} from '../api/api'
     width: 178px;
     height: 178px;
     display: block;
+  }
+
+  .hide .el-upload--picture-card{
+    display: none !important;
   }
   
 </style>

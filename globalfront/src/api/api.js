@@ -65,6 +65,16 @@ export const deleteMessage = (commentId) => {
   return axios.delete('/Message/'+commentId+'/')
 }
 
+//接受团队邀请
+export const acceptInvitation = (document,user) =>{
+  return axios.post('/AcceptInvitation/',{'document':document, 'user':user})
+}
+
+//拒绝团队邀请
+export const refuseInvitation = (document,user) => {
+  return axios.post('/RefuseInvitation/',{'document':document,'user':user})
+}
+
 export const changeVisibility = (docId, role) => {
   return axios.put('/DocRoleEdit/'+docId+'/',{'role':role})
 }
