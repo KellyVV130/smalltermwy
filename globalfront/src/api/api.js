@@ -159,3 +159,27 @@ export const undoDeleteAll = () => {
 export const fetchTemplates = (keywords, ordering) => {
   return axios.get('/templates/', {params:{search: keywords, ordering:ordering}})
 }
+
+//获取文章内容
+export const getContent = doc => {
+  return axios.get('/DocEdit/' + doc)
+}
+
+//修改文章内容
+export const changeContent = (
+  type,
+  name = '未命名',
+  parent_doc,
+  content,
+  model,
+  role
+) => {
+  return axios.post('/DocEdit/', {
+    name: name,
+    content: content,
+    parent_doc: parent_doc,
+    role: role,
+    type: type,
+    create_by_model: model
+  })
+}
