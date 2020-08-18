@@ -1,5 +1,5 @@
 <template>
-  <div class="EditorPage" v-web-title="{title:webTitle}">
+  <div class="EditorPage">
     <div style="font-size: large; color: black; font-weight: bold">
       <span style="margin-left: 20px;"></span>
 
@@ -122,12 +122,12 @@
         ></editor-bar>
       </el-form-item>
       <el-form-item label="评论区">
-<!--        <comment-bar-->
-<!--          v-model="detail"-->
-<!--          :newsid="id"-->
-<!--          isClear="isClear"-->
-<!--          @change="change"-->
-<!--        ></comment-bar>-->
+        <comment-bar
+          v-model="detail"
+          :newsid="id"
+          isClear="isClear"
+          @change="change"
+        ></comment-bar>
       </el-form-item>
     </el-form>
 
@@ -138,152 +138,168 @@
 </template>
 
 <script>
-//import Axios from "../api/index"
-//import { getContent } from "../api/api"
-import EditorBar from "../components/Editor"
-//import CommentBar from "../components/Comment"
+import Axios from '../api/index'
+import {
+  deleteDoc,
+  getContent /*
+  changeContent,
+  doCollect,
+  fetchCollections,
+  fetchCoworkers,
+  fetchDocInfo,
+  fetchMyDocs,
+  fetchRecentDocs,
+  fetchTeamDocs,
+  removeCoworker,
+  undoCollect,
+  undoDelete*/
+} from '../api/api'
+import EditorBar from '../components/Editor'
+import CommentBar from '../components/Comment'
 
 export default {
-  components: { EditorBar,  },
+  components: { EditorBar, CommentBar },
   data() {
     return {
-      dialog:false,
-      webTitle:'环球文档',
-      input: "",
-      activeIndex: "1",
+      input: '',
+      activeIndex: '1',
       isClear: false,
-      detail: "",
+      detail: '',
       Info: {
-        builder: "Kelly",
+        builder: 'Kelly',
         coworkers: [
           {
             userId: 1,
-            userName: "Kelly",
+            userName: 'Kelly',
             isBuilder: true,
             isCollected: true,
             userImg:
-              "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+              'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
           },
           {
             userId: 2,
-            userName: "Kelly2",
+            userName: 'Kelly2',
             isBuilder: false,
             isCollected: true,
             userImg:
-              "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+              'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
           }
         ],
         _public: false
       },
 
-      date: "2016-05-02",
-      name: "王小虎",
-      builder: "家",
+      date: '2016-05-02',
+      name: '王小虎',
+      builder: '家',
       isCollected: false,
       id: 1,
       isFolder: false,
-      title: "未命名文本",
-      content: "今天天气很好，小王出门散步。",
+      title: '未命名文本',
+      content: '今天天气很好，小王出门散步。',
 
-      shareId: "",
+      shareId: '',
       shareV: false,
-      setId: "2",
+      setId: '2',
       setV: false,
 
       ruleForm: {
-        title: "",
-        description: "",
-        content: ""
+        title: '',
+        description: '',
+        content: ''
       },
       rules: {
         title: [
-          { required: true, message: "请输入标题", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+          { required: true, message: '请输入标题', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        description: [
-          { required: true, message: "请输入摘要", trigger: "blur" }
-        ],
-        content: [{ required: true, message: "请输入内容", trigger: "blur" }]
+        content: [{ trequired: true, message: '请输入内容', trigger: 'blur' }]
       }
     }
   },
 
   methods: {
     //获取文章内容
-    // getContent(id) {
-    //   getContent(id)
-    //     .then(response => {
-    //       if (response.status === 200) {
-    //         console.log(response)
-    //         this.name = response.data.username
-    //         this.content = response.data.content
-    //         this.ID = response.data.id
-    //         this.webTitle = this.name
-    //       } else {
-    //         this.$message({
-    //           message: "获取信息失败" + response.message,
-    //           type: "error"
-    //         })
-    //       }
-    //     })
-    //     .catch(error => {
-    //       console.log(error.response)
-    //     })
-    // },
-    // changeContent() {
-    //   this.$refs.content.validate(valid => {
-    //     if (valid) {
-    //       const axios = Axios
-    //       axios
-    //         .patch(
-    //           "http://127.0.0.1:8000/editorpage/" + localStorage.docID + "/",
-    //           {
-    //             content: this.content
-    //           }
-    //         )
-    //         .then(response => {
-    //           if (response.status === 200) {
-    //             console.log(response)
-    //             console.log(localStorage.token)
-    //             this.$message({
-    //               message: "修改文章成功",
-    //               type: "info"
-    //             })
-    //           } else {
-    //             this.$message({
-    //               message: "修改文章失败",
-    //               type: "error"
-    //             })
-    //           }
-    //         })
-    //         .catch(error => {
-    //           console.log(error.response)
-    //         })
-    //     }
-    //   })
-    // },
-    // change(val) {
-    //   console.log(val)
-    // },
-    // send(id) {
-    //   let message = "确定要保存当前改动吗？"
-    //   this.$confirm(message).then(_ => {
-    //     console.log(id + _)
-    //     this.Dialog = false
-    //
-    //   })
-    // },
-    goBack() {
-      console.log("go back")
+    getContent(docId) {
+      getContent(docId)
+        .then(response => {
+          if (response.status === 200) {
+            console.log(response)
+            this.title = response.data.name
+            this.content = response.data.content
+            this.docId = response.data.docId
+          } else {
+            this.$message({
+              message: '获取信息失败' + response.message,
+              type: 'error'
+            })
+          }
+        })
+        .catch(error => {
+          console.log(error.response)
+        })
+    },
+    changeContent() {
+      this.$refs.content.validate(valid => {
+        if (valid) {
+          const axios = Axios
+          axios
+            .patch(
+              'http://127.0.0.1:8000/editorpage/' + localStorage.docID + '/',
+              {
+                name: this.title,
+                content: this.content
+              }
+            )
+            .then(response => {
+              if (response.status === 200) {
+                console.log(response)
+                console.log(localStorage.token)
+                this.$message({
+                  message: '修改文章成功',
+                  type: 'info'
+                })
+              } else {
+                this.$message({
+                  message: '修改文章失败',
+                  type: 'error'
+                })
+              }
+            })
+            .catch(error => {
+              console.log(error.response)
+            })
+        }
+      })
+    },
+    change(val) {
+      console.log(val)
+    },
+    send(id) {
+      let message = '确定要保存当前改动吗？'
+      this.$confirm(message).then(_ => {
+        console.log(id + _)
+        this.Dialog = false
+      })
     },
     toHome() {
       this.$router.go(-1)
     },
     Delete(id) {
-      let message =
-        this.type === "dustbin" ? "确定要彻底删除它吗？" : "确定要删除它吗？"
+      EditorBar.disable()
+      let message = (this.type = '确定要删除它吗？')
       this.$confirm(message).then(_ => {
         console.log(id + _)
+        //删除文档
+        deleteDoc(id)
+          .then(res => {
+            if (res.status === 204) {
+              this.init()
+              this.$message({ message: '删除成功！', type: 'info' })
+            }
+          })
+          .catch(e =>
+            this.$message({ message: e.response.data, type: 'error' })
+          )
         this.Dialog = false
       })
     },
@@ -295,7 +311,7 @@ export default {
       this.shareV = val
     },
     setP(id) {
-      console.log("set")
+      console.log('set')
       this.setId = id
       this.setV = true
     },
@@ -306,9 +322,9 @@ export default {
       this.$refs[formName]
         .validate(valid => {
           if (valid) {
-            alert("submit!")
+            alert('submit!')
           } else {
-            console.log("error submit!!")
+            console.log('error submit!!')
             return false
           }
         })
@@ -333,7 +349,7 @@ export default {
 </script>
 
 <style>
-/*append-to-body:true*/
+//append-to-body=“true”
 .EditorPage {
   position: fixed;
   width: 100%;
