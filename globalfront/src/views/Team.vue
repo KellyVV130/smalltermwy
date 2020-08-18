@@ -1,12 +1,12 @@
 <template>
-  <div class="myTeams">
+  <div class="myTeams" v-web-title="{title:webTitle}">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
     <el-col :span="20"></el-col><el-container>
       <el-main>
         <h3>我的团队</h3><!--按修改日期倒序-->
-        <el-row :gutter="20">
+        <el-row :gutter="40">
           <el-col :span="4" v-for="(item, index) in teams" :key="index" style="margin-bottom: 20px;">
             <div style="text-align: center; height: 100px;">
               <el-card class="teamCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
@@ -40,26 +40,30 @@
       :visible.sync="infoDialog"
       width="30%"
       center>
-      <div style="">
-        <div><span style="width: 40px;">团队名：</span>{{Info.name}}</div>
-        <div style="cursor: pointer;"><span style="width: 40px;">创建者：</span>{{Info.builder}}</div>
+      <div>
+        <div><span style="width: 120px;display:inline-block;">团队名：</span>{{Info.name}}</div>
+        <div>
+          <span style="width: 120px;display:inline-block;">创建者：</span>
+          <span style="cursor: pointer;" @click="toPerson(Info.builderId)">{{Info.builder}}</span>
+        </div>
       <div><span style="width: 40px;">创建日期：</span>{{Info.create_time}}</div>
         <el-divider></el-divider>
         <div>所有成员：
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
-            <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;"></el-avatar>
+            <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: middle;"></el-avatar>
             <span style="height: 28px; padding-right: 15px;margin-left: 10px;">{{item.userName}}</span>
-            <i class="el-icon-user" v-if="item.isBuilder">
-            </i><el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
-                     @click="checkMove(item)" v-if="!item.isBuilder">
-              移除</el-link>
+            <i class="el-icon-user" v-if="item.isBuilder"></i>
+            <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
+                     @click="checkMove(item)" v-if="isCo">
+              <span v-if="!item.isBuilder&&userId===Info.builderId+''">移除</span>
+              <span v-else-if="!item.isBuilder&&isCo">退出</span>
+            </el-link>
           </div>
         </div>
-        <el-divider></el-divider>
+        <el-divider v-if="userId===Info.builderId+''"></el-divider>
 <!--        <el-link plain type="primary" style="font-size: 16px;">分享</el-link>-->
-        <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.id)">
-          <span v-if="userId === Info.builderId">退出</span>
-          <span v-else></span>删除
+        <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.id)" v-if="userId===Info.builderId+''">
+          <span>删除</span>
         </el-link>
       </div>
     </el-dialog>
@@ -81,6 +85,8 @@
     name: "myTeam",
     data(){
       return {
+        isCo:false,
+        webTitle:'团队空间',
         userId:localStorage.getItem('userId'),
         teams:[
           // {
@@ -172,15 +178,21 @@
         fetchCoworkers(this.Info.id).then(res=>{
           this.Info.coworkers = []
           console.log(res.data)
+          this.isCo = false;
           res.data.forEach((i, index) => {
+            if(i.id+'' === this.userId){
+              this.isCo = true
+            }
+            console.log(this.isCo)
             if(index === 0){
               this.Info.builder = i.username
+              this.Info.builderId = i.id
             }
             this.Info.coworkers.push({
               userId: i.id,
               userName: i.username,
               userImg: i.head,
-              isBuilder: index === 0? true:false
+              isBuilder: i.role===1? true:false
             })
             console.log(i.id, this.Info.coworkers)
           })
@@ -225,16 +237,18 @@
               res.data.forEach((i, index) => {
                 if(index === 0){
                   this.Info.builder = i.username
+                  this.Info.builderId = i.id
                 }
                 this.Info.coworkers.push({
                   userId: i.id,
                   userName: i.username,
                   userImg: i.head,
-                  isBuilder: index === 0? true:false
+                  isBuilder: i.role===1? true:false
                 })
               })
+              this.init()//好像不需要
+              this.Dialog = false
               this.$message({message:'移除成功', type:'info'})
-              //this.init()//好像不需要
             } else {
               this.$message({message:'发生其他错误', type:'error'})
             }

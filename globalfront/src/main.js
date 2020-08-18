@@ -4,7 +4,7 @@ import router from "./router";
 import store from "./store";
 import "../style/theme/index.css";
 import ElementUI from "element-ui";
-import VueWechatTitle from 'vue-wechat-title'//动态修改title
+import VueWechatTitle from 'vue-wechat-title'//动态修改titleimport Vue from 'vue';
 
 import NavBar from "./components/NavBar";
 import brain from "./components/header";
@@ -48,24 +48,53 @@ Vue.directive('web-title',{
 })
 
 Array.prototype.indexOf = function(val) {
-for (let i = 0; i < this.length; i++) {
-if (this[i] == val) return i;
-}
-return -1;
+  for (let i = 0; i < this.length; i++) {
+    if (this[i] == val) return i;
+  }
+  return -1;
 };
 Array.prototype.remove = function(val) {
-let index = this.indexOf(val);
-if (index > -1) {
-this.splice(index, 1);
-}
+  let index = this.indexOf(val);
+  if (index > -1) {
+    this.splice(index, 1);
+  }
 };
+
 export const GetTime = (time, sp = '.')=>{
+  console.log(time,sp)
   if(!time) return '—';
   if(sp === '.')
     time = time.split('T')[0]+' '+time.split('T')[1]
   if(time.indexOf(sp)>-1){
     return time.split(sp)[0]
   } else return time;
+}
+
+export const splitDate = (todo = [], time)=>{//将数组todo按字段time降序分组
+  if(!todo) return []
+  let dates = []
+  let newTodo = []
+  let j = 0;
+  todo.forEach((item)=>{
+    let t = GetTime(item[time]," ")
+    if(dates.length === 0 || dates.indexOf(t)===-1){
+      dates.push(t)
+      newTodo.push({
+        date:dates[j++],
+        subList:[]
+      })
+    }
+  })
+  todo.forEach((item) => {
+    let t = GetTime(item[time]," ")
+    if(dates.indexOf(t) > -1){
+      newTodo[dates.indexOf(t)].subList.push(item)
+    }
+  })
+  newTodo.sort(function(a,b) {
+    return Date.parse(b.date.replace(/-/g,"/"))-Date.parse(a.date.replace(/-/g,"/"));
+  });
+  return newTodo
 }
 
 new Vue({

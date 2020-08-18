@@ -76,7 +76,7 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
     }
   },
   {
-    path:'/editorPage',
+    path:'/editorPage/:docId',
     name:'editorPage',
     component: () => import("../views/EditorPage"),
     meta:{
@@ -87,9 +87,9 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
     path:'/Inbox',
     name: 'Inbox',
     component: () => import("../views/Inbox.vue"),
-//    meta:{
-//      auth: true
-//    }
+    meta:{
+     auth: true
+    }
   },
   {
     path:'/templates',
@@ -126,7 +126,7 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       console.log(that)
-      that.$message({message:'您暂无权限查看此页面。', type: 'error'})
+      that.$message({message:'欢迎使用环球文档！敬请登录。', type: 'info'})
       //alert('您暂无权限查看此页面，请先登录')
       next({
         name: 'Home',

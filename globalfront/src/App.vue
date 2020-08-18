@@ -30,4 +30,14 @@
   .main{
     flex: 1;
   }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: #f5f5f5;
+  }
+  ::-webkit-scrollbar-thumb {
+      border-radius:5px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .0);
+      background-color: rgba(0, 0, 0, .1)
+  }
 </style>

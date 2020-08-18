@@ -1,5 +1,5 @@
 <template>
-  <div class="basic">
+  <div class="basic" v-web-title="{title:'收件箱'}">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
@@ -7,7 +7,7 @@
       <el-main>
         <h3>收件箱</h3><!--按修改日期倒序-->
         <div>
-        <messageCard v-bind:messages="messages"></messageCard><br>
+        <messageCard v-bind:messages="messages" @getChangeFromSon='getChangeFromSon'></messageCard><br>
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
@@ -120,7 +120,6 @@ export default {
     getAllMessage(){
         getAllMessage().then(response => {
           if(response.status===200){
-            this.ifGetAllMessage=true
             console.log(response)
             this.messages=response.data
             for(var i=0;i<this.messages.length;i++){
@@ -145,6 +144,7 @@ export default {
                 this.messages[i].content='将你移出文档协作者'
               }
             }
+            this.ifGetAllMessage=true
           }
         })
       },
@@ -152,7 +152,6 @@ export default {
     getMessage(){
       getMessage().then(response => {
           if(response.status===200){
-            this.ifGetAllMessage=false
             console.log(response)
             this.messages=response.data
             for(var i=0;i<this.messages.length;i++){
@@ -177,6 +176,7 @@ export default {
                 this.messages[i].content='将你移出文档协作者'
               }
             }
+            this.ifGetAllMessage=false
           }
         })
     },
@@ -201,6 +201,11 @@ export default {
           console.log(response)
         }
       })
+    },
+    //子组件发生变化时刷新页面
+    getChangeFromSon(){
+      if(this.ifGetAllMessage===true) this.getAllMessage()
+      else if(this.ifGetAllMessage===false) this.getMessage()
     }
   },
   mounted(){
@@ -208,7 +213,7 @@ export default {
     this.getAllMessage()
   },
   watch:{
-    messages: {
+    ifGetAllMessage: {
       handler(oldValue,newValue){
         console.log(oldValue)
         console.log(newValue)
@@ -217,7 +222,6 @@ export default {
           else if(this.ifGetAllMessage===false) this.getMessage()
         }
       },
-      deep:true,
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="welcome">
+  <div class="welcome" v-web-title="{title:'欢迎使用环球文档'}">
     <el-divider content-position="center">
       <span style="font-size: 34px;">欢 迎 使 用 环 球 文 档 G l o b a l D o c</span>
     </el-divider>

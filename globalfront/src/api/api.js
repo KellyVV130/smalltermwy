@@ -1,7 +1,7 @@
 import Axios from './index'
 
 const axios = Axios
-//http://127.0.0.1:8000
+//http://47.104.15.57
 //http://127.0.0.1:8000
 
 // 登录
@@ -144,4 +144,8 @@ export const deleteForAll = () => {
 
 export const undoDeleteAll = () => {
   return axios.get('/AllRecall/')
+}
+
+export const fetchTemplates = (keywords, ordering) => {
+  return axios.get('/templates/', {params:{search: keywords, ordering:ordering}})
 }

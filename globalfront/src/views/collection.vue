@@ -54,7 +54,7 @@
         createDoc(0).then(res=>{
           if(res.status === 201){
             this.$message({message:'新建文档成功', type:'info'})
-            this.$router.push({name:'editorPage'})
+            this.$router.push({name:'editorPage', params:{docId:res.data.id}})
           }
         }).catch(e=>{
           if(e.response.status === 401){

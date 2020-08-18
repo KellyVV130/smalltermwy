@@ -1,5 +1,5 @@
 <template>
-  <div class="person">
+  <div class="person" v-web-title="{title:webTitle}">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
@@ -146,6 +146,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
         }
       }
       return {
+        webTitle:'个人主页',
         name: "whisper",
         password: "123123",
         phone: "18538947201",
@@ -222,6 +223,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
             this.password=response.data.password
             this.ID=response.data.id
             this.head=response.data.head
+            this.webTitle = this.name + '的个人主页'
           }
           else{
             this.$message({

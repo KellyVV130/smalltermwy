@@ -58,7 +58,7 @@
     },
     methods:{
       cancelForm(){
-        this.$emit('changeVisible', false)
+        this.$emit('changeVisible', false, this.setId)
       },
       submitForm(){
         console.log(this.vi)
@@ -70,7 +70,7 @@
           }
         }).catch(e=>{if(e.response.status === 401)
           this.$message({message:e.response.data, type:'error'})
-          this.$emit('changeVisible', false)
+          this.$emit('changeVisible', false, this.setId)
         })
       },
     }

@@ -1,5 +1,5 @@
 <template>
-  <div class="templateHub">
+  <div class="templateHub" v-web-title="{title:'模板库'}">
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
@@ -16,7 +16,7 @@
           <div style="margin-top: 30px;"><!--这里放模板卡片，有缩略图和模板名-->
             <el-row :gutter="20">
               <el-col :span="6" v-for="(item, index) in 6" :key="index" style="margin-bottom: 30px;">
-                  <temp-card :temp="temp"></temp-card>
+                  <temp-card :temp="item"></temp-card>
               </el-col>
             </el-row>
           </div>
@@ -27,20 +27,50 @@
 </template>
 
 <script>
+  import {fetchTemplates} from "../api/api";
+
   export default {
     name: "templateHub",
     data(){
       return{
         tempName: '',
-        temp:{
-          img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
-          name: '答辩模板'
-        }
+        temps:[
+          {
+            id:1,
+            img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
+            name: '答辩模板'
+          },{
+            id:2,
+            img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
+            name: '答辩模板'
+          },{
+            id:3,
+            img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
+            name: '答辩模板'
+          },
+        ]
       }
     },
+    mounted(){
+      this.init()
+    },
     methods:{
+      init(keywords = "", ordering = "name"){
+        fetchTemplates(keywords, ordering).then(res=>{
+          if(res.status === 200){
+            this.temps = []
+            res.data.forEach(i => {
+              this.temps.push({
+                id: i.id,
+                name: i.name,
+                img: i.thumbnail
+              })
+            })
+          }
+        }).catch(e=>this.$message({message:e, type:'error'}))
+      },
       doSearch(){
-        console.log(this.tempName)
+        this.init(this.tempName)
       }
     }
   }

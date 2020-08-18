@@ -113,10 +113,9 @@
         if(this.type !== 'newteam'){
           addCoworker(this.docId, this.form.id).then(res=>{
             if(res.status === 200){
-              // })
               this.$message({message:'添加成功', type:'info'})
             } else if(res.status === 204){
-              this.$message({message:'发生未知错误', type:'error'})
+              this.$message({message:'用户不存在', type:'error'})
             }
           }).catch(e=>{
             if(e.response.status === 401){
@@ -130,7 +129,7 @@
           createDoc(1,this.form.name).then(res => {
             if(res.status === 201){
               this.$message({message:'创建团队成功！', type: 'info'})
-              this.$emit('changeVisible', false)
+              this.$emit('changeVisible', false, this.docId)
             }
           }).catch(e=>{
             if(e.response.status === 401){

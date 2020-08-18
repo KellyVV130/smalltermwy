@@ -49,9 +49,6 @@
           this.chart = '图标'
         }
       },
-      toNewDoc(){
-        this.$router.push({name:'editorPage'})
-      },
       changeChart(value){
         this.chart = value
         localStorage.setItem('chart', value)

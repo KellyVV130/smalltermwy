@@ -18,7 +18,7 @@
         </div><!--按修改日期倒序-->
         <div style="margin-top: 40px;">
           <doc-list :type="'team'" v-if="chart === '列表'" :team="teamId"></doc-list>
-          <doc-img :type="'team'" v-else :team="teamId"></doc-img>
+          <doc-img :type="'team'" :team="teamId" v-else></doc-img>
         </div>
       </el-main>
       <el-aside style="text-align: center; padding: 50px; line-height: 80px;">
@@ -70,10 +70,10 @@
         }).catch(e=>this.$message({message:e.response.data, type:'error'}))
       },
       toNewDoc(){
-        createDoc(0,'未命名', this.teamId).then(res=>{
+        createDoc(0, "未命名", this.teamId).then(res=>{
           if(res.status === 201){
             this.$message({message:'新建文档成功', type:'info'})
-            this.$router.push({name:'editorPage'})
+            this.$router.push({name:'editorPage', params:{docId:res.data.id}})
           }
         }).catch(e=>{
           if(e.response.status === 401){

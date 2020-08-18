@@ -7,9 +7,13 @@
       <el-badge is-dot class="badgeitem" :hidden="!hasMessage">
         <el-popover
           placement="top-start"
-          trigger="hover"><!--这里应当是未读消息列表？-->
+          trigger="click"><!--这里应当是未读消息列表？-->
 
           <el-table :data="gridData" :show-header="false" :row-class-name="tableRowClassName" @cell-click="toInbox">
+            <template slot="empty" style="background-color: whitesmoke;">
+<!--              <img style="width: 100px;height: 100px;margin-top:20px;" :src="logo"><br>-->
+              暂无消息
+            </template>
             <el-table-column width="180">
               <template slot-scope="scope"><span>{{scope.row.time}}</span></template>
             </el-table-column>
@@ -59,15 +63,14 @@
       </el-badge>
       
       <el-badge :hidden="true" class="badgeitem">
-        <el-dropdown trigger="click">
+        <el-dropdown trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
             <el-avatar :src="userImg" :size="'small'"
-                        style="margin-left: 40px; cursor: pointer;" @click.native="toPerson"></el-avatar>
+                        style="margin-left: 40px; cursor: pointer;"></el-avatar>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-if="ifLogin" class="clearfix" @click="toPerson">个人信息</el-dropdown-item>
-            <el-dropdown-item v-if="ifLogin" class="clearfix" @click="logOut">退出登录</el-dropdown-item>
-            <el-dropdown-item v-if="ifLogin===false" class="clearfix" @click="toLogin">登   录</el-dropdown-item>
+            <el-dropdown-item class="clearfix" command="a">个人信息</el-dropdown-item>
+            <el-dropdown-item class="clearfix" command="b">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-badge>
@@ -86,8 +89,7 @@ import { GetTime } from '../main'
     name: "brain",
     data(){
       return{
-        //timer: '',
-        ifLogin: false,
+        timer: '',
         logo: logo,
         userImg:'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
         hasMessage:true,
@@ -146,11 +148,6 @@ import { GetTime } from '../main'
           }
         })
       },
-      //控制表格颜色 舍弃？
-      /*tableRowClassName({rowIndex}){
-        if(rowIndex===1) return 'warning-row';
-        else return 'success-row';
-      },*/
       //单个消息已读
       checkMessage(index,row){
         if(row.status===1) row.status=0
@@ -182,7 +179,16 @@ import { GetTime } from '../main'
       toLogin(){
         this.$router.push({name: 'Login'})
       },
+      handleCommand(command){
+        switch (command) {
+          case "a":this.toPerson()
+            break;
+          case "b":this.logOut()
+            break;
+        }
+      },
       logOut(){
+        console.log('logging')
         localStorage.removeItem('token')
         localStorage.removeItem('chart')
         localStorage.removeItem('userId')
@@ -190,26 +196,14 @@ import { GetTime } from '../main'
       }
     },
     mounted(){
-      if(localStorage.userId!==null){
-        this.ifLogin=true
-      }
       this.getMessage()
-      //this.timer=setInterval(this.getMessage,1000)
+      this.timer=setInterval(this.getMessage,10000)
     },
-    //beforeDestroy(){
-      //clearInterval(this.timer)
-    //},
+    beforeDestroy(){
+      clearInterval(this.timer)
+    },
     watch:{
-    gridData: {
-      handler(oldValue,newValue){
-        console.log(oldValue)
-        console.log(newValue)
-        if(oldValue!==newValue){
-          this.getMessage()
-        }
-      },
-      deep:true,
-    }
+    
   }
   }
 </script>
@@ -220,6 +214,7 @@ import { GetTime } from '../main'
     background-color: #fbfbfb;
     line-height: 50px;
     padding: 0 20px 0 15px;
+    overflow: hidden;
   }
   
   .el-table .warning-row {

@@ -3,7 +3,8 @@
     <el-col :span="4">
       <work-space></work-space>
     </el-col>
-    <el-col :span="20"></el-col><el-container>
+    <el-col :span="20"></el-col>
+    <el-container>
       <el-main>
         <div style="margin-top: 20px;">
           <span style="width: 50%; font-size: 1.17em; font-weight: bold">最近浏览</span>
@@ -73,7 +74,7 @@
         createDoc(0).then(res=>{
           if(res.status === 201){
             this.$message({message:'新建文档成功', type:'info'})
-            this.$router.push({name:'editorPage'})
+            this.$router.push({name:'editorPage', params:{docId:res.data.id}})
           }
         }).catch(e=>{
           if(e.response.status === 401){
@@ -98,7 +99,7 @@
 <style scoped>
   .el-aside{
     width: 300px;
-    height: calc(100vh - 50px);
+    /*height: calc(100vh - 50px);*/
   }
   .history{
     background-color: whitesmoke;

@@ -7,6 +7,7 @@
         ref="filterTable"
         :data="tableData"
         class="tabley"
+        height="600"
         style="width: 100%">
         <template slot="empty" style="background-color: whitesmoke;">
           <img style="width: 100px;height: 100px;margin-top:20px;" :src="logo"><br>
@@ -51,7 +52,7 @@
           label="创建者"
           sortable>
           <template slot-scope="scope">
-            <span style="cursor: pointer;" @click="toUser(scope.row.builderId)">{{scope.row.builderId}}</span>
+            <span style="cursor: pointer;" @click="toUser(scope.row.builderId)">{{scope.row.builder}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -64,6 +65,7 @@
         ref="filterTable"
         :data="tableData"
         class="tabley"
+        height="600"
         style="width: 100%">
         <template slot="empty" style="background-color: whitesmoke;">
           <img style="width: 100px;height: 100px;margin-top:20px;" :src="logo"><br>
@@ -106,6 +108,7 @@
         ref="filterTable"
         :data="tableData"
         class="tabley"
+        height="600"
         style="width: 100%">
         <template slot="empty" style="background-color: whitesmoke;">
           <img style="width: 100px;height: 100px;margin-top:20px;" :src="logo"><br>
@@ -145,7 +148,7 @@
           label="创建者"
           sortable>
           <template slot-scope="scope">
-            <span style="cursor: pointer;" @click="toUser(scope.row.builderId)">{{scope.row.builderId}}</span>
+            <span style="cursor: pointer;" @click="toUser(scope.row.builderId)">{{scope.row.builder}}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -176,29 +179,34 @@
       width="30%"
       center>
       <div style="">
-        <div><span style="width: 40px; display: inline-block;">文件名：</span>{{Info.docName}}</div>
+        <div><span style="width: 120px; display: inline-block;">文件名：</span>{{Info.docName}}</div>
         <div>
-          <span style="width: 40px; inline-block;">创建者：</span>
+          <span style="width: 120px; display:inline-block;">创建者：</span>
           <span @click="toUser(Info.builderId)" style="cursor: pointer;">{{Info.builder}}</span>
         </div>
-        <div><span style="width: 40px; inline-block;">创建日期：</span>{{Info.create_time}}</div>
-        <div><span style="width: 40px; inline-block;">最后修改时间：</span>{{Info.modify_time}}</div>
+        <div><span style="width: 120px; display:inline-block;">创建日期：</span>{{Info.create_time}}</div>
+        <div><span style="width: 120px; display:inline-block;">最后修改时间：</span>{{Info.modify_time}}</div>
         <el-divider></el-divider>
         <div v-if="type !== 'dustbin'">协作者：
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
-            <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;" @click.native="toUser(item.userId)"></el-avatar>
+            <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: middle;" @click.native="toUser(item.userId)"></el-avatar>
             <span style="height: 28px; padding-right: 15px;margin-left: 10px; cursor:pointer;" @click="toUser(item.userId)">{{item.userName}}</span>
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
-                     @click="checkMove(item)" v-if="!item.isBuilder">
-              移除</el-link>
+                     @click="checkMove(item)" v-if="isCo" :disabled="item.role===2">
+              <span v-if="!item.isBuilder&&userId===Info.builderId+''">移除</span>
+              <span v-else-if="!item.isBuilder&&isCo">退出</span>
+            </el-link>
           </div>
         </div>
         <el-divider v-if="type !== 'dustbin'"></el-divider>
-        <div v-if="type !== 'dustbin'"><el-button plain type="primary" @click="setP(Info.id)">设置权限</el-button> </div>
-        <div style=" margin-top: 20px;" v-if="type !== 'dustbin'"><el-button plain type="success" @click="shareDialog(Info.id)">
-          分享</el-button></div>
-        <div style=" margin-top: 20px;"><el-button plain type="danger" @click="Delete(Info.id)">
+        <div v-if="type !== 'dustbin'&&role===1">
+          <el-button plain type="primary" @click="setP(Info.id)">设置权限</el-button>
+        </div>
+        <div style=" margin-top: 20px;" v-if="type !== 'dustbin'">
+          <el-button plain type="success" @click="shareDialog(Info.id)">分享</el-button>
+        </div>
+        <div style=" margin-top: 20px;" v-if="role===1"><el-button plain type="danger" @click="Delete(Info.id)">
           <span v-if="type==='dustbin'">彻底</span>删除
           </el-button>
         </div>
@@ -244,6 +252,9 @@
     },
     data(){
       return {
+        isCo:false,
+        role:-1,
+        userId:localStorage.userId,
         logo:logo,
         tableData: [
           // {
@@ -265,7 +276,7 @@
           //   docId: 4,
           //   docName: '文档4',
           //   readTime: GetTime('2020-08-11T00:04:23.408300')
-          // }
+          // },
         ],
         Dialog: false,
         Info:{
@@ -326,9 +337,9 @@
                   builder: i.create_user.username,
                   builderId: i.create_user.id,
                   createTime: GetTime(i.create_time),
-                  lastTime: GetTime(i.last_modify_time),
-                  lastUser: i.last_modify_user.username,
-                  lastUserId: i.last_modify_user.id,
+                  lastTime: GetTime(i.modify_time),
+                  lastUser: i.last_modify_user?i.last_modify_user.username:"—",
+                  lastUserId: i.last_modify_user?i.last_modify_user.id:"",
                   isCollected: i.has_collect
                 })
               })
@@ -342,12 +353,12 @@
                 this.tableData.push({
                   docId: i.id,
                   docName: i.name,
-                  builder: i.create_user.username,
-                  buiderId: i.create_user.id,
+                  builder: i.create_user_username,
+                  builderId: i.create_user,
                   createTime: GetTime(i.create_time),
                   lastTime: GetTime(i.modify_time),
-                  lastUser: i.last_modify_user.username,
-                  lastUserId: i.last_modify_user.id
+                  lastUser: i.last_modify_user_username,
+                  lastUserId: i.last_modify_user,
                 })
               })
             }
@@ -366,7 +377,7 @@
                   docName: i.document.name,
                   deleteTime: GetTime(i.delete_time),
                   builder: i.document.create_user.username,
-                  buiderId: i.document.create_user.id,
+                  builderId: i.document.create_user.id,
                 })
               })
             }
@@ -381,9 +392,11 @@
                   docName: i.name,
                   isCollected: i.has_collect,
                   builder: i.create_user.username,
-                  buiderId: i.create_user.id,
-                  lastUser: i.last_modify_user.username,
-                  lastTime: GetTime(i.modyfy_time)
+                  builderId: i.create_user.id,
+                  lastTime: GetTime(i.modify_time),
+                  createTime: GetTime(i.create_time),
+                  lastUser: i.last_modify_user?i.last_modify_user.username:"—",
+                  lastUserId: i.last_modify_user?i.last_modify_user.id:"",
                 })
               })
             }
@@ -424,7 +437,10 @@
                 this.init()
                 this.$message({message:'已彻底删除文档!', type:'warning'})
               }
-            }).catch(e=>this.$message({message:e.response.data, type:'error'}))
+            }).catch(e=>{
+              if(e.response.status === 401)
+                this.$message({message:"您没有权限！", type:'error'})
+            })
           } else {
             //删除文档
             deleteDoc(id).then(res => {
@@ -432,7 +448,10 @@
                 this.init()
                 this.$message({message:'删除成功！', type: 'info'})
               }
-            }).catch(e=>this.$message({message:e.response.data, type:'error'}))
+            }).catch(e=>{
+              if(e.response.status === 401)
+                this.$message({message:"您没有权限！", type:'error'})
+            })
           }
           this.Dialog = false
         })
@@ -539,16 +558,24 @@
             if(res.status === 200){
               this.Info.coworkers = []
               res.data.forEach((i, index) => {
+                if(i.id+'' === this.userId){
+                  this.isCo = true
+                  this.role = i.role
+                }
                 if(index === 0){
                   this.Info.builder = i.username
+                  this.Info.builderId = i.id
                 }
                 this.Info.coworkers.push({
                   userId: i.id,
                   userName: i.username,
                   userImg: i.head,
-                  isBuilder: index === 0? true:false
+                  isBuilder: i.role === 1? true:false,
+                  role: i.role
                 })
               })
+              this.init()
+              this.Dialog = false
               this.$message({message:'移除成功', type:'info'})
             } else {
               this.$message({message:'发生其他错误', type:'error'})
@@ -572,8 +599,13 @@
             this.Info.create_time = GetTime(res.data.create_time)
             fetchCoworkers(this.Info.id).then(res=>{
               if(res.status === 200){
+                this.isCo = false;
                 this.Info.coworkers = []
                 res.data.forEach((i, index) => {
+                  if(i.id+'' === this.userId){
+                    this.isCo = true
+                    this.role = i.role
+                  }
                   if(index === 0){
                     this.Info.builder = i.username
                     this.Info.builderId = i.id
@@ -582,7 +614,8 @@
                     userId: i.id,
                     userName: i.username,
                     userImg: i.head,
-                    isBuilder: index === 0? true:false
+                    isBuilder: i.role === 1?true:false,
+                    role:i.role
                   })
                 })
               }
@@ -624,6 +657,19 @@
   }
 
   .tabley .el-table__empty-block{
+    background-color: whitesmoke;
+  }
+
+  .el-table td.gutter, .el-table th.gutter {
+    width: 15px;
+    background-color: whitesmoke;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    padding: 0;
+  }
+  .tabley .el-table__body-wrapper {
+    overflow: hidden;
+    position: relative;
     background-color: whitesmoke;
   }
 </style>

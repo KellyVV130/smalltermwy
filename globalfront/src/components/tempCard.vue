@@ -1,25 +1,42 @@
 <template>
   <div class="tempCard">
     <el-card class="teCard" shadow="hover" :body-style="{ padding: '0px' }">
-      <div class="imgDiv">
+      <div class="imgDiv" style="cursor: pointer;" @click="toNewDoc">
         <img :src="temp.img">
       </div>
-      <span style="font-size: 15px;margin-top: 20px;">{{temp.name}}</span>
+      <span style="font-size: 15px;margin-top: 20px;cursor: pointer" @click="toNewDoc">{{temp.name}}</span>
     </el-card>
   </div>
 </template>
 
 <script>
+  import {createDoc} from "../api/api";
+
   export default {
     name: "tempCard",
     props:{
       temp:{
         default:function(){
           return{
+            id:0,
             img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
             name: '人力资源模板'
           }
         }
+      }
+    },
+    methods:{
+      toNewDoc(){
+        createDoc(0,this.temp.name,null,"",this.temp.id).then(res=>{
+          if(res.status === 201){
+            this.$message({message:'新建文档成功', type:'info'})
+            this.$router.push({name:'editorPage', params:{docId:res.data.id}})
+          }
+        }).catch(e=>{
+          if(e.response.status === 401){
+            this.$message({message:'您没有权限', type: 'error'})
+          }
+        })
       }
     }
   }

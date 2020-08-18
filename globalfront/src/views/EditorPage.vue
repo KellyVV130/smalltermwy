@@ -1,5 +1,5 @@
 <template>
-  <div class="EditorPage">
+  <div class="EditorPage" v-web-title="{title:webTitle}">
     <div style="font-size: large; color: black; font-weight: bold">
       <span style="margin-left: 20px;"></span>
 
@@ -122,12 +122,12 @@
         ></editor-bar>
       </el-form-item>
       <el-form-item label="评论区">
-        <comment-bar
-          v-model="detail"
-          :newsid="id"
-          isClear="isClear"
-          @change="change"
-        ></comment-bar>
+<!--        <comment-bar-->
+<!--          v-model="detail"-->
+<!--          :newsid="id"-->
+<!--          isClear="isClear"-->
+<!--          @change="change"-->
+<!--        ></comment-bar>-->
       </el-form-item>
     </el-form>
 
@@ -138,15 +138,17 @@
 </template>
 
 <script>
-import Axios from "../api/index"
-import { getContent } from "../api/api"
+//import Axios from "../api/index"
+//import { getContent } from "../api/api"
 import EditorBar from "../components/Editor"
-import CommentBar from "../components/Comment"
+//import CommentBar from "../components/Comment"
 
 export default {
-  components: { EditorBar, CommentBar },
+  components: { EditorBar,  },
   data() {
     return {
+      dialog:false,
+      webTitle:'环球文档',
       input: "",
       activeIndex: "1",
       isClear: false,
@@ -201,75 +203,76 @@ export default {
         description: [
           { required: true, message: "请输入摘要", trigger: "blur" }
         ],
-        content: [{ trequired: true, message: "请输入内容", trigger: "blur" }]
+        content: [{ required: true, message: "请输入内容", trigger: "blur" }]
       }
     }
   },
 
   methods: {
     //获取文章内容
-    getContent(id) {
-      getContent(id)
-        .then(response => {
-          if (response.status === 200) {
-            console.log(response)
-            this.name = response.data.username
-            this.content = response.data.content
-            this.ID = response.data.id
-          } else {
-            this.$message({
-              message: "获取信息失败" + response.message,
-              type: "error"
-            })
-          }
-        })
-        .catch(error => {
-          console.log(error.response)
-        })
-    },
-    changeContent() {
-      this.$refs.content.validate(valid => {
-        if (valid) {
-          const axios = Axios
-          axios
-            .patch(
-              "http://127.0.0.1:8000/editorpage/" + localStorage.docID + "/",
-              {
-                content: this.content
-              }
-            )
-            .then(response => {
-              if (response.status === 200) {
-                console.log(response)
-                console.log(localStorage.token)
-                this.$message({
-                  message: "修改文章成功",
-                  type: "info"
-                })
-              } else {
-                this.$message({
-                  message: "修改文章失败",
-                  type: "error"
-                })
-              }
-            })
-            .catch(error => {
-              console.log(error.response)
-            })
-        }
-      })
-    },
-    change(val) {
-      console.log(val)
-    },
-    send(id) {
-      let message = "确定要保存当前改动吗？"
-      this.$confirm(message).then(_ => {
-        console.log(id + _)
-        this.Dialog = false
-        
-      })
-    },
+    // getContent(id) {
+    //   getContent(id)
+    //     .then(response => {
+    //       if (response.status === 200) {
+    //         console.log(response)
+    //         this.name = response.data.username
+    //         this.content = response.data.content
+    //         this.ID = response.data.id
+    //         this.webTitle = this.name
+    //       } else {
+    //         this.$message({
+    //           message: "获取信息失败" + response.message,
+    //           type: "error"
+    //         })
+    //       }
+    //     })
+    //     .catch(error => {
+    //       console.log(error.response)
+    //     })
+    // },
+    // changeContent() {
+    //   this.$refs.content.validate(valid => {
+    //     if (valid) {
+    //       const axios = Axios
+    //       axios
+    //         .patch(
+    //           "http://127.0.0.1:8000/editorpage/" + localStorage.docID + "/",
+    //           {
+    //             content: this.content
+    //           }
+    //         )
+    //         .then(response => {
+    //           if (response.status === 200) {
+    //             console.log(response)
+    //             console.log(localStorage.token)
+    //             this.$message({
+    //               message: "修改文章成功",
+    //               type: "info"
+    //             })
+    //           } else {
+    //             this.$message({
+    //               message: "修改文章失败",
+    //               type: "error"
+    //             })
+    //           }
+    //         })
+    //         .catch(error => {
+    //           console.log(error.response)
+    //         })
+    //     }
+    //   })
+    // },
+    // change(val) {
+    //   console.log(val)
+    // },
+    // send(id) {
+    //   let message = "确定要保存当前改动吗？"
+    //   this.$confirm(message).then(_ => {
+    //     console.log(id + _)
+    //     this.Dialog = false
+    //
+    //   })
+    // },
     goBack() {
       console.log("go back")
     },
@@ -330,7 +333,7 @@ export default {
 </script>
 
 <style>
-//append-to-body=“true”
+/*append-to-body:true*/
 .EditorPage {
   position: fixed;
   width: 100%;

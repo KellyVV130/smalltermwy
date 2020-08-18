@@ -1,5 +1,5 @@
 <template>
-  <div class="basic">
+  <div class="basic" v-web-title="{title:'登录'}">
     <div style="display: flex;justify-content: center;margin-top:50px">
       <el-card style="width: 400px" shadow="hover">
         <div slot="header" class="clearfix">

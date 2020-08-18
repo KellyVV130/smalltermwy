@@ -1,42 +1,47 @@
 <template>
   <div class="docImg">
     <div v-if="type==='history'">
-      <el-row :gutter="20">
-        <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
-          <div style="height: 110px;text-align: center">
-            <el-card class="fileCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
-              <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="isHover">
-                <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
-                <i class="el-icon-s-tools" @click="handleClick(item.docId)"></i>
-                </el-tooltip>
+      <el-timeline>
+        <el-timeline-item v-for="(father, index_f) in todo" :key="index_f" :timestamp="father.date" placement="top"
+          type="primary" size="large">
+          <el-row :gutter="40">
+            <el-col :span="4" v-for="(item, index) in father.subList" :key="index" style="margin: 20px 0;">
+              <div style="height: 110px;text-align: center">
+                <el-card class="fileCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
+                  <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="isHover">
+                    <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
+                    <i class="el-icon-s-tools" @click="handleClick(item.docId)"></i>
+                    </el-tooltip>
+                  </div>
+                  <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="isHover">
+                    <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
+                      <span slot="content"><span v-if="item.isCollected">取消</span>收藏</span>
+                    <i class="el-icon-star-on" v-if="item.isCollected" @click="changeColl(item.docId)"></i>
+                    <i class="el-icon-star-off" v-else @click="changeColl(item.docId)"></i>
+                    </el-tooltip>
+                  </div>
+                  <div style="right: 5px; line-height: 5px;position: absolute; top: 45px; font-size: x-small" v-if="isHover">
+                    <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
+                    <i class="el-icon-s-custom" @click="openFolderDialog(item.docId)"></i>
+                    </el-tooltip>
+                  </div>
+                  <div style="font-size: 40px;">
+                    <i class="el-icon-folder" v-if="item.isFolder"></i>
+                    <i class="el-icon-document" @click="toDoc(item.docId)" v-else></i>
+                  </div>
+                  <div @click="toDoc(item.docId)" style="cursor: pointer">{{item.docName}}</div>
+                  <div style="font-size: x-small; color: grey; margin-top: 15px;">
+                  {{item.readTime}}访问</div>
+                </el-card>
               </div>
-              <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="isHover">
-                <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
-                  <span slot="content"><span v-if="item.isCollected">取消</span>收藏</span>
-                <i class="el-icon-star-on" v-if="item.isCollected" @click="changeColl(item.docId)"></i>
-                <i class="el-icon-star-off" v-else @click="changeColl(item.docId)"></i>
-                </el-tooltip>
-              </div>
-              <div style="right: 5px; line-height: 5px;position: absolute; top: 45px; font-size: x-small" v-if="isHover">
-                <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
-                <i class="el-icon-s-custom" @click="openFolderDialog(item.docId)"></i>
-                </el-tooltip>
-              </div>
-              <div style="font-size: 40px;">
-                <i class="el-icon-folder" v-if="item.isFolder"></i>
-                <i class="el-icon-document" @click="toDoc(item.docId)" v-else></i>
-              </div>
-              <div @click="toDoc(item.docId)" style="cursor: pointer">{{item.docName}}</div>
-              <div style="font-size: x-small; color: grey; margin-top: 15px;">
-              {{item.readTime}}访问</div>
-            </el-card>
-          </div>
-        </el-col>
-      </el-row>
+            </el-col>
+          </el-row>
+        </el-timeline-item>
+      </el-timeline>
     </div>
 
     <div v-else-if="type === 'dustbin'">
-      <el-row :gutter="20">
+      <el-row :gutter="40">
         <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
           <div style="height: 110px;text-align: center">
             <el-card class="fileCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
@@ -64,7 +69,7 @@
     </div>
 
     <div v-else>
-      <el-row :gutter="20">
+      <el-row :gutter="40">
         <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
           <div style="height: 110px;text-align: center">
             <el-card class="fileCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
@@ -104,29 +109,32 @@
       width="30%"
       center>
       <div style="">
-        <div><span style="width: 40px; inline-block;">文件名：</span>{{Info.docName}}</div>
+        <div><span style="width: 120px; display:inline-block;">文件名：</span>{{Info.docName}}</div>
         <div>
-          <span style="width: 40px; inline-block;">创建者：</span>
+          <span style="width: 120px; display:inline-block;">创建者：</span>
           <span @click="toUser(Info.builderId)" style="cursor: pointer;width: 40px;">{{Info.builder}}</span>
         </div>
-      <div><span style="width: 40px; inline-block;">创建日期：</span>{{Info.create_time}}</div>
-      <div><span style="width: 40px; inline-block;">最后修改时间：</span>{{Info.modify_time}}</div>
+      <div><span style="width: 120px; display:inline-block;">创建日期：</span>{{Info.create_time}}</div>
+      <div><span style="width: 120px; display:inline-block;">最后修改时间：</span>{{Info.modify_time}}</div>
         <el-divider></el-divider>
         <div v-if="type !== 'dustbin'">协作者：
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
-            <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: sub;" @click.native="toUser(item.userId)"></el-avatar>
+            <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: middle;" @click.native="toUser(item.userId)"></el-avatar>
             <span style="height: 28px; padding-right: 15px;margin-left: 10px;cursor:pointer;" @click="toUser(item.userId)">{{item.userName}}</span>
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
-                     @click="checkMove(item)" v-if="!item.isBuilder">
-              移除</el-link>
+                     @click="checkMove(item)" v-if="isCo">
+              <span v-if="!item.isBuilder&&userId===Info.builderId+''">移除</span>
+              <span v-else-if="!item.isBuilder&&isCo">退出</span>
+            </el-link>
           </div>
         </div>
         <el-divider v-if="type !== 'dustbin'"></el-divider>
-        <div v-if="type !== 'dustbin'"><el-button plain type="primary" @click="setP(Info.id)">设置权限</el-button> </div>
-        <div style=" margin-top: 20px;" v-if="type !== 'dustbin'"><el-button plain type="success" @click="shareDialog(Info.id)">
-          分享</el-button></div>
-        <div style=" margin-top: 20px;"><el-button plain type="danger" @click="Delete(Info.id)">
+        <div v-if="type !== 'dustbin'&&role===1"><el-button plain type="primary" @click="setP(Info.id)">设置权限</el-button> </div>
+        <div style=" margin-top: 20px;" v-if="type !== 'dustbin'">
+          <el-button plain type="success" @click="shareDialog(Info.id)">分享</el-button>
+        </div>
+        <div style=" margin-top: 20px;" v-if="role===1"><el-button plain type="danger" @click="Delete(Info.id)">
           <span v-if="type==='dustbin'">彻底</span>删除
           </el-button>
         </div>
@@ -157,7 +165,7 @@
     fetchTeamDocs,
     removeCoworker, undoCollect, undoDelete
   } from "../api/api";
-  import {GetTime} from "../main";
+  import {GetTime, splitDate} from "../main";
 
   export default {
     name: "docImg",
@@ -171,6 +179,9 @@
     },
     data(){
       return{
+        isCo:false,
+        role:-1,
+        userId:localStorage.userId,
         tableData: [
         // {
         //     docId: 1,
@@ -224,6 +235,7 @@
         visi: 3,
         NAME: '',
         isTeam: false,
+        todo:{},
       }
     },
     mounted(){
@@ -231,6 +243,7 @@
     },
     methods:{
       init(){
+      console.log('team',this.team,this.type)
         if(this.type === 'history'){
           fetchRecentDocs().then(res=>{
             if(res.status === 200){
@@ -242,9 +255,10 @@
                   readTime: GetTime(i.read_time),
                   isCollected: i.document.has_collect,
                   builder: i.document.create_user.username,
-                  buiderId: i.document.create_user.id,
+                  builderId: i.document.create_user.id,
                 })
               })
+              this.todo = splitDate(this.tableData, "readTime")
             }
           }).catch(e=>{this.$message({message:e, type:'error'})})
         } else if(this.type === 'build'){
@@ -256,30 +270,31 @@
                   docId: i.id,
                   docName: i.name,
                   builder: i.create_user.username,
-                  buiderId: i.create_user.id,
+                  builderId: i.create_user.id,
                   createTime: GetTime(i.create_time),
-                  lastTime: GetTime(i.last_modify_time),
-                  lastUser: i.last_modify_user.username,
-                  lastUserId: i.last_modify_user.id,
+                  lastTime: GetTime(i.modify_time),
+                  lastUser: i.last_modify_user?i.last_modify_user.username:"—",
+                  lastUserId: i.last_modify_user?i.last_modify_user.id:"",
                   isCollected: i.has_collect
                 })
               })
             }
           }).catch(e=>{this.$message({message:e, type:'error'})})
-        } else if(this.team){
-          fetchTeamDocs(this.team).then(res=>{
+        } else if(this.type === 'team'){
+          console.log('params',this.$route.params.teamId)
+          fetchTeamDocs(this.$route.params.teamId).then(res=>{
             if(res.status === 200){
               this.tableData = []
               res.data.forEach(i=>{
                 this.tableData.push({
                   docId: i.id,
                   docName: i.name,
-                  builder: i.create_user.username,
-                  buiderId: i.create_user.id,
+                  builder: i.create_user_username,
+                  builderId: i.create_user,
                   createTime: GetTime(i.create_time),
                   lastTime: GetTime(i.modify_time),
-                  lastUser: i.last_modify_user.username,
-                  lastUserId: i.last_modify_user.id
+                  lastUser: i.last_modify_user_username,
+                  lastUserId: i.last_modify_user,
                 })
               })
             }
@@ -298,7 +313,7 @@
                   docName: i.document.name,
                   deleteTime: GetTime(i.delete_time),
                   builder: i.document.create_user.username,
-                  buiderId: i.document.create_user.id,
+                  builderId: i.document.create_user.id,
                 })
               })
             }
@@ -313,9 +328,9 @@
                   docName: i.name,
                   isCollected: i.has_collect,
                   builder: i.create_user.username,
-                  buiderId: i.create_user.id,
-                  lastUser: i.last_modify_user.username,
-                  lastTime: GetTime(i.modyfy_time)
+                  builderId: i.create_user.id,
+                  lastUser: i.last_modify_user?i.last_modify_user.username:"—",
+                  lastUserId: i.last_modify_user?i.last_modify_user.id:"",
                 })
               })
             }
@@ -349,7 +364,10 @@
                 this.init()
                 this.$message({message:'删除成功！', type: 'info'})
               }
-            }).catch(e=>this.$message({message:e.response.data, type:'error'}))
+            }).catch(e=>{
+              if(e.response.status === 401)
+                this.$message({message:"您没有权限！", type:'error'})
+            })
           }
           this.Dialog = false
         })
@@ -434,16 +452,23 @@
             if(res.status === 200){
               this.Info.coworkers = []
               res.data.forEach((i, index) => {
+                if(i.id+'' === this.userId){
+                  this.isCo = true
+                  this.role = i.role
+                }
                 if(index === 0){
                   this.Info.builder = i.username
+                  this.Info.builderId = i.id
                 }
                 this.Info.coworkers.push({
                   userId: i.id,
                   userName: i.username,
                   userImg: i.head,
-                  isBuilder: index === 0? true:false
+                  isBuilder: i.role === 1?true:false
                 })
               })
+              this.init()
+              this.Dialog = false
               this.$message({message:'移除成功', type:'info'})
             } else {
               this.$message({message:'发生其他错误', type:'error'})
@@ -467,8 +492,13 @@
             this.Info.create_time = GetTime(res.data.create_time)
             fetchCoworkers(this.Info.id).then(res=>{
               if(res.status === 200){
+                this.isCo = false;
                 this.Info.coworkers = []
                 res.data.forEach((i, index) => {
+                  if(i.id+'' === this.userId){
+                    this.isCo = true
+                    this.role = i.role
+                  }
                   if(index === 0){
                     this.Info.builder = i.username
                     this.Info.builderId = i.id
@@ -477,7 +507,7 @@
                     userId: i.id,
                     userName: i.username,
                     userImg: i.head,
-                    isBuilder: index === 0? true:false
+                    isBuilder: i.role === 1? true:false
                   })
                 })
               }
