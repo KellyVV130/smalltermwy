@@ -1,6 +1,6 @@
 <template>
   <div class="docImg">
-    <div v-if="type==='history'" style="margin: 5px;">
+    <div v-if="type==='history'" style="margin: 10px;">
       <el-timeline>
         <el-timeline-item v-for="(father, index_f) in todo" :key="index_f" :timestamp="father.date" placement="top"
           type="primary" size="large">
@@ -31,7 +31,7 @@
                   </div>
                   <div @click="toDoc(item.docId)" style="cursor: pointer">{{item.docName}}</div>
                   <div style="font-size: x-small; color: grey; margin-top: 15px;">
-                  {{item.readTime}}访问</div>
+                  {{item.readTime}}&#10;访问</div>
                 </el-card>
               </div>
             </el-col>
@@ -61,7 +61,7 @@
               </div>
               <div @click="toDoc(item.docId)" style="cursor: pointer">{{item.docName}}</div>
               <div style="font-size: x-small; color: grey; margin-top: 12px;">
-              删除于{{item.deleteTime}}</div>
+              {{item.deleteTime}}&#10;删除</div>
             </el-card>
           </div>
         </el-col>
@@ -96,7 +96,7 @@
               </div>
               <div @click="toDoc(item.docId)" style="cursor: pointer">{{item.docName}}</div>
               <div style="font-size: x-small; color: grey; margin-top: 12px;">
-              {{item.lastTime}}最后修改</div>
+              {{item.lastTime}}&#10;最后修改</div>
             </el-card>
           </div>
         </el-col>
@@ -123,7 +123,7 @@
             <span style="height: 28px; padding-right: 15px;margin-left: 10px;cursor:pointer;" @click="toUser(item.userId)">{{item.userName}}</span>
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
-                     @click="checkMove(item)" v-if="isCo">
+                     @click="checkMove(item)" v-if="isCo" :disabled="item.role===2">
               <span v-if="!item.isBuilder&&userId===Info.builderId+''">移除</span>
               <span v-else-if="!item.isBuilder&&isCo">退出</span>
             </el-link>
@@ -159,7 +159,7 @@
     fetchCollections,
     fetchCoworkers,
     fetchDocInfo,
-    fetchDustbin,
+    fetchDustbin, fetchMyBuild,
     fetchMyDocs,
     fetchRecentDocs,
     fetchTeamDocs,
@@ -183,28 +183,16 @@
         role:-1,
         userId:localStorage.userId,
         tableData: [
-        {
-            docId: 1,
-            docName: '文档aaa1',
-            readTime: '2020-08-14 00:04:23.408300',
-            isHover: false
-          },
-          {
-            docId: 2,
-            docName: '文档aaa2',
-            readTime: '2020-08-15 00:04:23.408300',
-            isHover: false
-          },
-        //   {
-        //     docId: 3,
-        //     docName: '文档3',
+        // {
+        //     docId: 1,
+        //     docName: '文档aaa1',
         //     readTime: '2020-08-14 00:04:23.408300',
         //     isHover: false
         //   },
         //   {
-        //     docId: 4,
-        //     docName: '文档4',
-        //     readTime: '2020-08-11 00:04:23.408300',
+        //     docId: 2,
+        //     docName: '文档aaa2',
+        //     readTime: '2020-08-15 00:04:23.408300',
         //     isHover: false
         //   },
         ],
@@ -324,6 +312,25 @@
               })
             }
           }).catch(e=>this.$message({message: e.response.data, type: 'error'}))
+        } else if (this.type === 'build_t'){
+          fetchMyBuild().then(res=>{
+            if(res.status === 200){
+              this.tableData = []
+              res.data.forEach(i => {
+                this.tableData.push({
+                  docId: i.id,
+                  docName: i.name,
+                  builder: i.create_user.username,
+                  builderId: i.create_user.id,
+                  createTime: GetTime(i.create_time),
+                  lastTime: GetTime(i.modify_time),
+                  lastUser: i.last_modify_user?i.last_modify_user.username:"—",
+                  lastUserId: i.last_modify_user?i.last_modify_user.id:"",
+                  isCollected: i.has_collect
+                })
+              })
+            }
+          }).catch(e=>{this.$message({message:e, type:'error'})})
         }
       },
       toDoc(id){
@@ -453,7 +460,8 @@
                   userId: i.id,
                   userName: i.username,
                   userImg: i.head,
-                  isBuilder: i.role === 1?true:false
+                  isBuilder: i.role === 1?true:false,
+                  role: i.role
                 })
               })
               this.init()
@@ -470,7 +478,7 @@
         })
       },
       getDocInfo(id){
-        fetchDocInfo(id).then(res=>{
+        fetchDocInfo(id,0).then(res=>{
           if(res.status === 200){
             this.Info.id = res.data.id
             this.Info.docName = res.data.name
@@ -508,6 +516,7 @@
         }).catch(e=>{
           this.$message({message:e.response.data, type: 'error'})
         })
+        console.log('info',this.Info)
       },
     },
   }

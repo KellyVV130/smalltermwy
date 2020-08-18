@@ -121,6 +121,9 @@ export default {
   },
   methods:{
     toLogin(){
+      if(this.$route.params.redirect){
+        this.$router.push({name:"Login", params:{redirect:this.$route.params.redirect}})
+      } else
       this.$router.push({path:"/Login"})
     },
     getCode(){

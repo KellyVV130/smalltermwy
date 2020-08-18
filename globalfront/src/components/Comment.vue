@@ -9,27 +9,32 @@
       v-model="commentContent"
     >
     </el-input>
-    <el-button type="primary" size="large" @click="postMsg">发表评论</el-button>
+    <el-button type="primary" size="large" @click="postMsg(null)">发表评论</el-button>
 
     <!-- 评论列表区域 -->
     <div class="list">
       <div class="item" v-for="(item, i) in cmtlist" :key="i">
         <div class="item-title">
-          第{{ i + 1 }}楼 用户：{{ item.author.username }} 发表时间：{{
-            item.create_time /* GetTime(item.create_time, ' ') */
+          第{{ i + 1 }}楼 用户：
+          <span style="cursor: pointer;" @click="toUser(item.author.id)">{{ item.author.username }}</span>
+          发表时间：{{
+          item.create_time
           }}
-          <el-button @click="postMsg(item.id)" size="small">回复</el-button>
-          <el-button @click="deleteMsg()" size="small">删除</el-button>
+          <a @click="deleteMsg(item.id)" style="cursor: pointer;color: red;margin-left: 20px;">删除</a>
+          <a @click="openDiag(item.id)" style="cursor: pointer;color: cadetblue;margin-left: 20px;">回复</a>
         </div>
         <div class="item-body">
           {{ item.body }}
+          <hr align=center width=900 color=#987cb9 size=1/>
           <div class="sub-list">
             <div class="sub-item" v-for="(item2, j) in item.replies" :key="j">
               <div class="sub-item-title">
-                第{{ j + 1 }}楼 用户：{{ item2.author.username }} 发表时间：{{
-                  item2.create_time /* GetTime(item2.create_time, ' ') */
+                第{{ j + 1 }}楼 用户：
+                <span style="cursor: pointer;" @click="toUser(item2.author.id)">{{ item2.author.username }}</span>
+                发表时间：{{
+                  item2.create_time
                 }}
-                <el-button @click="deleteMsg()" size="small">删除</el-button>
+                <a @click="deleteMsg(item2.id)" style="cursor: pointer;color: red;margin-left: 20px;">删除</a>
               </div>
               <div class="sub-item-body">{{ item2.body }}</div>
             </div>
@@ -37,12 +42,29 @@
         </div>
       </div>
     </div>
+
+    <el-dialog title="回复评论" :visible.sync="dialog">
+      <el-form>
+        <el-form-item>
+          <el-input
+            type="textarea"
+            :rows="2"
+            placeholder="请输入内容"
+            v-model="subComment"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialog = false">取 消</el-button>
+        <el-button type="primary" @click="postMsg(subId)">发 送</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { deleteMsg, postMsg, fetchDocInfo } from '../api/api'
-// import { GetTime } from './main'
+import { GetTime } from '../main'
 export default {
   name: 'Comment',
   props: ['cid'], // 接收父组件传递过来的Id
@@ -95,7 +117,15 @@ export default {
           ]
         }
       ],
-      commentContent: ''
+      commentContent: '',
+      dialog:false,
+      subComment:'',
+      subId:0,
+    }
+  },
+  watch:{
+    cid(val){
+      this.getMsg(val)
     }
   },
   mounted() {
@@ -104,45 +134,71 @@ export default {
   methods: {
     getMsg(id) {
       // 获取评论
+      console.log(this.cid,'getting')
       fetchDocInfo(id)
         .then(res => {
           if (res.status === 200) {
-            //this.cmtlist = res.data.comments
-            this.cmtlist = this.cmtlist.concat(res.data.comments)
+            console.log('comment',res.data.comments)
+            this.cmtlist = res.data.comments
+            if(this.cmtlist){
+              this.cmtlist = this.cmtlist.reverse()
+              this.cmtlist.forEach(i=>{
+                i.create_time = GetTime(i.create_time,".")
+                if(i.replies){
+                  i.replies = i.replies.reverse()
+                  i.replies.forEach(j=>{
+                    j.create_time = GetTime(j.create_time, ".")
+                  })
+                }
+              })
+            }
+            console.log(this.cmtlist)
           } else if (res.status === 204) {
             this.$message({ message: '其他错误', type: 'error' })
           }
         })
         .catch(e => {
-          this.$message({ message: e.response.data, type: 'error' })
+          this.$message({ message: e, type: 'error' })
         })
     },
-    postMsg(fid) {
+    openDiag(id){
+      this.subId = id
+      this.subComment = ''
+      this.dialog = true
+    },
+    postMsg(fid = null) {
       // 点击发表评论
-      postMsg(this.cid, this.commentContent, fid)
+      console.log(fid)
+      postMsg(this.cid, fid?this.subComment:this.commentContent, fid)
         .then(res => {
           console.log(res.data.message)
+          this.getMsg(this.cid)
+          this.$message({message:'评论成功',type:'info'})
+          this.Dialog = false
+          console.log('dialog',this.Dialog)
         })
         .catch(err => {
           console.log('评论失败', err)
+          this.$message({message:'评论失败',type:'error'})
         })
     },
-    deleteMsg() {
+    deleteMsg(id) {
       // 点击删除评论
-      let message = (this.type = '确定要删除它吗？')
-      this.$confirm(message).then(_ => {
-        console.log(_)
+      let message = '确定要删除它吗？'
+      this.$confirm(message).then(() => {
         //删除
-        deleteMsg()
+        deleteMsg(id)
           .then(res => {
             if (res.status === 204) {
-              this.init()
+              this.getMsg(this.cid)
               this.$message({ message: '删除成功！', type: 'info' })
             }
           })
-          .catch(err => console.log('没有删除权限', err))
-        this.Dialog = false
+          .catch(()=> this.$message({message:'没有删除权限', type:'error'}))
       })
+    },
+    toUser(id){
+      this.$router.push({name:'PersonInfo', params:{PersonId: id}})
     }
   }
 }
@@ -166,7 +222,7 @@ textarea {
       text-indent: 2em;
     }
   }
-  //background-color: red;
+  /*background-color: red;*/
 }
 .sub-list {
   margin-left: 50px;

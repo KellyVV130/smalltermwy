@@ -443,7 +443,7 @@ export default {
         this.init()
       }
     }).catch(e => {
-      if (e.response.status === 401) {
+      if (e.response.status === 400) {
         this.edit = false
         const notify = this.$notify({
           title: '协作',
@@ -458,8 +458,10 @@ export default {
           // 点击后关闭notify 不需要的话可删掉
           notify.close();
         };
-        this.init()
+      } else if(e.response.status === 401){
+        this.$message({message:'您无权限编辑此文档', type: 'error'})
       }
+      this.init()
     })
   },
   checkMove(item) {

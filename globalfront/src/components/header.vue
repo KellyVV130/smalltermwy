@@ -212,7 +212,7 @@ import { GetTime } from '../main'
         localStorage.removeItem('userId')
         localStorage.removeItem('head')
         this.head=''
-        this.$router.push({name:'history'})
+        this.$router.push({name:'Home'})
       },
       getHead(){
         getUserInfo(1).then(response => {

@@ -232,7 +232,7 @@
     removeCoworker,
     fetchMyDocs,
     fetchTeamDocs,
-    undoCollect, doCollect, fetchDustbin, fetchCollections, deleteForever, undoDelete, deleteDoc
+    undoCollect, doCollect, fetchDustbin, fetchCollections, deleteForever, undoDelete, deleteDoc, fetchMyBuild
   } from "../api/api";
   import {GetTime} from "../main"
   import logo from '../assets/icon.png'
@@ -405,6 +405,25 @@
               })
             }
           }).catch(e=>this.$message({message: e.response.data, type: 'error'}))
+        } else if (this.type === 'build_t'){
+          fetchMyBuild().then(res=>{
+            if(res.status === 200){
+              this.tableData = []
+              res.data.forEach(i => {
+                this.tableData.push({
+                  docId: i.id,
+                  docName: i.name,
+                  builder: i.create_user.username,
+                  builderId: i.create_user.id,
+                  createTime: GetTime(i.create_time),
+                  lastTime: GetTime(i.modify_time),
+                  lastUser: i.last_modify_user?i.last_modify_user.username:"—",
+                  lastUserId: i.last_modify_user?i.last_modify_user.id:"",
+                  isCollected: i.has_collect
+                })
+              })
+            }
+          }).catch(e=>{this.$message({message:e, type:'error'})})
         }
       },
       createTimeFilter(timeName){
@@ -592,7 +611,7 @@
         })
       },
       getDocInfo(id){
-        fetchDocInfo(id).then(res=>{
+        fetchDocInfo(id,0).then(res=>{
           if(res.status === 200){
             this.Info.id = res.data.id
             this.Info.docName = res.data.name

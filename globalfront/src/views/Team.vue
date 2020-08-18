@@ -44,14 +44,15 @@
         <div><span style="width: 120px;display:inline-block;">团队名：</span>{{Info.name}}</div>
         <div>
           <span style="width: 120px;display:inline-block;">创建者：</span>
-          <span style="cursor: pointer;" @click="toPerson(Info.builderId)">{{Info.builder}}</span>
+          <span style="cursor: pointer;" @click="toUser(Info.builderId)">{{Info.builder}}</span>
         </div>
       <div><span style="width: 40px;">创建日期：</span>{{Info.create_time}}</div>
         <el-divider></el-divider>
         <div>所有成员：
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers">
-            <el-avatar :src="item.userImg" :size="'small'" style="cursor: pointer;vertical-align: middle;"></el-avatar>
-            <span style="height: 28px; padding-right: 15px;margin-left: 10px;">{{item.userName}}</span>
+            <el-avatar :src="item.userImg" :size="'small'"
+                       style="cursor: pointer;vertical-align: middle;" @click.native="toUser(item.userId)"></el-avatar>
+            <span style="height: 28px; padding-right: 15px;margin-left: 10px;" @click="toUser(item.userId)">{{item.userName}}</span>
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
                      @click="checkMove(item)" v-if="isCo">
@@ -62,9 +63,11 @@
         </div>
         <el-divider v-if="userId===Info.builderId+''"></el-divider>
 <!--        <el-link plain type="primary" style="font-size: 16px;">分享</el-link>-->
-        <el-link plain type="danger" style="float: right; font-size: 16px;" @click="Delete(Info.id)" v-if="userId===Info.builderId+''">
-          <span>删除</span>
-        </el-link>
+        <div style=" margin-top: 20px;" v-if="userId===Info.builderId+''">
+          <el-button plain type="danger" @click="Delete(Info.id)">
+          解散团队
+          </el-button>
+        </div>
       </div>
     </el-dialog>
 
@@ -192,7 +195,8 @@
               userId: i.id,
               userName: i.username,
               userImg: i.head,
-              isBuilder: i.role===1? true:false
+              isBuilder: i.role===1? true:false,
+              role: i.role
             })
             console.log(i.id, this.Info.coworkers)
           })
@@ -243,7 +247,8 @@
                   userId: i.id,
                   userName: i.username,
                   userImg: i.head,
-                  isBuilder: i.role===1? true:false
+                  isBuilder: i.role===1? true:false,
+                  role: i.role
                 })
               })
               this.init()//好像不需要
@@ -260,6 +265,9 @@
           this.infoDialog = false
         })
       },
+      toUser(id){
+        this.router.push({name:'PersonInfo', params:{PersonId: id}})
+      }
     }
   }
 </script>

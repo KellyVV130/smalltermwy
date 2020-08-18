@@ -96,6 +96,9 @@ export default {
       
     },
     toRegister(){
+      if(this.$route.params.redirect){
+        this.$router.push({name:"Register", params:{redirect:this.$route.params.redirect}})
+      } else
       this.$router.push({path:"/Register"})
     },
   },

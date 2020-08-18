@@ -83,12 +83,12 @@ export const fetchRecentDocs = () => {
   return axios.get('/RecentDoc/')
 }
 
-export const fetchDocInfo= (id) =>{
-  return axios.get('/DocEdit/'+id)
+export const fetchDocInfo= (id, type = null) =>{
+  return axios.get('/DocEdit/'+id+'/',{params:{type:type}})
 }
 
 export const fetchCoworkers = (id) => {
-  return axios.get('/Coworker/' + id)
+  return axios.get('/Coworker/' + id+'/')
 }
 
 export const addCoworker = (doc, user) => {
@@ -181,6 +181,10 @@ export const postMsg = (doc_id, body, reply_comment) => {
   })
 }
 
-export const deleteMsg = function(params) {
-  return axios.delete('/comment/', { data: params })
+export const deleteMsg = id =>  {
+  return axios.delete('/comment/'+id+'/')
+}
+
+export const fetchMyBuild = () => {
+  return axios.get('/MyCreate/')
 }

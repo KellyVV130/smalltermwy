@@ -27,6 +27,12 @@
         <el-menu-item index="/myBuild">
           <template slot="title">
             <i class="el-icon-edit-outline"></i>
+            <span>我创建的</span>
+          </template>
+        </el-menu-item>
+        <el-menu-item index="/myDocs">
+          <template slot="title">
+            <i class="el-icon-tickets"></i>
             <span>我的文档</span>
           </template>
         </el-menu-item>
