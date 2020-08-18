@@ -183,3 +183,8 @@ export const changeContent = (
     create_by_model: model
   })
 }
+
+// 获取编辑者ID
+export const Edit = doc => {
+  return axios.get('/DocEdit/' + doc)
+}
