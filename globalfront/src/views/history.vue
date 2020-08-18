@@ -103,6 +103,7 @@
   }
   .history{
     background-color: whitesmoke;
+    overflow-x: hidden;
   }
   .el-button{
     width: 150px;

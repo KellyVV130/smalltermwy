@@ -31,7 +31,7 @@
     flex: 1;
   }
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
     height: 8px;
     background-color: #f5f5f5;
   }

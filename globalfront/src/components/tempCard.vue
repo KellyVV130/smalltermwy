@@ -20,14 +20,20 @@
           return{
             id:0,
             img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
-            name: '人力资源模板'
+            name: '人力资源模板',
+            teamId:''
           }
         }
       }
     },
     methods:{
       toNewDoc(){
-        createDoc(0,this.temp.name,null,"",this.temp.id).then(res=>{
+        if(this.$route.params.teamId){
+          this.teamId = this.$route.params.teamId
+        } else {
+          this.teamId = null
+        }
+        createDoc(0,this.temp.name,this.teamId,"",this.temp.id).then(res=>{
           if(res.status === 201){
             this.$message({message:'新建文档成功', type:'info'})
             this.$router.push({name:'editorPage', params:{docId:res.data.id}})

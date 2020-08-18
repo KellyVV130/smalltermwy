@@ -15,7 +15,7 @@
           </span>
           <div style="margin-top: 30px;"><!--这里放模板卡片，有缩略图和模板名-->
             <el-row :gutter="20">
-              <el-col :span="6" v-for="(item, index) in 6" :key="index" style="margin-bottom: 30px;">
+              <el-col :span="6" v-for="(item, index) in temps" :key="index" style="margin-bottom: 30px;">
                   <temp-card :temp="item"></temp-card>
               </el-col>
             </el-row>
@@ -56,8 +56,10 @@
     },
     methods:{
       init(keywords = "", ordering = "name"){
+        console.log('template')
         fetchTemplates(keywords, ordering).then(res=>{
           if(res.status === 200){
+            console.log(res.data)
             this.temps = []
             res.data.forEach(i => {
               this.temps.push({

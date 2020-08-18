@@ -1,26 +1,26 @@
 <template>
   <div class="docImg">
-    <div v-if="type==='history'">
+    <div v-if="type==='history'" style="margin: 5px;">
       <el-timeline>
         <el-timeline-item v-for="(father, index_f) in todo" :key="index_f" :timestamp="father.date" placement="top"
           type="primary" size="large">
           <el-row :gutter="40">
             <el-col :span="4" v-for="(item, index) in father.subList" :key="index" style="margin: 20px 0;">
               <div style="height: 110px;text-align: center">
-                <el-card class="fileCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
-                  <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="isHover">
+                <el-card class="fileCard" shadow="hover" @mouseenter.native="item.isHover = true" @mouseleave.native="item.isHover=false">
+                  <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="item.isHover">
                     <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
                     <i class="el-icon-s-tools" @click="handleClick(item.docId)"></i>
                     </el-tooltip>
                   </div>
-                  <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="isHover">
+                  <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="item.isHover">
                     <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
                       <span slot="content"><span v-if="item.isCollected">取消</span>收藏</span>
                     <i class="el-icon-star-on" v-if="item.isCollected" @click="changeColl(item.docId)"></i>
                     <i class="el-icon-star-off" v-else @click="changeColl(item.docId)"></i>
                     </el-tooltip>
                   </div>
-                  <div style="right: 5px; line-height: 5px;position: absolute; top: 45px; font-size: x-small" v-if="isHover">
+                  <div style="right: 5px; line-height: 5px;position: absolute; top: 45px; font-size: x-small" v-if="item.isHover">
                     <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
                     <i class="el-icon-s-custom" @click="openFolderDialog(item.docId)"></i>
                     </el-tooltip>
@@ -40,17 +40,17 @@
       </el-timeline>
     </div>
 
-    <div v-else-if="type === 'dustbin'">
+    <div v-else-if="type === 'dustbin'" style="margin: 5px;">
       <el-row :gutter="40">
         <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
           <div style="height: 110px;text-align: center">
-            <el-card class="fileCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
-              <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="isHover">
+            <el-card class="fileCard" shadow="hover" @mouseenter.native="item.isHover = true" @mouseleave.native="item.isHover=false">
+              <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="item.isHover">
                 <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-s-tools" @click="handleClick(item.docId)"></i>
                 </el-tooltip>
               </div>
-              <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="isHover">
+              <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="item.isHover">
                 <el-tooltip effect="dark" content="恢复文档" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-refresh-right" @click="recover(item.docId)"></i>
                 </el-tooltip>
@@ -68,24 +68,24 @@
       </el-row>
     </div>
 
-    <div v-else>
+    <div v-else style="margin: 5px;">
       <el-row :gutter="40">
         <el-col :span="4" v-for="(item, index) in tableData" :key="index" style="margin-bottom: 20px;">
           <div style="height: 110px;text-align: center">
-            <el-card class="fileCard" shadow="hover" @mouseenter.native="isHover = true" @mouseleave.native="isHover=false">
-              <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="isHover">
+            <el-card class="fileCard" shadow="hover" @mouseenter.native="item.isHover = true" @mouseleave.native="item.isHover=false">
+              <div style="right: 5px; line-height: 5px;position: absolute; top: 5px; font-size: x-small" v-if="item.isHover">
                 <el-tooltip effect="dark" content="文档详情" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-s-tools" @click="handleClick(item.docId)"></i>
                 </el-tooltip>
               </div>
-              <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="isHover">
+              <div style="right: 5px; line-height: 5px;position: absolute; top: 25px; font-size: x-small" v-if="item.isHover">
                 <el-tooltip effect="dark" placement="bottom" :hide-after="800" :enterable="false">
                   <span slot="content"><span v-if="item.isCollected">取消</span>收藏</span>
                 <i class="el-icon-star-on" v-if="item.isCollected" @click="changeColl(item.docId)"></i>
                 <i class="el-icon-star-off" v-else @click="changeColl(item.docId)"></i>
                 </el-tooltip>
               </div>
-              <div style="right: 5px; line-height: 5px;position: absolute; top: 45px; font-size: x-small" v-if="isHover">
+              <div style="right: 5px; line-height: 5px;position: absolute; top: 45px; font-size: x-small" v-if="item.isHover">
                 <el-tooltip effect="dark" content="添加协作者" placement="bottom" :hide-after="800" :enterable="false">
                 <i class="el-icon-s-custom" @click="openFolderDialog(item.docId)"></i>
                 </el-tooltip>
@@ -183,26 +183,102 @@
         role:-1,
         userId:localStorage.userId,
         tableData: [
-        // {
-        //     docId: 1,
-        //     docName: '文档1',
-        //     readTime: '2020-08-14 00:04:23.408300'
-        //   },
-        //   {
-        //     docId: 2,
-        //     docName: '文档2',
-        //     readTime: '2020-08-15 00:04:23.408300'
-        //   },
-        //   {
-        //     docId: 3,
-        //     docName: '文档3',
-        //     readTime: '2020-08-14 00:04:23.408300'
-        //   },
-        //   {
-        //     docId: 4,
-        //     docName: '文档4',
-        //     readTime: '2020-08-11 00:04:23.408300'
-        //   }
+        {
+            docId: 1,
+            docName: '文档1',
+            readTime: '2020-08-14 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 2,
+            docName: '文档2',
+            readTime: '2020-08-15 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 3,
+            docName: '文档3',
+            readTime: '2020-08-14 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 4,
+            docName: '文档4',
+            readTime: '2020-08-11 00:04:23.408300',
+            isHover: false
+          },
+        {
+            docId: 1,
+            docName: '文档1',
+            readTime: '2020-08-14 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 2,
+            docName: '文档2',
+            readTime: '2020-08-15 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 3,
+            docName: '文档3',
+            readTime: '2020-08-14 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 4,
+            docName: '文档4',
+            readTime: '2020-08-11 00:04:23.408300',
+            isHover: false
+          },
+        {
+            docId: 1,
+            docName: '文档1',
+            readTime: '2020-08-14 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 2,
+            docName: '文档2',
+            readTime: '2020-08-15 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 3,
+            docName: '文档3',
+            readTime: '2020-08-14 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 4,
+            docName: '文档4',
+            readTime: '2020-08-11 00:04:23.408300',
+            isHover: false
+          },
+        {
+            docId: 1,
+            docName: '文档1',
+            readTime: '2020-08-14 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 2,
+            docName: '文档2',
+            readTime: '2020-08-15 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 3,
+            docName: '文档3',
+            readTime: '2020-08-19 00:04:23.408300',
+            isHover: false
+          },
+          {
+            docId: 4,
+            docName: '文档4',
+            readTime: '2020-08-10 00:04:23.408300',
+            isHover: false
+          }
         ],
         isHover: false,
         Dialog: false,
@@ -239,7 +315,8 @@
       }
     },
     mounted(){
-      this.init()
+      //this.init()
+      this.todo = splitDate(this.tableData,"readTime")
     },
     methods:{
       init(){
@@ -256,6 +333,7 @@
                   isCollected: i.document.has_collect,
                   builder: i.document.create_user.username,
                   builderId: i.document.create_user.id,
+                  isHover: false,
                 })
               })
               this.todo = splitDate(this.tableData, "readTime")
@@ -275,7 +353,8 @@
                   lastTime: GetTime(i.modify_time),
                   lastUser: i.last_modify_user?i.last_modify_user.username:"—",
                   lastUserId: i.last_modify_user?i.last_modify_user.id:"",
-                  isCollected: i.has_collect
+                  isCollected: i.has_collect,
+                  isHover: false,
                 })
               })
             }
@@ -295,6 +374,7 @@
                   lastTime: GetTime(i.modify_time),
                   lastUser: i.last_modify_user_username,
                   lastUserId: i.last_modify_user,
+                  isHover: false,
                 })
               })
             }
@@ -314,6 +394,7 @@
                   deleteTime: GetTime(i.delete_time),
                   builder: i.document.create_user.username,
                   builderId: i.document.create_user.id,
+                  isHover: false,
                 })
               })
             }
@@ -331,6 +412,7 @@
                   builderId: i.create_user.id,
                   lastUser: i.last_modify_user?i.last_modify_user.username:"—",
                   lastUserId: i.last_modify_user?i.last_modify_user.id:"",
+                  isHover: false,
                 })
               })
             }
@@ -526,6 +608,8 @@
 <style>
   .docImg{
     height: 80vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
   .fileCard{
     border: 0px;

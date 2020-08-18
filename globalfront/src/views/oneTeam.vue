@@ -89,7 +89,7 @@
         localStorage.setItem('chart', value)
       },
       toTemplate(){
-        this.$router.push({name:'templates'})
+        this.$router.push({name:'templates', params:{teamId:this.teamId}})
       },
     }
   }
