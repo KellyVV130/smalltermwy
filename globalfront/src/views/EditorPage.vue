@@ -16,6 +16,7 @@
         <el-button plain type="danger" @click="Delete(Info.builder)"
           >删除</el-button
         >
+        <el-button @click="StartEdit()">编辑</el-button>
         <el-button @click="changeContent()">保存</el-button>
         <el-dropdown>
           <el-button icon="el-icon-more"> </el-button>
@@ -89,7 +90,7 @@
             </div>
             <div style=" margin-top: 20px;">
               <el-button plain type="danger" @click="Delete(Info.builder)">
-                <span v-if="type === 'dustbin'">彻底</span>删除
+                删除
               </el-button>
             </div>
           </div>
@@ -140,6 +141,7 @@
 <script>
 import Axios from '../api/index'
 import {
+  Edit,
   deleteDoc,
   getContent /*
   changeContent,
@@ -285,7 +287,6 @@ export default {
       this.$router.go(-1)
     },
     Delete(id) {
-      EditorBar.disable()
       let message = (this.type = '确定要删除它吗？')
       this.$confirm(message).then(_ => {
         console.log(id + _)
@@ -332,16 +333,44 @@ export default {
           console.log(res)
         })
     },
+    updated() {
+      this.getContent(this.$route.params.docId)
+      console.log('界面已更新')
+    },
+    //开始编辑
+    StartEdit() {
+        // 是否在被人编辑
+        Edit().then(res => {
+          if (res.status === 204) {
+            const axios = Axios
+            axios.patch(
+              'http://127.0.0.1:8000/editorpage/' + localStorage.docID + '/',
+              {
+                editor: this.userId
+              }
+            )
+            this.updated()
+            this.init()
+            this.$message({ message: '您已进入编辑状态！', type: 'info' })
+          } else {
+            this.init()
+            this.$message({
+              message: '文档正在编辑中, 当前编辑者: ' + res.response.editor,
+              type: 'error'
+            })
+          }
+        })
+    },
     mounted() {
       this.ID = this.$route.params.personId
       if (this.ID === localStorage.userId) {
         this.ifChangeVisible = true
         this.ifChangeHeadVisible = true
-        this.getContent(this.$route.params.personId)
+        this.getContent(this.$route.params.docId)
       } else {
         this.ifChangeVisible = false
         this.ifChangeHeadVisible = false
-        //this.getOtherInfo(this.$route.params.personId)
+        //this.getOtherInfo(this.$route.params.docId)
       }
     }
   }
