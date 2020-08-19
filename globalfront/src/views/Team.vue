@@ -56,8 +56,8 @@
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
                      @click="checkMove(item)" v-if="isCo">
-              <span v-if="!item.isBuilder&&userId===Info.builderId+''">移除</span>
-              <span v-else-if="!item.isBuilder&&isCo">退出</span>
+              <span v-if="!item.isBuilder">移除</span>
+<!--              <span v-else-if="!item.isBuilder&&isCo">退出</span>-->
             </el-link>
           </div>
         </div>
@@ -275,10 +275,11 @@
 <style scoped>
   .el-aside{
     width: 300px;
-    height: calc(100vh - 50px);
+    /*height: calc(100vh - 50px);*/
   }
   .myTeams{
     background-color: whitesmoke;
+    overflow-x: hidden;
   }
   .el-button{
     width: 150px;

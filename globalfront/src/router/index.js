@@ -84,7 +84,7 @@ const routes = [//I don't know why this files keeps jumping out merge fails, the
   //  }
   },
   {
-    path:'/editorPage/:docId',
+    path:'/editorPage',
     name:'editorPage',
     component: () => import("../views/EditorPage"),
     meta:{
@@ -128,19 +128,40 @@ VueRouter.prototype.push = function push (location) {
 //判断用户是否登录
 router.beforeEach((to, from, next) => {
   let that = router.app
+  console.log(to.path)
   if (to.meta.auth) {
     let token = localStorage.getItem('token')
     if (token) {
-      next()
+      if(to.name === 'editorPage'&&!to.query.key){
+        next({
+          path:'/editorPage',
+          query:{
+            key:that.$cypher.encode(to.params.docId)
+          }
+        })
+      }
+      else next()
     } else {
       console.log(that)
       that.$message({message:'欢迎使用环球文档！敬请登录。', type: 'info'})
-      next({
-        name: 'Home',
-        params: {
-          redirect: to.fullPath
-        }
-      })
+      console.log(to.path)
+      if(to.query&&to.query.key){
+        console.log(to.query.key)
+        next({
+          name:'Login',
+          params:{
+            redirect: to.path+'?key='+to.query.key
+          }
+        })
+      }
+      else{
+        next({
+          name: 'Login',
+          params: {
+            redirect: to.path
+          }
+        })
+      }
     }
   } else {
     console.log(that)

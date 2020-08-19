@@ -17,6 +17,7 @@
           prop="readTime"
           label="最后浏览时间"
           sortable
+          width="200"
           column-key="readTime"
           :filters="createTimeFilter('readTime')"
           :filter-method="filterHandler"
@@ -25,7 +26,7 @@
         <el-table-column
           prop="docName"
           sortable
-          width="400"
+          width="350"
           label="文件名">
           <template slot-scope="scope">
             <span  style="cursor: pointer;" @click="toDoc(scope.row.docId)">{{scope.row.docName}}</span>
@@ -74,7 +75,6 @@
         <el-table-column
           prop="docName"
           sortable
-          width="400"
           label="文件名">
           <template slot-scope="scope">
             {{scope.row.docName}}
@@ -117,7 +117,7 @@
         <el-table-column
           prop="name"
           sortable
-          width="400"
+          width="350"
           label="文件名">
           <template slot-scope="scope">
             <span  style="cursor: pointer;" @click="toDoc(scope.row.docId)">{{scope.row.docName}}</span>
@@ -155,6 +155,7 @@
           prop="lastTime"
           label="最新修改时间"
           sortable
+          width="200"
           column-key="lastTime"
           :filters="createTimeFilter('lastTime')"
           :filter-method="filterHandler"
@@ -194,19 +195,19 @@
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
                      @click="checkMove(item)" v-if="isCo" :disabled="item.role===2">
-              <span v-if="!item.isBuilder&&userId===Info.builderId+''">移除</span>
-              <span v-else-if="!item.isBuilder&&isCo">退出</span>
+              <span v-if="!item.isBuilder">移除</span>
+<!--              <span v-else-if="!item.isBuilder&&item.userId+''===userId+''">退出</span>-->
             </el-link>
           </div>
         </div>
         <el-divider v-if="type !== 'dustbin'"></el-divider>
-        <div v-if="type !== 'dustbin'&&role===1">
+        <div v-if="type !== 'dustbin'&&role+''===1+''">
           <el-button plain type="primary" @click="setP(Info.id)">设置权限</el-button>
         </div>
         <div style=" margin-top: 20px;" v-if="type !== 'dustbin'">
           <el-button plain type="success" @click="shareDialog(Info.id)">分享</el-button>
         </div>
-        <div style=" margin-top: 20px;" v-if="role===1"><el-button plain type="danger" @click="Delete(Info.id)">
+        <div style=" margin-top: 20px;" v-if="role+''===1+''"><el-button plain type="danger" @click="Delete(Info.id)">
           <span v-if="type==='dustbin'">彻底</span>删除
           </el-button>
         </div>
@@ -567,7 +568,9 @@
         this.getDocInfo(id)
       },
       shareDialog(id){
-        this.shareId = id
+        console.log(id,'id',this.$cypher.encode(id+''))
+        this.shareId = this.$cypher.encode(id+'')
+        console.log(this.shareId)
         this.NAME = this.Info.docName
         this.shareV = true
       },
@@ -593,7 +596,7 @@
                   userId: i.id,
                   userName: i.username,
                   userImg: i.head,
-                  isBuilder: i.role === 1? true:false,
+                  isBuilder: i.role+'' === 1+''? true:false,
                   role: i.role
                 })
               })
@@ -622,9 +625,11 @@
             this.Info.create_time = GetTime(res.data.create_time)
             fetchCoworkers(this.Info.id).then(res=>{
               if(res.status === 200){
+                console.log(res.data)
                 this.isCo = false;
                 this.Info.coworkers = []
                 res.data.forEach((i, index) => {
+                  console.log(i)
                   if(i.id+'' === this.userId){
                     this.isCo = true
                     this.role = i.role
@@ -637,10 +642,11 @@
                     userId: i.id,
                     userName: i.username,
                     userImg: i.head,
-                    isBuilder: i.role === 1?true:false,
+                    isBuilder: i.role+'' === 1+''?true:false,
                     role:i.role
                   })
                 })
+                console.log(this.Info.coworkers)
               }
             }).catch(e => this.$message({message:e.response.data, type:'error'}))
           } else if(res.status === 204){

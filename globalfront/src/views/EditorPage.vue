@@ -7,10 +7,10 @@
                style="font-size: 20px;margin-left: -180px;margin-top: 10px;margin-bottom: 10px;">返回</el-link>
 
       <div style="float: right;margin-top: 11px; line-height: 28px;">
-
         <el-popover
           placement="bottom"
-          width="160"
+          width="200"
+          style="padding: 20px;"
           v-model="visible">
          <div>
           <div v-for="(item, index) in Info.coworkers" :key="index" class="coworkers" style="margin-left:10px">
@@ -19,13 +19,14 @@
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
                   @click="checkMove(item)" v-if="isCo" :disabled="item.role===2">
-            <span v-if="!item.isBuilder&&userId===Info.builderId+''">移除</span>
-            <span v-else-if="!item.isBuilder&&isCo">退出</span>
+            <span v-if="!item.isBuilder">移除</span>
+<!--            <span v-else-if="!item.isBuilder&&isCo">退出</span>-->
             </el-link>
           </div>
-          <el-link type="primary" size="mini" :underline="false" style="margin-left:0px" icon="el-icon-plus" @click="dialog = true">添加</el-link>
+          <el-link type="primary" size="mini" style="margin: 20px;"
+                   :underline="false" icon="el-icon-plus" @click="dialog = true">添加</el-link>
           </div>
-          <el-button plain type="info" slot="reference">协作</el-button>
+          <el-link slot="reference" :underline="false" style="font-size: large">协作</el-link>
         </el-popover>
 
         <el-dialog title="添加协作者" :visible.sync="dialog" :close-on-click-modal="false" :modal-append-to-body="false"
@@ -50,18 +51,19 @@
             </div>
           </el-dialog>
 
-        <el-button @click="StartEdit" plain type="warning" style="margin-left: 14px;">编辑</el-button>
-        <el-button @click="changeContent" type="success" plain>保存</el-button>
+<!--        <el-button @click="StartEdit" plain type="warning" style="margin-left: 14px;">编辑</el-button>-->
+        <el-link @click="changeContent" type="success"
+                 :underline="false" style="font-size: large;margin-left: 14px;">保存</el-link>
+        <el-divider direction="vertical"></el-divider>
         <el-dropdown @command="handleCommand" style="margin-left: 14px;">
-          <el-button icon="el-icon-more" type="primary" plain> </el-button>
+          <el-link icon="el-icon-more" type="info" :underline="false" style="font-size: large"> </el-link>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="a">
               <span v-if="Info.isCollected">取消</span>收藏
             </el-dropdown-item>
             <el-dropdown-item command="b">文档信息</el-dropdown-item>
             <el-dropdown-item command="d">分享</el-dropdown-item>
-            <el-divider></el-divider>
-            <el-dropdown-item command="c">删除</el-dropdown-item>
+            <el-dropdown-item command="c" style="color: #ff4144" v-if="role+''===1+''">删除</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
 
@@ -85,9 +87,9 @@
                 <span style="height: 28px; padding-right: 15px;margin-left: 10px;cursor:pointer;" @click="toUser(item.userId)">{{item.userName}}</span>
                 <i class="el-icon-user" v-if="item.isBuilder"></i>
                 <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
-                         @click="checkMove(item)" v-if="isCo">
-                  <span v-if="!item.isBuilder&&ID===Info.builderId+''">移除</span>
-                  <span v-else-if="!item.isBuilder&&isCo">退出</span>
+                         @click="checkMove(item)" v-if="isCo" :disabled="item.role===2">
+                  <span v-if="!item.isBuilder">移除</span>
+<!--                  <span v-else-if="!item.isBuilder&&item.userId+''===ID+''">退出</span>-->
                 </el-link>
               </div>
             </div>
@@ -112,13 +114,16 @@
 
     <el-form ref="form" :model="ruleForm" label-width="0px">
       <el-form-item>
-        标题：<el-input v-model="title" style="width: 200px;"></el-input>
+        标题：
+        <el-input v-model="title" style="width: 200px;" @focus="StartEdit()"></el-input>
       </el-form-item>
       <el-form-item>
         <editor-bar
           v-model="content"
           :isClear="isClear"
+          @onfocus="StartEdit"
           @change="change"
+          :edit="edit"
         ></editor-bar>
       </el-form-item>
       <el-divider style="margin-top: 40px;">评论区</el-divider>
@@ -128,7 +133,6 @@
           :cid="docId"
           isClear="isClear"
           disable="false"
-          @change="change"
         ></comment-bar>
       </el-form-item>
     </el-form>
@@ -191,7 +195,7 @@ export default {
       builder: '家',
       ID: 1,
       title: '未命名',
-      content: '',
+      content: '请输入内容……',
 
       comments: {
         id: 12,
@@ -245,16 +249,15 @@ export default {
       folderDialog: false,
       role: 1,
       edit: false,
-      timer:''
+      timer:'',
+      firstFocus: true,
     }
   },
 
   methods: {
     //获取文章内容
     init() {//当前编辑者
-      this.docId = this.$route.params.docId
       console.log('init',this.docId)
-      this.edit = false
       fetchDocInfo(this.docId).then(res => {
         if (res.status === 200) {
           this.title = res.data.name
@@ -262,29 +265,35 @@ export default {
           this.docId = res.data.id
           if (res.data.editor) {
             //有当前编辑者。
+            console.log(res.data.editor,this.ID)
             this.editor = res.data.editor
-            const notify = this.$notify({
-              title: '协作',
-              message: "<a style='cursor: pointer;'>"+this.editor.username+"</a>正在编辑",
-              //duration: 0,
-              type: 'warning',
-              dangerouslyUseHTMLString: true,
-            });
-            notify.$el.querySelector('a').onclick = () => {
-              // your code
-              this.toUser(this.editor.id)
-              // 点击后关闭notify 不需要的话可删掉
-              notify.close();
-            };
-            if (this.editor.id === this.ID) {
-              console.log('right')
+            if (this.editor.id+ ''=== this.ID+'') {
               this.edit = true
+              this.firstFocus = false
+              console.log('right')
             } else {
+              console.log('wrong',this.editor.id===this.ID)
               this.edit = false
+              this.firstFocus = true
+              const notify = this.$notify({
+                title: '协作',
+                message: "<a style='cursor: pointer;'>"+this.editor.username+"</a>正在编辑",
+                //duration: 0,
+                type: 'warning',
+                dangerouslyUseHTMLString: true,
+              });
+              notify.$el.querySelector('a').onclick = () => {
+                // your code
+                this.toUser(this.editor.id)
+                // 点击后关闭notify 不需要的话可删掉
+                notify.close();
+              };
             }
           } else {
             //没有他人编辑
+            console.log('nobody')
             this.edit = true
+            this.firstFocus = true
           }
 
           this.Info.id = res.data.id
@@ -332,15 +341,22 @@ export default {
       this.folderDialog = val
       this.init()//或许没有用
     },
+    change(val){
+      this.content = val
+    },
     changeContent() {
       changeContent(this.docId, this.title, this.content)
           .then(response => {
             if (response.status === 200) {
+              this.edit = false
               this.$message({
                 message: '修改文档成功',
                 type: 'info'
               })
+              this.firstFocus = true
             } else if (response.status === 204){
+              this.edit = true
+              this.firstFocus = true
               this.$message({
                 message: '您尚未进入编辑状态，不可提交',
                 type: 'error'
@@ -349,9 +365,11 @@ export default {
           })
           .catch(e => {
             if (e.response.status === 401) {
+              this.firstFocus = false
               this.message({message: '修改文档失败', type: 'error'})
             }
           })
+      this.init()
     },
   toUser(id) {
     this.$router.push({name: 'PersonInfo', params: {personId: id}})
@@ -396,9 +414,6 @@ export default {
         this.shareDialog()
     }
   },
-  change(val) {
-    console.log(val)
-  },
   toHome() {
     this.$router.go(-1)
   },
@@ -408,8 +423,8 @@ export default {
       //删除文档
       deleteDoc(this.docId).then(res => {
         if (res.status === 204) {
-          this.init()
           this.$message({message: '删除成功！', type: 'info'})
+          this.$router.push({name:'dustbin'})
         }
       })
       .catch(e =>
@@ -419,7 +434,8 @@ export default {
     })
   },
   shareDialog() {
-    this.shareId = this.docId
+    console.log(this.docId)
+    this.shareId = this.$cypher.encode(this.docId+'')
     this.shareV = true
   },
   changeShare(val) {
@@ -435,37 +451,45 @@ export default {
   },
   //开始编辑
   StartEdit() {
-    // 是否在被人编辑//修改装
-    console.log('edit',this.docId)
-    Edit(this.docId, 0).then(res => {
-      if (res.status === 200) {
-        this.$message({message: '您已进入编辑状态！', type: 'info'})
-        this.edit = true
-        this.init()
-      }
-    }).catch(e => {
-      if (e.response.status === 400) {
-        this.edit = false
-        const notify = this.$notify({
-          title: '协作',
-          message: "<a style='cursor: pointer;'>"+this.editor.username+"</a>正在编辑",
-          //duration: 0,
-          type: 'warning',
-          dangerouslyUseHTMLString: true,
-        });
-        notify.$el.querySelector('a').onclick = () => {
-          // your code
-          this.toUser(this.editor.id)
-          // 点击后关闭notify 不需要的话可删掉
-          notify.close();
-        };
-        this.edit = false
-      } else if(e.response.status === 401){
-        this.$message({message:'您无权限编辑此文档', type: 'error'})
-      }
-      this.init()
-      this.edit = false
-    })
+    // 是否在被人编辑
+    this.init()
+    console.log(this.edit, this.firstFocus)
+    if(this.edit && this.firstFocus){
+      Edit(this.docId, 0).then(res => {
+        if (res.status === 200) {
+          this.edit = true
+          this.firstFocus = false
+          this.$message({message: '您已进入编辑状态！', type: 'info'})
+        }
+      }).catch(e => {
+        if (e.response.status === 400) {
+          const notify = this.$notify({
+            title: '协作',
+            message: "<a style='cursor: pointer;'>"+this.editor.username+"</a>正在编辑",
+            //duration: 0,
+            type: 'warning',
+            dangerouslyUseHTMLString: true,
+          });
+          notify.$el.querySelector('a').onclick = () => {
+            // your code
+            this.toUser(this.editor.id)
+            // 点击后关闭notify 不需要的话可删掉
+            notify.close();
+          };
+          if(this.ID+'' === this.editor.id+''){
+            this.edit = true
+            this.firstFocus = false
+          }
+          else{
+            this.edit = false
+            this.firstFocus = true
+          }
+        } else if(e.response.status === 401){
+          this.edit = false
+          this.$message({message:'您无权限编辑此文档', type: 'error'})
+        }
+      })
+    }
   },
   checkMove(item) {
     let message = '确定要移除ta吗？'
@@ -560,11 +584,20 @@ export default {
   },
 },
   mounted() {
+    this.edit = true
+    this.firstFocus = true
+    let path = ""
+    if(this.$route.query){
+      console.log(this.$route.query.key)
+      path = this.$cypher.decode(this.$route.query.key)
+      console.log(path)
+    }
     console.log('mounted')
     this.ID = localStorage.userId
-    this.docId = this.$route.params.docId
+    console.log(path)
+    this.docId = this.$route.params.docId ||  path+''
     console.log(this.ID, this.docId)
-    this.timer=setInterval(this.init,120000)
+    //this.timer=setInterval(this.init,120000)
     this.init()
   },
   beforeDestroy(){

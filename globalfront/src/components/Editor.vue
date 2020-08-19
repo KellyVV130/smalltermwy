@@ -1,7 +1,12 @@
 <template lang="html">
   <div class="editor">
-    <div ref="toolbar" class="toolbar"></div>
-    <div ref="editor" class="text"></div>
+<!--    <div ref="toolbar" class="toolbar"></div>-->
+<!--    <div ref="editor" class="text"></div>-->
+    <div id="div1" class="toolbar">
+    </div>
+
+    <div id="div2" class="text"> <!--可使用 min-height 实现编辑区域自动增加高度-->
+    </div>
   </div>
 </template>
 
@@ -13,7 +18,8 @@ export default {
     return {
       // uploadPath,
       editor: null,
-      info_: null
+      info_: null,
+      can:false
     }
   },
   model: {
@@ -46,24 +52,22 @@ export default {
         this.editor.txt.html(this.value)
       }
     },
-    // edit(val){
-    //   console.log(val)
-    //   this.seteditor()
-    //   if(val){
-    //     this.editor.enable();
-    //   } else {
-    //     this.editor.disable()
-    //   }
-    // }
+    edit(val){
+      console.log('editchange',val)
+      this.changeEdit()
+    }
   },
   mounted() {
     this.seteditor()
+    console.log(this.edit,'------------')
     this.editor.txt.html(this.value)
-    this.editor.disable()
   },
   methods: {
+    changeEdit(){
+      this.editor.$textElem.attr('contenteditable', this.edit)
+    },
     seteditor() {
-      this.editor = new E(this.$refs.toolbar, this.$refs.editor)
+      this.editor = new E('#div1', '#div2')  // 两个参数也可以传入 elem 对象，class 选择器
       this.editor.customConfig.uploadImgShowBase64 = true // base 64 存储图片
       // this.editor.customConfig.uploadImgServer =
       //   ""; // 配置服务器端地址
@@ -100,10 +104,17 @@ export default {
 
       this.editor.customConfig.onchange = html => {
         this.info_ = html // 绑定当前逐渐地值
+        console.log('change')
         this.$emit('change', this.info_) // 将内容同步到父组件中
+      }
+      this.editor.customConfig.onchangeTimeout = 10
+      this.editor.customConfig.onfocus = () => {
+        console.log('focus')
+        this.$emit('onfocus')
       }
       // 创建富文本编辑器
       this.editor.create()
+      this.editor.$textElem.attr('contenteditable', true)
     }
   }
 }
@@ -113,13 +124,13 @@ export default {
 .editor {
   margin: 0 auto;
   position: relative;
-  z-index: 0;
+  z-index: 50;
 }
 .toolbar {
   border: 1px solid #ccc;
 }
 .text {
   border: 1px solid #ccc;
-  min-height: 1000px;
+  min-height: 800px;
 }
 </style>

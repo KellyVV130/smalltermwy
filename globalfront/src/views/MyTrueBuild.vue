@@ -77,10 +77,11 @@
 <style scoped>
   .el-aside{
     width: 300px;
-    height: calc(100vh - 50px);
+    /*height: calc(100vh - 50px);*/
   }
   .myTrueBuild{
     background-color: whitesmoke;
+    overflow-x: hidden;
   }
   .el-button{
     width: 150px;

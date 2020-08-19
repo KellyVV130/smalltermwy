@@ -124,8 +124,8 @@
             <i class="el-icon-user" v-if="item.isBuilder"></i>
             <el-link type="danger" style="position: absolute; right: 15px; top: 10px;"
                      @click="checkMove(item)" v-if="isCo" :disabled="item.role===2">
-              <span v-if="!item.isBuilder&&userId===Info.builderId+''">移除</span>
-              <span v-else-if="!item.isBuilder&&isCo">退出</span>
+              <span v-if="!item.isBuilder">移除</span>
+<!--              <span v-else-if="!item.isBuilder&&item.userId+''===userId+''">退出</span>-->
             </el-link>
           </div>
         </div>
@@ -326,7 +326,8 @@
                   lastTime: GetTime(i.modify_time),
                   lastUser: i.last_modify_user?i.last_modify_user.username:"—",
                   lastUserId: i.last_modify_user?i.last_modify_user.id:"",
-                  isCollected: i.has_collect
+                  isCollected: i.has_collect,
+                  isHover: false,
                 })
               })
             }
@@ -369,7 +370,8 @@
         })
       },
       shareDialog(id){
-        this.shareId = id
+        this.shareId = this.$cypher.encode(id+'')
+        console.log(this.shareId)
         this.NAME = this.Info.docName
         this.shareV = true
       },
@@ -500,13 +502,15 @@
                     this.Info.builder = i.username
                     this.Info.builderId = i.id
                   }
-                  this.Info.coworkers.push({
+                  let q = {
                     userId: i.id,
                     userName: i.username,
                     userImg: i.head,
                     isBuilder: i.role === 1? true:false,
                     role:i.role
-                  })
+                  }
+                  this.Info.coworkers.push(q)
+                  console.log(!q.isBuilder&&(this.userId+''!==this.Info.builderId+''),q.isBuilder,this.userId+'',this.Info.builderId+'')
                 })
               }
             }).catch(e => this.$message({message:e.response.data, type:'error'}))

@@ -222,7 +222,7 @@ export default {
   mounted(){
     //this.ifGetAllMessage=true
     this.getAllMessage()
-    this.inboxTimer=setInterval(this.timerGet,120000)
+    this.inboxTimer=setInterval(this.timerGet,10000)
   },
   beforeDestroy(){
     clearInterval(this.inboxTimer)

@@ -155,7 +155,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
         email: "1214960505@qq.com",
         ID: "18373154",
         head: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-        uploadurl:'http://127.0.0.1:8000/users/',
+        uploadurl:'http://47.104.15.57/users/',
         hideUpload: false,
         dialogImageUrl:'',
         dialogVisible:false,
@@ -226,6 +226,7 @@ import {getUserInfo,getOtherInfo} from '../api/api'
             this.ID=response.data.id
             this.head=response.data.head
             this.webTitle = this.name + '的个人主页'
+            console.log(this.head)
           }
           else{
             this.$message({
@@ -471,8 +472,10 @@ import {getUserInfo,getOtherInfo} from '../api/api'
     }
     },
     mounted() {
+      console.log(this.$route.params.personId)
       this.ID=this.$route.params.personId
-      if(this.ID===localStorage.userId){
+      this.getOtherInfo(this.ID)
+      /*if(this.ID+''===localStorage.userId+''){
         this.ifChangeVisible=true
         this.ifChangeHeadVisible=true
         this.getPersonInfo(this.$route.params.personId)
@@ -481,14 +484,14 @@ import {getUserInfo,getOtherInfo} from '../api/api'
         this.ifChangeVisible=false
         this.ifChangeHeadVisible=false
         this.getOtherInfo(this.$route.params.personId)
-      }
+      }*/
       //this.getAvatar()//获取的头像都是登录用户的头像
     },
     watch: {
       head: {
         handler(oldValue,newValue){
           if(oldValue!==newValue){
-            this.getPersonInfo()
+            this.getOtherInfo(this.ID)
           }
         },
         immediate:true

@@ -61,7 +61,6 @@ Array.prototype.remove = function(val) {
 };
 
 export const GetTime = (time, sp = '.')=>{
-  console.log(time,sp)
   if(!time) return '—';
   if(sp === '.')
     time = time.split('T')[0]+' '+time.split('T')[1]
@@ -98,7 +97,6 @@ export const splitDate = (todo = [], time)=> {//将数组todo按字段time降序
 }
 
 Vue.prototype.$addStorageEvent = function (key, data) {
- 
       // 创建一个StorageEvent事件
       let newStorageEvent = document.createEvent('StorageEvent');
       const storage = {
@@ -111,6 +109,23 @@ Vue.prototype.$addStorageEvent = function (key, data) {
           }
       }
       return storage.setItem(key, data);
+}
+
+Vue.prototype.$cypher =  {
+   //加密
+    encode(str) {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+            function toSolidBytes(match, p1) {
+                return String.fromCharCode('0x' + p1);
+            }));
+    },
+  //解密
+    decode(str) {
+        // Going backwards: from bytestream, to percent-encoding, to original string.
+        return decodeURIComponent(atob(str).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
 }
 
 new Vue({

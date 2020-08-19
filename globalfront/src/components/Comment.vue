@@ -1,15 +1,31 @@
 <template>
   <div>
+    <el-card>
     <h4>发表评论</h4>
-    <el-input
-      type="textarea"
-      :rows="2"
-      placeholder="请输入内容"
-      v-model="commentContent"
-    >
-    </el-input>
-    <el-button type="primary" size="large" @click="postMsg(null)">发表评论</el-button>
+<!--    <el-input-->
+<!--      type="textarea"-->
+<!--      :rows="2"-->
+<!--      placeholder="请输入内容"-->
+<!--      v-model="commentContent"-->
+<!--    >-->
+<!--    </el-input>-->
+<!--    <el-button type="primary" size="large" @click="postMsg(null)">发表评论</el-button>-->
 
+    <el-row>
+      <el-col :span="20"><div class="grid-content bg-purple">
+        <el-input
+            type="textarea"
+            :rows="2"
+            placeholder="请输入内容"
+            v-model="commentContent"
+          >
+          </el-input>
+        </div></el-col>
+      <el-col :span="4">
+        <div class="commentButton">
+        <el-button type="primary" size="large" @click="postMsg(null)">发表评论</el-button>
+        </div></el-col>
+    </el-row>
     <!-- 评论列表区域 -->
     <div class="list">
       <div class="item" v-for="(item, i) in cmtlist" :key="i">
@@ -20,12 +36,12 @@
           item.create_time
           }}
           <a @click="deleteMsg(item.id)" style="cursor: pointer;color: red;margin-left: 20px;"
-          v-if="userId === item.author.id">删除</a>
+          v-if="userId === item.author.id+''">删除</a>
           <a @click="openDiag(item.id)" style="cursor: pointer;color: cadetblue;margin-left: 20px;">回复</a>
         </div>
         <div class="item-body">
           {{ item.body }}
-          <hr align=center width=900 color=#987cb9 size=1/>
+          <el-divider></el-divider>
           <div class="sub-list">
             <div class="sub-item" v-for="(item2, j) in item.replies" :key="j">
               <div class="sub-item-title">
@@ -34,8 +50,8 @@
                 发表时间：{{
                   item2.create_time
                 }}
-                <a @click="deleteMsg(item2.id)" style="cursor: pointer;color: red;margin-left: 20px;"
-                v-if="userId === item2.author.id">删除</a>
+                <a @click="deleteMsg(item2.id)" style="cursor: pointer;color: #ff4641;margin-left: 20px;"
+                v-if="userId === item2.author.id+''">删除</a>
               </div>
               <div class="sub-item-body">{{ item2.body }}</div>
             </div>
@@ -60,6 +76,7 @@
         <el-button type="primary" @click="postMsg(subId)">发 送</el-button>
       </div>
     </el-dialog>
+    </el-card>
   </div>
 </template>
 
@@ -132,12 +149,16 @@ export default {
   },
   mounted() {
     this.userId = localStorage.userId
+    let path = ""
+    if(this.$route.query)
+      path = this.$cypher.decode(this.$route.query.key)
+    this.cid = this.$route.params.docId ||  path+''
     this.getMsg(this.cid)
   },
   methods: {
     getMsg(id) {
       // 获取评论
-      console.log(this.cid,'getting')
+      console.log(id,'getting')
       fetchDocInfo(id)
         .then(res => {
           if (res.status === 200) {
@@ -161,7 +182,9 @@ export default {
           }
         })
         .catch(e => {
-          this.$message({ message: e, type: 'error' })
+          if(e.response.status === 401){
+           console.log(e)
+          }
         })
     },
     openDiag(id){
@@ -211,6 +234,8 @@ export default {
 textarea {
   font-size: 14px;
   margin: 0;
+}
+ .commentButton .el-button{padding:19px;
 }
 .list {
   margin-top: 4px;

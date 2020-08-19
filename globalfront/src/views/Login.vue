@@ -1,7 +1,19 @@
 <template>
   <div class="basic" v-web-title="{title:'登录'}">
-    <div style="display: flex;justify-content: center;margin-top:50px">
-      <el-card style="width: 400px" shadow="hover">
+    <el-container>
+      <el-main>
+        <div class="block" style="margin-top:60px">
+          <el-carousel :interval="5000" arrow="always" height="540px">
+            <el-carousel-item v-for="(img,index) in imgList" :key="index">
+              <img v-bind:src="img.url" style="width:100%">
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+      </el-main>
+
+      <el-aside width="450px">
+        <div style="justify-content: center;margin-top:100px;">
+        <el-card style="width: 400px;margin-top:140px;margin-left: 15px;height: 400px;" shadow="hover">
         <div slot="header" class="clearfix">
           <span style="margin-left:45%">登  录</span>
         </div>
@@ -36,7 +48,9 @@
           </el-form-item>
         </el-form>
       </el-card>
-    </div>
+        </div>
+      </el-aside>
+    </el-container>
   </div>
 </template>
 
@@ -45,6 +59,13 @@ import {postUser,getUserInfo} from '../api/api'
 export default {
   data (){
     return {
+      imgList:[
+        {url:require('../assets/11.png')},
+        // {url:require('../assets/12.png')},
+        {url:require('../assets/13.png')},
+        {url:require('../assets/14.png')},
+        {url:require('../assets/15.png')},
+      ],
       user: {
         username: '',
         password: ''
@@ -79,6 +100,7 @@ export default {
                 message: '登录成功',
                 type: 'info'
               })
+              console.log(this.$route.params.redirect,'redirect')
               this.$router.push({ path: this.$route.params.redirect || '/' })
             } else {
               console.log(response)
@@ -96,6 +118,7 @@ export default {
       
     },
     toRegister(){
+        console.log('login',this.$route.params.redirect)
       if(this.$route.params.redirect){
         this.$router.push({name:"Register", params:{redirect:this.$route.params.redirect}})
       } else
@@ -116,6 +139,32 @@ export default {
     position: fixed;
     width: 100%;
     height: 100%;
-    background-color: whitesmoke;
+    overflow: hidden;
+    background: url('../assets/8.jpg');
+    background-size: 100% 100%;
+    background-attachment: fixed;/* 不设置的话页面滑动时，背景会不铺满*/
   }
+  .el-container{
+    margin-top: 30px;
+  }
+  .el-carousel__item h3 {
+    color: #475669;
+    font-size: 14px;
+    opacity: 0.75;
+    line-height: 150px;
+    margin: 0;
+  }
+
+  .el-carousel__item:nth-child(2n) {
+     background-color:#333333;
+  }
+  
+  .el-carousel__item:nth-child(2n+1) {
+     background-color:#333333;
+  }
+  .el-carousel--horizontal {
+    overflow-x: hidden;
+    width: 960px;
+    border-radius:20px;
+}
 </style>
