@@ -84,6 +84,7 @@ export const fetchRecentDocs = () => {
 }
 
 export const fetchDocInfo= (id, type = null) =>{
+  console.log(id,type)
   return axios.get('/DocEdit/'+id+'/',{params:{type:type}})
 }
 

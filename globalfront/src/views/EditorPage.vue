@@ -121,7 +121,7 @@
           @change="change"
         ></editor-bar>
       </el-form-item>
-      <el-divider>评论区</el-divider>
+      <el-divider style="margin-top: 40px;">评论区</el-divider>
       <el-form-item>
         <comment-bar
           v-model="comments"
@@ -191,7 +191,7 @@ export default {
       builder: '家',
       ID: 1,
       title: '未命名',
-      content: '今天天气很好，小王出门散步。',
+      content: '',
 
       comments: {
         id: 12,
@@ -234,7 +234,7 @@ export default {
         content: ''
       },
       Dialog: false,
-      docId: '',
+      docId: this.$route.params.docId,
       isCo: false,
       visi: '',
       editor: {
@@ -252,7 +252,8 @@ export default {
   methods: {
     //获取文章内容
     init() {//当前编辑者
-      console.log('init')
+      this.docId = this.$route.params.docId
+      console.log('init',this.docId)
       this.edit = false
       fetchDocInfo(this.docId).then(res => {
         if (res.status === 200) {
@@ -458,10 +459,12 @@ export default {
           // 点击后关闭notify 不需要的话可删掉
           notify.close();
         };
+        this.edit = false
       } else if(e.response.status === 401){
         this.$message({message:'您无权限编辑此文档', type: 'error'})
       }
       this.init()
+      this.edit = false
     })
   },
   checkMove(item) {

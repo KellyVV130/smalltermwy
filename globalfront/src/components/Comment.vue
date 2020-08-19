@@ -1,7 +1,6 @@
 <template>
   <div>
     <h4>发表评论</h4>
-    <hr />
     <el-input
       type="textarea"
       :rows="2"
@@ -20,7 +19,8 @@
           发表时间：{{
           item.create_time
           }}
-          <a @click="deleteMsg(item.id)" style="cursor: pointer;color: red;margin-left: 20px;">删除</a>
+          <a @click="deleteMsg(item.id)" style="cursor: pointer;color: red;margin-left: 20px;"
+          v-if="userId === item.author.id">删除</a>
           <a @click="openDiag(item.id)" style="cursor: pointer;color: cadetblue;margin-left: 20px;">回复</a>
         </div>
         <div class="item-body">
@@ -34,7 +34,8 @@
                 发表时间：{{
                   item2.create_time
                 }}
-                <a @click="deleteMsg(item2.id)" style="cursor: pointer;color: red;margin-left: 20px;">删除</a>
+                <a @click="deleteMsg(item2.id)" style="cursor: pointer;color: red;margin-left: 20px;"
+                v-if="userId === item2.author.id">删除</a>
               </div>
               <div class="sub-item-body">{{ item2.body }}</div>
             </div>
@@ -121,6 +122,7 @@ export default {
       dialog:false,
       subComment:'',
       subId:0,
+      userId:localStorage.userId
     }
   },
   watch:{
@@ -129,6 +131,7 @@ export default {
     }
   },
   mounted() {
+    this.userId = localStorage.userId
     this.getMsg(this.cid)
   },
   methods: {

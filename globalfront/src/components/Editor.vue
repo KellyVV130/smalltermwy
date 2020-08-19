@@ -46,14 +46,23 @@ export default {
         this.editor.txt.html(this.value)
       }
     },
+    // edit(val){
+    //   console.log(val)
+    //   this.seteditor()
+    //   if(val){
+    //     this.editor.enable();
+    //   } else {
+    //     this.editor.disable()
+    //   }
+    // }
   },
   mounted() {
     this.seteditor()
     this.editor.txt.html(this.value)
+    this.editor.disable()
   },
   methods: {
     seteditor() {
-      // http://192.168.2.125:8080/admin/storage/create
       this.editor = new E(this.$refs.toolbar, this.$refs.editor)
       this.editor.customConfig.uploadImgShowBase64 = true // base 64 存储图片
       // this.editor.customConfig.uploadImgServer =
@@ -83,7 +92,6 @@ export default {
         'emoticon', // 表情
         'image', // 插入图片
         'table', // 表格
-        'video', // 插入视频
         'code', // 插入代码
         'undo', // 撤销
         'redo', // 重复
