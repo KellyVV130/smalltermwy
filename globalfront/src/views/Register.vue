@@ -1,5 +1,5 @@
 <template>
-  <div class="basic" v-web-title="{title:'注册'}">
+  <div class="basic" v-web-title="{title:'欢迎使用环球文档-注册'}">
     <el-container>
       <el-main>
         <div class="block" style="margin-top:60px">

@@ -24,7 +24,7 @@
             </el-link>
           </div>
           <el-link type="primary" size="mini" style="margin: 20px;"
-                   :underline="false" icon="el-icon-plus" @click="dialog = true">添加</el-link>
+                   :underline="false" icon="el-icon-plus" @click="openFolderDialog(docId)">添加</el-link>
           </div>
           <el-link slot="reference" :underline="false" style="font-size: large">协作</el-link>
         </el-popover>
@@ -101,7 +101,7 @@
         <share-dialog :share-dialog="shareV" :share-id="shareId"
                       @changeVisible="changeShare" :share-name="title"></share-dialog>
         <set-dialog :set-dialog="setV" :set-id="setId" @changeVisible="changeP"
-                    :visi="visi" :is-team="isTeam" :set-name="title"></set-dialog>
+                    :visi="visi" :is-team="Info.isTeam" :set-name="title"></set-dialog>
         <folder-dialog
         :dialog="folderDialog"
         @changeVisible="changeVisible"
@@ -191,10 +191,10 @@ export default {
         id: null,
       },
       date: '2016-05-02',
-      name: '王小虎',
+      name: '笔记模板',
       builder: '家',
       ID: 1,
-      title: '未命名',
+      title: '笔记模板',
       content: '请输入内容……',
 
       comments: {
@@ -255,12 +255,18 @@ export default {
   },
 
   methods: {
+    openFolderDialog(id){
+      this.name = this.title
+      this.docId = id
+      this.folderDialog = true
+    },
     //获取文章内容
     init() {//当前编辑者
       console.log('init',this.docId)
       fetchDocInfo(this.docId).then(res => {
         if (res.status === 200) {
           this.title = res.data.name
+          console.log('文档名称是', this.title)
           this.content = res.data.content
           this.docId = res.data.id
           if (res.data.editor) {
@@ -443,7 +449,7 @@ export default {
   },
   setP() {
     this.setId = this.docId
-    this.Visi = this.Info.role
+    this.visi = this.Info.role
     this.setV = true
   },
   changeP(val) {

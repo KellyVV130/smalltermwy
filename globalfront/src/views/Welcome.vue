@@ -1,5 +1,5 @@
 <template>
-<div class="welcome">
+<div class="welcome" v-web-title="{title:'欢迎使用环球文档'}">
   <video id="v1" autoplay loop muted>
     <source src="../assets/welcome.mp4" type="video/mp4"  />
   </video> 

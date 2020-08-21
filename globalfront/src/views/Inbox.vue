@@ -31,86 +31,87 @@ export default {
     return {
       inboxTimer:'',
       ifGetAllMessage: true,
-      messages: [{
-      id: 15,
-      user: {
-        id: 1,
-        username: "1",
-        head: null
-      },
-      origin_user: {
-        id: 2,
-        username: "1679",
-        head: null
-      },
-      document: {
-        id: 1,
-        name: "测试"
-      },
-      time: "2020-08-15 22:03:10",
-      type: 6,
-      status: 0
-      },
-      {
-      id: 15,
-      user: {
-        id: 1,
-        username: "1",
-        head: null
-      },
-      origin_user: {
-        id: 2,
-        username: "1679",
-        head: null
-      },
-      document: {
-        id: 1,
-        name: "测试"
-      },
-      time: "2020-08-15T22:03:10.828014",
-      type: 6,
-      status: 0
-      },
-      {
-      id: 15,
-      user: {
-        id: 1,
-        username: "1",
-        head: null
-      },
-      origin_user: {
-        id: 2,
-        username: "1679",
-        head: null
-      },
-      document: {
-        id: 1,
-        name: "测试"
-      },
-      time: "2020-08-15T22:03:10.828014",
-      type: 6,
-      status: 1
-      },
-      {
-      id: 15,
-      user: {
-        id: 1,
-        username: "1",
-        head: null
-      },
-      origin_user: {
-        id: 2,
-        username: "1679",
-        head: null
-      },
-      document: {
-        id: 1,
-        name: "测试"
-      },
-      time: "2020-08-15T22:03:10.828014",
-      type: 6,
-      status: 1
-      }
+      messages: [
+      //     {
+      // id: 15,
+      // user: {
+      //   id: 1,
+      //   username: "1",
+      //   head: null
+      // },
+      // origin_user: {
+      //   id: 2,
+      //   username: "1679",
+      //   head: null
+      // },
+      // document: {
+      //   id: 1,
+      //   name: "测试"
+      // },
+      // time: "2020-08-15 22:03:10",
+      // type: 6,
+      // status: 0
+      // },
+      // {
+      // id: 15,
+      // user: {
+      //   id: 1,
+      //   username: "1",
+      //   head: null
+      // },
+      // origin_user: {
+      //   id: 2,
+      //   username: "1679",
+      //   head: null
+      // },
+      // document: {
+      //   id: 1,
+      //   name: "测试"
+      // },
+      // time: "2020-08-15T22:03:10.828014",
+      // type: 6,
+      // status: 0
+      // },
+      // {
+      // id: 15,
+      // user: {
+      //   id: 1,
+      //   username: "1",
+      //   head: null
+      // },
+      // origin_user: {
+      //   id: 2,
+      //   username: "1679",
+      //   head: null
+      // },
+      // document: {
+      //   id: 1,
+      //   name: "测试"
+      // },
+      // time: "2020-08-15T22:03:10.828014",
+      // type: 6,
+      // status: 1
+      // },
+      // {
+      // id: 15,
+      // user: {
+      //   id: 1,
+      //   username: "1",
+      //   head: null
+      // },
+      // origin_user: {
+      //   id: 2,
+      //   username: "1679",
+      //   head: null
+      // },
+      // document: {
+      //   id: 1,
+      //   name: "测试"
+      // },
+      // time: "2020-08-15T22:03:10.828014",
+      // type: 6,
+      // status: 1
+      // }
       ]
     }
   },

@@ -474,17 +474,16 @@ import {getUserInfo,getOtherInfo} from '../api/api'
     mounted() {
       console.log(this.$route.params.personId)
       this.ID=this.$route.params.personId
-      this.getOtherInfo(this.ID)
-      /*if(this.ID+''===localStorage.userId+''){
+      if(this.ID+''===localStorage.userId+''){
         this.ifChangeVisible=true
         this.ifChangeHeadVisible=true
-        this.getPersonInfo(this.$route.params.personId)
+        this.getOtherInfo(this.$route.params.personId)
       }
       else {
         this.ifChangeVisible=false
         this.ifChangeHeadVisible=false
         this.getOtherInfo(this.$route.params.personId)
-      }*/
+      }
       //this.getAvatar()//获取的头像都是登录用户的头像
     },
     watch: {

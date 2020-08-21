@@ -75,6 +75,7 @@ export default {
     //查看详细信息
     viewMessage(item){
       item.status=1
+      this.readMessage(item.id, 0)
       if(item.type===1){//1:团队邀请信息（给被邀请人发） 接受或拒绝
         this.$confirm('是否接受邀请加入该团队？','团队邀请',{
           confirmButtonText:'接受',
